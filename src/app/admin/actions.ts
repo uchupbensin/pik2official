@@ -2,6 +2,14 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { signToken, verifyToken } from '@/lib/auth';
+
+async function requireAuth() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('admin_token')?.value;
+  const payload = await verifyToken(token);
+  if (!payload) throw new Error('Unauthorized');
+}
 
 export async function login(formData: FormData) {
   const password = formData.get('password') as string;
@@ -10,7 +18,8 @@ export async function login(formData: FormData) {
   if (password === adminPassword) {
     // Set an HTTP-only cookie
     const cookieStore = await cookies();
-    cookieStore.set('admin_token', 'authenticated', {
+    const token = await signToken({ role: 'admin' });
+    cookieStore.set('admin_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24 * 7, // 1 week
@@ -33,6 +42,7 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 export async function updateSettings(formData: FormData) {
+  await requireAuth();
   try {
     // 1. Update SiteSettings (id = 1)
     await prisma.siteSettings.upsert({
@@ -87,6 +97,7 @@ export async function updateSettings(formData: FormData) {
 
 // Menus Actions
 export async function createMenu(formData: FormData) {
+  await requireAuth();
   try {
     const parent_id = formData.get('parent_id') ? parseInt(formData.get('parent_id') as string) : null;
     await prisma.menus.create({
@@ -108,6 +119,7 @@ export async function createMenu(formData: FormData) {
 }
 
 export async function deleteMenu(id: number) {
+  await requireAuth();
   try {
     await prisma.menus.delete({ where: { id } });
     revalidatePath('/');
@@ -123,6 +135,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 export async function createProject(formData: FormData) {
+  await requireAuth();
   try {
     const file = formData.get('cover_image') as File | null;
     let coverPath = null;
@@ -173,6 +186,7 @@ export async function createProject(formData: FormData) {
 }
 
 export async function deleteProject(id: number) {
+  await requireAuth();
   try {
     const project = await prisma.projects.findUnique({ where: { id } });
     if (project?.cover_image) {
@@ -191,6 +205,7 @@ export async function deleteProject(id: number) {
 }
 
 export async function updateProject(id: number, formData: FormData) {
+  await requireAuth();
   try {
     const file = formData.get('cover_image') as File | null;
     let updateData: any = {
@@ -238,6 +253,7 @@ export async function updateProject(id: number, formData: FormData) {
 }
 
 export async function uploadProjectImages(projectId: number, formData: FormData) {
+  await requireAuth();
   try {
     const files = formData.getAll('images') as File[];
     if (!files || files.length === 0) return { success: false, error: 'No files provided' };
@@ -282,6 +298,7 @@ export async function uploadProjectImages(projectId: number, formData: FormData)
 }
 
 export async function deleteProjectImage(imageId: number) {
+  await requireAuth();
   try {
     const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };

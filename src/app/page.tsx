@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import ProjectCard from '@/components/ProjectCard';
+import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-react';
 
 export const revalidate = 0; // Or omit this for dynamic if you prefer
 
@@ -101,29 +102,48 @@ export default async function Home() {
 
             {/* PROMO SECTION */}
             {(homeSetting?.promo_title || homeSetting?.promo_description || promoBenefits.length > 0) && (
-                <section className="relative bg-white py-16 lg:py-24 border-t border-gray-100">
+                <section className="relative bg-white py-16 lg:py-24 border-t border-gray-100 overflow-hidden">
                     <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center max-w-3xl mx-auto">
+                        <div className="text-center max-w-3xl mx-auto mb-16">
                             {homeSetting?.promo_subtitle && (
-                                <p className="text-[#81A649] font-extrabold text-sm tracking-[0.2em] uppercase mb-3">{homeSetting.promo_subtitle}</p>
+                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-sm tracking-[0.15em] uppercase mb-6">
+                                    <span className="w-2 h-2 rounded-full bg-[#81A649] animate-pulse"></span>
+                                    {homeSetting.promo_subtitle}
+                                </div>
                             )}
                             {homeSetting?.promo_title && (
-                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 leading-tight text-[#1E356A]">{homeSetting.promo_title}</h2>
+                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mt-2 leading-tight text-[#1E356A]">
+                                    {homeSetting.promo_title}
+                                </h2>
                             )}
                             {homeSetting?.promo_description && (
-                                <p className="mt-5 text-gray-600 text-lg leading-relaxed">{homeSetting.promo_description}</p>
+                                <p className="mt-6 text-gray-500 text-lg sm:text-xl leading-relaxed">
+                                    {homeSetting.promo_description}
+                                </p>
                             )}
                         </div>
+                        
                         {promoBenefits.length > 0 && (
-                            <div className="flex flex-wrap justify-center gap-6 lg:gap-8 mt-14">
-                                {promoBenefits.map((benefit, idx) => (
-                                    <div key={idx} className="group w-full sm:w-[calc(50%-1rem)] lg:w-[280px] bg-gray-50 rounded-2xl p-8 text-center border border-gray-200 hover:bg-white hover:shadow-lg hover:-translate-y-2 transition-all duration-300">
-                                        <div className="mx-auto w-14 h-14 rounded-2xl bg-[#81A649] shadow-lg shadow-[#81A649]/20 flex items-center justify-center mb-6 transform group-hover:rotate-6 transition-transform duration-300">
-                                            <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" /></svg>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                                {promoBenefits.map((benefit, idx) => {
+                                    // Map dynamic icons based on index
+                                    const IconTag = [Building2, BookOpen, MessageCircle, MapPin][idx] || CheckCircle;
+                                    
+                                    return (
+                                        <div key={idx} className="group relative bg-white rounded-3xl p-8 text-center border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(30,53,106,0.08)] hover:-translate-y-2 transition-all duration-500 overflow-hidden flex flex-col items-center">
+                                            {/* Subtle gradient blob on hover */}
+                                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-[#1E356A]/5 to-[#81A649]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+                                            
+                                            <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 shadow-sm flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                                                <div className="absolute inset-0 rounded-2xl bg-[#1E356A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                <IconTag className="w-9 h-9 text-[#1E356A] drop-shadow-sm" strokeWidth={1.5} />
+                                            </div>
+                                            <p className="relative text-base sm:text-lg font-medium text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors duration-300">
+                                                {benefit}
+                                            </p>
                                         </div>
-                                        <p className="text-base font-semibold text-gray-800 leading-relaxed">{benefit}</p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
@@ -142,7 +162,7 @@ export default async function Home() {
 
                     {projects.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {projects.map((project) => (
+                            {projects.map((project: any) => (
                                 <ProjectCard key={project.id} project={project} />
                             ))}
                         </div>

@@ -53,33 +53,33 @@ export default function ProjectForm({ project }: { project?: Projects }) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nama Properti <span className="text-red-500">*</span></label>
-                <input type="text" name="name" defaultValue={project?.name} required className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: Tokyo Riverside" />
+                <input type="text" name="name" defaultValue={project?.name} required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: Tokyo Riverside" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Slug URL (Biarkan kosong untuk generate otomatis)</label>
-                <input type="text" name="slug" defaultValue={project?.slug} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="contoh: tokyo-riverside" />
+                <input type="text" name="slug" defaultValue={project?.slug} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="contoh: tokyo-riverside" />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Singkat</label>
-              <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
+              <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
-                <input type="text" name="location" defaultValue={project?.location || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: PIK 2, Jakarta Utara" />
+                <input type="text" name="location" defaultValue={project?.location || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: PIK 2, Jakarta Utara" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Khusus (Opsional)</label>
-                <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="62812345..." />
+                <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="62812345..." />
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Cover (Upload)</label>
-              <input type="file" name="cover_image" accept="image/*" className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20" />
+              <input type="file" name="cover_image" accept="image/*" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20" />
               {project?.cover_image && <p className="text-xs text-gray-500 mt-2">Biarkan kosong jika tidak ingin mengubah cover.</p>}
             </div>
 
@@ -97,11 +97,11 @@ export default function ProjectForm({ project }: { project?: Projects }) {
           <div className="grid grid-cols-1 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
-              <input type="text" name="meta_title" defaultValue={project?.meta_title || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+              <input type="text" name="meta_title" defaultValue={project?.meta_title || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-              <textarea name="meta_description" defaultValue={project?.meta_description || ''} rows={2} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
+              <textarea name="meta_description" defaultValue={project?.meta_description || ''} rows={2} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
             </div>
           </div>
         </div>

@@ -44,19 +44,19 @@ export default function SettingsForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nama Website</label>
-            <input type="text" name="site_name" defaultValue={siteSettings?.site_name || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="site_name" defaultValue={siteSettings?.site_name || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-            <input type="text" name="site_tagline" defaultValue={siteSettings?.site_tagline || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="site_tagline" defaultValue={siteSettings?.site_tagline || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp Sales (Mulai dengan 62...)</label>
-            <input type="text" name="sales_whatsapp_number" defaultValue={siteSettings?.sales_whatsapp_number || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="sales_whatsapp_number" defaultValue={siteSettings?.sales_whatsapp_number || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Label Topbar</label>
-            <input type="text" name="topbar_label" defaultValue={siteSettings?.topbar_label || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="topbar_label" defaultValue={siteSettings?.topbar_label || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
         </div>
       </div>
@@ -67,15 +67,15 @@ export default function SettingsForm({
         <div className="grid grid-cols-1 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Judul Utama (Hero)</label>
-            <input type="text" name="hero_title" defaultValue={homeSettings?.hero_title || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="hero_title" defaultValue={homeSettings?.hero_title || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Utama</label>
-            <textarea name="hero_description" defaultValue={homeSettings?.hero_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
+            <textarea name="hero_description" defaultValue={homeSettings?.hero_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">URL Video YouTube (Opsional, untuk diputar di latar belakang)</label>
-            <input type="text" name="hero_youtube_url" defaultValue={homeSettings?.hero_youtube_url || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="hero_youtube_url" defaultValue={homeSettings?.hero_youtube_url || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
         </div>
       </div>
@@ -85,19 +85,19 @@ export default function SettingsForm({
         <div className="grid grid-cols-1 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Sub-judul Promo</label>
-            <input type="text" name="promo_subtitle" defaultValue={homeSettings?.promo_subtitle || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="promo_subtitle" defaultValue={homeSettings?.promo_subtitle || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Judul Promo</label>
-            <input type="text" name="promo_title" defaultValue={homeSettings?.promo_title || ''} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+            <input type="text" name="promo_title" defaultValue={homeSettings?.promo_title || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Promo</label>
-            <textarea name="promo_description" defaultValue={homeSettings?.promo_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
+            <textarea name="promo_description" defaultValue={homeSettings?.promo_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Daftar Keuntungan (Pisahkan dengan baris baru)</label>
-            <textarea name="promo_benefits" defaultValue={homeSettings?.promo_benefits || ''} rows={5} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Lokasi Strategis&#10;Bebas Banjir&#10;..."></textarea>
+            <textarea name="promo_benefits" defaultValue={homeSettings?.promo_benefits || ''} rows={5} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Lokasi Strategis&#10;Bebas Banjir&#10;..."></textarea>
           </div>
         </div>
       </div>

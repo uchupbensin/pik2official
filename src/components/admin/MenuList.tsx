@@ -32,15 +32,15 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
           <form onSubmit={handleAddMenu} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Label Menu</label>
-              <input type="text" name="label" required className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: Tentang Kami" />
+              <input type="text" name="label" required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: Tentang Kami" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">URL / Link</label>
-              <input type="text" name="url" required className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: /about atau https://..." />
+              <input type="text" name="url" required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: /about atau https://..." />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Menu Induk (Opsional)</label>
-              <select name="parent_id" className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]">
+              <select name="parent_id" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]">
                 <option value="">-- Tidak Ada --</option>
                 {menus.filter(m => !m.parent_id).map(m => (
                   <option key={m.id} value={m.id}>{m.label}</option>
@@ -59,7 +59,7 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Urutan</label>
-              <input type="number" name="sort_order" defaultValue={0} className="w-full px-4 py-2 border rounded-xl focus:ring-[#81A649] focus:border-[#81A649]" />
+              <input type="number" name="sort_order" defaultValue={0} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
             </div>
             <button
               type="submit"
