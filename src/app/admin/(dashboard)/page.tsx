@@ -13,7 +13,7 @@ export default async function AdminDashboard() {
     <div className="space-y-6">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900">Selamat Datang di Panel Admin</h2>
-        <p className="text-gray-600 mt-1">Berikut adalah ringkasan data website PIK 2 Property saat ini.</p>
+        <p className="text-gray-600 mt-1">Berikut adalah ringkasan data website PIK 2 OFFICIAL saat ini.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

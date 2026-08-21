@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import ProjectList from '@/components/admin/ProjectList';
 
 export const metadata = {
-  title: 'Manajemen Properti - Admin PIK 2 Property',
+  title: 'Manajemen Properti - Admin PIK 2 OFFICIAL',
 };
 
 export default async function ProjectsPage() {

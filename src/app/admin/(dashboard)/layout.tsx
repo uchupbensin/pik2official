@@ -11,7 +11,7 @@ import {
 import { logout } from '@/app/admin/actions';
 
 export const metadata = {
-  title: 'Admin Dashboard - PIK 2 Property',
+  title: 'Admin Dashboard - PIK 2 OFFICIAL',
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

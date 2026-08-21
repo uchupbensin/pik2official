@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import SettingsForm from '@/components/admin/SettingsForm';
 
 export const metadata = {
-  title: 'Pengaturan Web - Admin PIK 2 Property',
+  title: 'Pengaturan Web - Admin PIK 2 OFFICIAL',
 };
 
 export default async function SettingsPage() {

@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import MenuList from '@/components/admin/MenuList';
 
 export const metadata = {
-  title: 'Manajemen Menu - Admin PIK 2 Property',
+  title: 'Manajemen Menu - Admin PIK 2 OFFICIAL',
 };
 
 export default async function MenusPage() {
