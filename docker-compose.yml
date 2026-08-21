@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: pik2-property-web
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    volumes:
+      # Map the SQLite database to the host so data is persistent
+      - ./dev.db:/app/dev.db
+      # Map the uploaded images folder so they aren't lost on container restart
+      - ./public/storage:/app/public/storage
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=file:./dev.db
+      - ADMIN_PASSWORD=pik2propertyadmin
+      - JWT_SECRET=verysecretkeyforjwtsessionpik2
