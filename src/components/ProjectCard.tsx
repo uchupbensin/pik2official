@@ -4,7 +4,13 @@ import { Projects } from '@prisma/client';
 
 export default function ProjectCard({ project }: { project: Projects }) {
   // We'll assume cover_image holds the path/URL to the image
-  const coverUrl = project.cover_image ? `/storage/${project.cover_image}` : null;
+  const coverUrl = project.cover_image 
+    ? (project.cover_image.startsWith('http') 
+        ? project.cover_image 
+        : project.cover_image.startsWith('storage/') 
+          ? `/${project.cover_image}` 
+          : `/storage/${project.cover_image}`)
+    : null;
   const alt = `${project.name} PIK 2`;
 
   return (
