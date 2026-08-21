@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model HomeSettings {
+  id                 Int       @id @default(autoincrement())
+  hero_youtube_url   String?
+  hero_title         String?
+  hero_description   String?
+  hero_primary_cta   String?
+  hero_primary_url   String?
+  hero_secondary_cta String?
+  hero_secondary_url String?
+  promo_subtitle     String?
+  promo_title        String?
+  promo_description  String?
+  promo_benefits     String?
+  created_at         DateTime? @default(now())
+  updated_at         DateTime? @updatedAt
+
+  @@map("home_settings")
+}
+
+model Menus {
+  id              Int       @id @default(autoincrement())
+  label           String
+  url             String
+  parent_id       Int?
+  sort_order      Int       @default(0)
+  is_active       Boolean   @default(true)
+  open_in_new_tab Boolean   @default(false)
+  created_at      DateTime? @default(now())
+  updated_at      DateTime? @updatedAt
+
+  menus           Menus?    @relation("MenusToMenus", fields: [parent_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
+  other_menus     Menus[]   @relation("MenusToMenus")
+
+  @@index([parent_id, sort_order], map: "menus_parent_id_sort_order_index")
+  @@map("menus")
+}
+
+model ProjectImages {
+  id         Int       @id @default(autoincrement())
+  project_id Int
+  image_path String
+  sort_order Int       @default(0)
+  created_at DateTime? @default(now())
+  updated_at DateTime? @updatedAt
+
+  projects   Projects  @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([project_id, sort_order], map: "project_images_project_id_sort_order_index")
+  @@map("project_images")
+}
+
+model Projects {
+  id                Int       @id @default(autoincrement())
+  name              String
+  slug              String    @unique(map: "projects_slug_unique")
+  short_description String?
+  location          String?
+  cover_image       String?
+  is_promo          Boolean   @default(false)
+  whatsapp_number   String?
+  meta_title        String?
+  meta_description  String?
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @updatedAt
+
+  project_images    ProjectImages[]
+
+  @@index([is_promo], map: "projects_is_promo_index")
+  @@index([slug], map: "projects_slug_index")
+  @@map("projects")
+}
+
+model SiteSettings {
+  id                    Int       @id @default(autoincrement())
+  sales_whatsapp_number String?
+  site_name             String    @default("PIK 2 OFFICIAL")
+  site_tagline          String    @default("Katalog Properti & Hunian Pilihan di PIK 2")
+  topbar_label          String    @default("Sales Property")
+  created_at            DateTime? @default(now())
+  updated_at            DateTime? @updatedAt
+
+  @@map("site_settings")
+}
