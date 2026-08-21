@@ -189,3 +189,112 @@ export async function deleteProject(id: number) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateProject(id: number, formData: FormData) {
+  try {
+    const file = formData.get('cover_image') as File | null;
+    let updateData: any = {
+      name: formData.get('name') as string,
+      short_description: formData.get('short_description') as string,
+      location: formData.get('location') as string,
+      is_promo: formData.get('is_promo') === 'on',
+      whatsapp_number: formData.get('whatsapp_number') as string,
+      meta_title: formData.get('meta_title') as string,
+      meta_description: formData.get('meta_description') as string,
+    };
+    
+    let slug = formData.get('slug') as string;
+    if (slug) {
+      updateData.slug = slug;
+    } else {
+      updateData.slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    }
+
+    if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+      const uploadDir = path.join(process.cwd(), 'public/storage');
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      updateData.cover_image = `storage/${filename}`;
+    }
+
+    await prisma.projects.update({
+      where: { id },
+      data: updateData
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    console.error(error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function uploadProjectImages(projectId: number, formData: FormData) {
+  try {
+    const files = formData.getAll('images') as File[];
+    if (!files || files.length === 0) return { success: false, error: 'No files provided' };
+
+    const uploadDir = path.join(process.cwd(), 'public/storage/projects', projectId.toString());
+    try {
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
+
+    // Get current max sort_order
+    const currentMax = await prisma.projectImages.aggregate({
+      where: { project_id: projectId },
+      _max: { sort_order: true }
+    });
+    let nextSortOrder = (currentMax._max.sort_order || 0) + 1;
+
+    for (const file of files) {
+      if (file.size > 0) {
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+        await fs.writeFile(path.join(uploadDir, filename), buffer);
+        
+        await prisma.projectImages.create({
+          data: {
+            project_id: projectId,
+            image_path: `projects/${projectId}/${filename}`,
+            sort_order: nextSortOrder++
+          }
+        });
+      }
+    }
+
+    revalidatePath('/');
+    revalidatePath(`/admin/projects/${projectId}/edit`);
+    return { success: true };
+  } catch (error: any) {
+    console.error(error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function deleteProjectImage(imageId: number) {
+  try {
+    const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
+    if (!image) return { success: false, error: 'Image not found' };
+
+    const filepath = path.join(process.cwd(), 'public/storage', image.image_path);
+    try { await fs.unlink(filepath); } catch (e) {}
+
+    await prisma.projectImages.delete({ where: { id: imageId } });
+
+    revalidatePath('/');
+    revalidatePath(`/admin/projects/${image.project_id}/edit`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

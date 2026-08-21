@@ -3,7 +3,7 @@
 import React from 'react';
 import { deleteProject } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
-import { Trash2, Plus, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProjectList({ projects }: { projects: Projects[] }) {
@@ -69,6 +69,9 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end gap-2">
+                    <Link href={`/admin/projects/${project.id}/edit`} className="text-amber-500 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 p-2 rounded-lg transition-colors">
+                      <Edit2 className="w-4 h-4" />
+                    </Link>
                     <a href={`/project/${project.slug}`} target="_blank" className="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-lg transition-colors">
                       <ExternalLink className="w-4 h-4" />
                     </a>

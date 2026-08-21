@@ -7,7 +7,7 @@ import { Trash2, Plus } from 'lucide-react';
 
 export default function MenuList({ menus }: { menus: Menus[] }) {
   const [isSaving, setIsSaving] = useState(false);
-  
+
   async function handleAddMenu(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsSaving(true);
