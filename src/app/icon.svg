@@ -1,8 +1,0 @@
-<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
-  <g transform="translate(128, 128) scale(1.6)">
-    <!-- Blue bottom part -->
-    <path d="M -60,0 L 0,60 L 60,0 C 20,25 -20,-10 -60,0 Z" fill="#7195CE"/>
-    <!-- Green top part -->
-    <path d="M -60,-5 C -20,-15 20,20 60,-5 C 50,-40 20,-50 0,-60 L -60,-5 Z" fill="#81A649"/>
-  </g>
-</svg>

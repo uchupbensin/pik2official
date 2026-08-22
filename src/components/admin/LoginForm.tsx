@@ -30,7 +30,7 @@ export default function LoginForm() {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-[url('/bg-pattern.svg')]">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center mb-6">
-           <img src="/logo.svg" alt="PIK 2" className="h-16 w-auto" />
+           <img src="/pik2.png" alt="PIK 2" className="h-16 w-auto" />
         </div>
         <h2 className="mt-2 text-center text-3xl font-extrabold text-[#1E356A]">
           Admin Panel

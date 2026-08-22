@@ -31,7 +31,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`fixed inset-y-0 left-0 w-64 bg-[#1E356A] text-white flex flex-col shadow-xl z-50 transform transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="h-16 flex items-center justify-between px-6 bg-[#14244B] border-b border-white/10">
           <div className="flex items-center">
-            <img src="/logo.svg" alt="PIK 2" className="h-8 w-auto brightness-0 invert" />
+            <img src="/pik2.png" alt="PIK 2" className="h-8 w-auto brightness-0 invert" />
             <span className="ml-3 font-bold text-lg tracking-tight">Admin Panel</span>
           </div>
           <button 

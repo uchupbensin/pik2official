@@ -37,7 +37,7 @@ export default function Navbar({
 
                         {/* Left: Logo */}
                         <Link href="/" className="flex items-center gap-3 group">
-                            <img src="/logo.svg" alt={siteName} className="h-10 sm:h-12 w-auto group-hover:scale-105 transition-transform duration-300" />
+                            <img src="/pik2.png" alt={siteName} className="h-10 sm:h-12 w-auto group-hover:scale-105 transition-transform duration-300" />
                             <span className="hidden sm:block font-extrabold tracking-tight text-[#1E356A] text-lg whitespace-nowrap">
                                 {siteName}
                             </span>
