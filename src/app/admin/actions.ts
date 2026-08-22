@@ -162,7 +162,7 @@ export async function createProject(formData: FormData) {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    await prisma.projects.create({
+    const newProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
         slug: slug,
@@ -178,7 +178,7 @@ export async function createProject(formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/admin/projects');
-    return { success: true };
+    return { success: true, projectId: newProject.id };
   } catch (error: any) {
     console.error(error);
     return { success: false, error: error.message };
