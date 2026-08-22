@@ -21,6 +21,12 @@ File ini dibuat untuk mencatat perubahan terbaru yang dilakukan pada proyek agar
    - Memperbaiki warna kolom input (*form*) di seluruh halaman admin (seperti Tambah Properti, Pengaturan Web, Menu Navigasi). Menambahkan latar belakang putih (`bg-white`) dan teks hitam (`text-gray-900`) secara eksplisit agar tulisan tetap terbaca jelas meskipun OS pengguna menggunakan mode gelap (*dark mode*).
    - Membuat tata letak admin menjadi **100% responsif di perangkat mobile**. Menambahkan ikon menu *hamburger*, *slide-in sidebar*, dan layar *overlay* gelap pada `src/app/admin/(dashboard)/layout.tsx` agar admin panel dapat diakses dengan nyaman melalui HP.
 
+## Pembaruan Fitur
+1. **Upload Brosur Langsung Saat Tambah Properti**:
+   - Menambahkan kotak isian *E-Brochure (PDF)* langsung di halaman `Tambah Properti` (`ProjectForm.tsx`), mempercepat alur kerja admin agar tidak perlu beralih ke mode edit untuk sekadar menambahkan brosur.
+   - Mengatasi isu *Server Side Rendering (SSR)* yang memunculkan *error* `DOMMatrix is not defined` pada library `pdfjs-dist` dengan mengimplementasikan teknik *Dynamic Import*. Kini pemrosesan PDF berjalan secara ketat dan aman sepenuhnya di sisi *client* (browser).
+   - Menyelesaikan limitasi 10MB pada *Next.js Server Actions* (error `Unexpected end of form`). File PDF raksasa kini dihapus dari *payload* form sebelum dikirim ke server. PDF tersebut lalu diekstrak secara lokal di browser menjadi halaman-halaman gambar `WebP` dan diunggah satu per satu di *background*, menghindari beban server berlebih.
+
 ## Perbaikan Bug / Code Quality
 1. **Perbaikan TypeScript (Lint Error) di `src/app/page.tsx`**:
    - Memperbaiki error `Parameter 'project' implicitly has an 'any' type` pada *looping* daftar properti (baris ~168).
