@@ -32,7 +32,7 @@ export default function Footer({
                     {/* Branding */}
                     <div className="md:col-span-5 lg:col-span-4">
                         <div className="flex items-center gap-3 mb-2">
-                            <img src="/icon.svg" alt={siteName} className="h-10 w-auto" />
+                            <img src="/pik2.png" alt={siteName} className="h-10 w-auto" />
                             <h2 className="text-3xl font-extrabold tracking-tight text-white">{siteName}</h2>
                         </div>
                         <p className="text-[#81A649] font-semibold text-sm uppercase tracking-widest">{siteTagline}</p>
