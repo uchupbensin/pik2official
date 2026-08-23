@@ -1,13 +1,18 @@
 import React from 'react';
 import Link from 'next/link';
-import { Menus, SiteSettings } from '@prisma/client';
+import { SiteSettings } from '@prisma/client';
 
+type MenuItem = {
+    label: string;
+    url: string;
+    children?: MenuItem[];
+};
 export default function Footer({
     siteSetting,
     menus
 }: {
     siteSetting: SiteSettings | null;
-    menus: (Menus & { children?: Menus[] })[];
+    menus: MenuItem[];
 }) {
     const siteName = siteSetting?.site_name ?? 'PIK 2 OFFICIAL';
     const siteTagline = siteSetting?.site_tagline ?? 'Katalog Properti & Hunian Pilihan di PIK 2';
@@ -44,8 +49,8 @@ export default function Footer({
                         <h3 className="font-bold text-lg mb-6 text-white border-b border-white/10 pb-3 inline-block">Navigasi Utama</h3>
                         <ul className="grid grid-cols-2 gap-y-3 gap-x-4">
                             {menus.map((menu) => (
-                                <li key={menu.id}>
-                                    <Link href={menu.url} target={menu.open_in_new_tab ? '_blank' : '_self'}
+                                <li key={menu.label}>
+                                    <Link href={menu.url} target={menu.url.startsWith('http') ? '_blank' : '_self'}
                                         className="group flex items-center text-white/70 hover:text-white text-sm transition-colors font-medium">
                                         <span className="w-1.5 h-1.5 rounded-full bg-[#81A649] mr-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all"></span>
                                         {menu.label}

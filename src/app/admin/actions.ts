@@ -165,6 +165,7 @@ export async function createProject(formData: FormData) {
         whatsapp_number: formData.get('whatsapp_number') as string,
         meta_title: formData.get('meta_title') as string,
         meta_description: formData.get('meta_description') as string,
+        category: formData.get('category') as string || 'rumah',
         cover_image: coverPath,
       }
     });
@@ -219,6 +220,7 @@ export async function updateProject(id: number, formData: FormData) {
       whatsapp_number: formData.get('whatsapp_number') as string,
       meta_title: formData.get('meta_title') as string,
       meta_description: formData.get('meta_description') as string,
+      category: formData.get('category') as string || 'rumah',
     };
 
     let slug = formData.get('slug') as string;

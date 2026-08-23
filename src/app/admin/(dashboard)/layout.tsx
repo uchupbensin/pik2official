@@ -51,10 +51,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Building2 className="w-5 h-5" />
             Properti
           </Link>
-          <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
-            <MenuSquare className="w-5 h-5" />
-            Menu Navigasi
-          </Link>
           <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
             <Settings className="w-5 h-5" />
             Pengaturan Web
