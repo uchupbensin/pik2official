@@ -11,11 +11,33 @@ async function requireAuth() {
   if (!payload) throw new Error('Unauthorized');
 }
 
+import { headers } from 'next/headers';
+
+// Simple in-memory rate limiter (per instance)
+const loginAttempts = new Map<string, { count: number, lastAttempt: number }>();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
+
 export async function login(formData: FormData) {
+  const headersList = await headers();
+  const ip = headersList.get('x-forwarded-for') || 'unknown-ip';
+  const now = Date.now();
+  const attempt = loginAttempts.get(ip);
+
+  if (attempt && attempt.count >= MAX_ATTEMPTS) {
+    if (now - attempt.lastAttempt < LOCKOUT_TIME) {
+      return { success: false, error: 'Terlalu banyak percobaan login. Silakan coba lagi dalam 15 menit.' };
+    } else {
+      loginAttempts.delete(ip);
+    }
+  }
+
   const password = formData.get('password') as string;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (password === adminPassword) {
+    loginAttempts.delete(ip);
+    
     // Set an HTTP-only cookie
     const cookieStore = await cookies();
     const token = await signToken({ role: 'admin' });
@@ -29,6 +51,7 @@ export async function login(formData: FormData) {
     return { success: true };
   }
 
+  loginAttempts.set(ip, { count: (attempt?.count || 0) + 1, lastAttempt: now });
   return { success: false, error: 'Password salah.' };
 }
 

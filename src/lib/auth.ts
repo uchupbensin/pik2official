@@ -1,7 +1,10 @@
 import { SignJWT, jwtVerify } from 'jose';
 
 const getJwtSecretKey = () => {
-  const secret = process.env.JWT_SECRET || 'verysecretkeyforjwtsessionpik2';
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error('JWT_SECRET environment variable is not defined. Please set it in your .env file.');
+  }
   return new TextEncoder().encode(secret);
 };
 
