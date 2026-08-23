@@ -42,7 +42,11 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden">
                       {project.cover_image ? (
-                        <img src={`/${project.cover_image}`} alt="" className="h-12 w-12 object-cover" />
+                        <img 
+                          src={project.cover_image.startsWith('http') ? project.cover_image : `/${project.cover_image}`} 
+                          alt="" 
+                          className="h-12 w-12 object-cover" 
+                        />
                       ) : (
                         <ImageIcon className="w-6 h-6 text-gray-400" />
                       )}

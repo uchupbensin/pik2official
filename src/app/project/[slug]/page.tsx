@@ -89,7 +89,7 @@ export default async function ProjectDetail({ params }: Props) {
               <div className="bg-white p-2 sm:p-4 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.06)] border border-gray-100 flex flex-col gap-2 overflow-hidden">
                   {project.project_images.map((image, index) => (
                       <div className="w-full rounded-2xl overflow-hidden shadow-sm" key={image.id}>
-                          <img src={`/storage/${image.image_path}`} alt={`${project.name} - Brochure ${index + 1}`}
+                          <img src={image.image_path.startsWith('http') ? image.image_path : `/storage/${image.image_path}`} alt={`${project.name} - Brochure ${index + 1}`}
                                loading="lazy"
                                className="w-full h-auto block hover:scale-[1.02] transition-transform duration-700" />
                       </div>

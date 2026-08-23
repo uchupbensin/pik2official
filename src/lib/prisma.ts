@@ -1,8 +1,11 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3'
+import { PrismaNeon } from '@prisma/adapter-neon'
+import { neonConfig } from '@neondatabase/serverless'
+
+// Note: Node 22 has native WebSocket, so we don't need 'ws'
 
 const prismaClientSingleton = () => {
-  const adapter = new PrismaBetterSqlite3({ url: './dev.db' })
+  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL as string })
   return new PrismaClient({ adapter })
 }
 

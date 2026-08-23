@@ -131,6 +131,7 @@ export async function deleteMenu(id: number) {
 }
 
 // Project Actions
+import { put, del } from '@vercel/blob';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -141,19 +142,11 @@ export async function createProject(formData: FormData) {
     let coverPath = null;
 
     if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage');
-
-      // Ensure dir exists
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      coverPath = `storage/${filename}`;
+      const blob = await put(`storage/${filename}`, file, {
+        access: 'public',
+      });
+      coverPath = blob.url;
     }
 
     // Auto-generate slug from name if not provided
@@ -188,11 +181,21 @@ export async function createProject(formData: FormData) {
 export async function deleteProject(id: number) {
   await requireAuth();
   try {
-    const project = await prisma.projects.findUnique({ where: { id } });
-    if (project?.cover_image) {
-      // Optional: Delete file
-      const filepath = path.join(process.cwd(), 'public', project.cover_image);
-      try { await fs.unlink(filepath); } catch (e) { }
+    const project = await prisma.projects.findUnique({ 
+      where: { id },
+      include: { project_images: true } 
+    });
+    
+    if (project?.cover_image && project.cover_image.startsWith('http')) {
+      try { await del(project.cover_image); } catch (e) { }
+    }
+
+    if (project?.project_images) {
+      for (const img of project.project_images) {
+        if (img.image_path && img.image_path.startsWith('http')) {
+          try { await del(img.image_path); } catch (e) { }
+        }
+      }
     }
 
     await prisma.projects.delete({ where: { id } });
@@ -226,16 +229,17 @@ export async function updateProject(id: number, formData: FormData) {
     }
 
     if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage');
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
+      const blob = await put(`storage/${filename}`, file, {
+        access: 'public',
+      });
+      updateData.cover_image = blob.url;
+      
+      // Delete old image if it's a blob url
+      const oldProject = await prisma.projects.findUnique({ where: { id } });
+      if (oldProject?.cover_image && oldProject.cover_image.startsWith('http')) {
+        try { await del(oldProject.cover_image); } catch (e) { }
       }
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.cover_image = `storage/${filename}`;
     }
 
     await prisma.projects.update({
@@ -258,13 +262,6 @@ export async function uploadProjectImages(projectId: number, formData: FormData)
     const files = formData.getAll('images') as File[];
     if (!files || files.length === 0) return { success: false, error: 'No files provided' };
 
-    const uploadDir = path.join(process.cwd(), 'public/storage/projects', projectId.toString());
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
     // Get current max sort_order
     const currentMax = await prisma.projectImages.aggregate({
       where: { project_id: projectId },
@@ -274,14 +271,15 @@ export async function uploadProjectImages(projectId: number, formData: FormData)
 
     for (const file of files) {
       if (file.size > 0) {
-        const buffer = Buffer.from(await file.arrayBuffer());
         const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
-        await fs.writeFile(path.join(uploadDir, filename), buffer);
+        const blob = await put(`projects/${projectId}/${filename}`, file, {
+          access: 'public',
+        });
 
         await prisma.projectImages.create({
           data: {
             project_id: projectId,
-            image_path: `projects/${projectId}/${filename}`,
+            image_path: blob.url,
             sort_order: nextSortOrder++
           }
         });
@@ -303,8 +301,9 @@ export async function deleteProjectImage(imageId: number) {
     const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };
 
-    const filepath = path.join(process.cwd(), 'public/storage', image.image_path);
-    try { await fs.unlink(filepath); } catch (e) { }
+    if (image.image_path && image.image_path.startsWith('http')) {
+      try { await del(image.image_path); } catch (e) { }
+    }
 
     await prisma.projectImages.delete({ where: { id: imageId } });
 
