@@ -1,6 +1,5 @@
 import React from 'react';
 import ProjectForm from '@/components/admin/ProjectForm';
-import BrochureUploader from '@/components/admin/BrochureUploader';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
@@ -30,7 +29,6 @@ export default async function EditProjectPage({ params }: Props) {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <ProjectForm project={project} />
-      <BrochureUploader projectId={project.id} existingImages={project.project_images} />
     </div>
   );
 }

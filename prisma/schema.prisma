@@ -29,17 +29,14 @@ model Menus {
   id              Int       @id @default(autoincrement())
   label           String
   url             String
-  parent_id       Int?
+  category        String?
   sort_order      Int       @default(0)
   is_active       Boolean   @default(true)
   open_in_new_tab Boolean   @default(false)
   created_at      DateTime? @default(now())
   updated_at      DateTime? @updatedAt
 
-  menus           Menus?    @relation("MenusToMenus", fields: [parent_id], references: [id], onDelete: SetNull, onUpdate: NoAction)
-  other_menus     Menus[]   @relation("MenusToMenus")
-
-  @@index([parent_id, sort_order], map: "menus_parent_id_sort_order_index")
+  @@index([category, sort_order], map: "menus_category_sort_order_index")
   @@map("menus")
 }
 
@@ -64,6 +61,7 @@ model Projects {
   short_description String?
   location          String?
   cover_image       String?
+  brochure_file     String?
   is_promo          Boolean   @default(false)
   whatsapp_number   String?
   meta_title        String?

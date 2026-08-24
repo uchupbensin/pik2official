@@ -9,14 +9,23 @@ export default function Navbar({
     menus
 }: {
     siteSetting: SiteSettings | null;
-    menus: (Menus & { children?: Menus[] })[];
+    menus: Menus[];
 }) {
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [openDropdowns, setOpenDropdowns] = useState<Record<number, boolean>>({});
+    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
 
-    const toggleDropdown = (id: number) => {
+    const toggleDropdown = (id: string) => {
         setOpenDropdowns(prev => ({ ...prev, [id]: !prev[id] }));
     };
+
+    const STATIC_MENUS = [
+        { id: 'home', label: 'HOME', url: '/', isDropdown: false },
+        { id: 'progres', label: 'PROGRES PIK 2', url: '#', isDropdown: false },
+        { id: 'rumah', label: 'RUMAH', url: '#', isDropdown: true, category: 'RUMAH' },
+        { id: 'ruko', label: 'RUKO & GUDANG', url: '#', isDropdown: true, category: 'RUKO & GUDANG' },
+        { id: 'apartemen', label: 'APARTEMEN', url: '#', isDropdown: true, category: 'APARTEMEN' },
+        { id: 'kavling', label: 'KAVLING', url: '#', isDropdown: true, category: 'KAVLING' },
+    ];
 
     const siteName = siteSetting?.site_name ?? 'PIK 2 OFFICIAL';
     const topbarLabel = siteSetting?.topbar_label ?? 'Sales Property';
@@ -45,12 +54,12 @@ export default function Navbar({
 
                         {/* Desktop nav */}
                         <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-2 mx-auto">
-                            {menus.map((menu) => {
-                                const hasChildren = menu.children && menu.children.length > 0;
+                            {STATIC_MENUS.map((menu) => {
+                                const children = menu.isDropdown ? menus.filter(m => m.category === menu.category) : [];
+                                const hasChildren = children.length > 0;
                                 return (
                                     <div className="relative group" key={menu.id}>
                                         <Link href={menu.url}
-                                            target={menu.open_in_new_tab ? '_blank' : '_self'}
                                             className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-[#1E356A] rounded-full hover:bg-gray-50/80 transition-all duration-300 ${hasChildren ? 'cursor-default' : ''}`}>
                                             {menu.label}
                                             {hasChildren && (
@@ -64,7 +73,7 @@ export default function Navbar({
                                                 <div className="bg-white/95 backdrop-blur-xl border border-gray-100 shadow-[0_10px_40px_rgba(0,0,0,0.08)] rounded-2xl overflow-hidden py-2 relative">
                                                     {/* Decorative top border */}
                                                     <div className="absolute top-0 left-0 right-0 h-1 bg-[#81A649]"></div>
-                                                    {menu.children!.map((child) => (
+                                                    {children.map((child) => (
                                                         <Link href={child.url}
                                                             key={child.id}
                                                             target={child.open_in_new_tab ? '_blank' : '_self'}
@@ -106,8 +115,9 @@ export default function Navbar({
                     {/* Mobile menu */}
                     <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-screen opacity-100 py-3' : 'max-h-0 opacity-0'}`}>
                         <div className="border-t border-gray-100/50 pt-2 space-y-1">
-                            {menus.map((menu) => {
-                                const hasChildren = menu.children && menu.children.length > 0;
+                            {STATIC_MENUS.map((menu) => {
+                                const children = menu.isDropdown ? menus.filter(m => m.category === menu.category) : [];
+                                const hasChildren = children.length > 0;
                                 return hasChildren ? (
                                     <div key={menu.id} className="rounded-xl overflow-hidden">
                                         <button type="button" className="w-full flex items-center justify-between px-4 py-3.5 text-left text-sm font-semibold text-gray-700 hover:bg-gray-50/80 transition-colors"
@@ -117,7 +127,7 @@ export default function Navbar({
                                         </button>
                                         <div className={`overflow-hidden transition-all duration-300 bg-gray-50/50 ${openDropdowns[menu.id] ? 'max-h-60' : 'max-h-0'}`}>
                                             <div className="pl-6 pr-4 py-2 space-y-0.5">
-                                                {menu.children!.map((child) => (
+                                                {children.map((child) => (
                                                     <Link href={child.url}
                                                         key={child.id}
                                                         target={child.open_in_new_tab ? '_blank' : '_self'}
@@ -131,7 +141,6 @@ export default function Navbar({
                                 ) : (
                                     <Link href={menu.url}
                                         key={menu.id}
-                                        target={menu.open_in_new_tab ? '_blank' : '_self'}
                                         className="block px-4 py-3.5 text-sm font-semibold text-gray-700 hover:text-[#1E356A] hover:bg-gray-50/80 rounded-xl transition-colors">
                                         {menu.label}
                                     </Link>

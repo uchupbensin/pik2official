@@ -99,15 +99,15 @@ export async function updateSettings(formData: FormData) {
 export async function createMenu(formData: FormData) {
   await requireAuth();
   try {
-    const parent_id = formData.get('parent_id') ? parseInt(formData.get('parent_id') as string) : null;
+    const category = formData.get('category') as string || null;
     await prisma.menus.create({
       data: {
         label: formData.get('label') as string,
         url: formData.get('url') as string,
+        category: category,
         sort_order: parseInt(formData.get('sort_order') as string) || 0,
         is_active: formData.get('is_active') === 'on',
         open_in_new_tab: formData.get('open_in_new_tab') === 'on',
-        parent_id: parent_id,
       }
     });
     revalidatePath('/');
@@ -156,13 +156,31 @@ export async function createProject(formData: FormData) {
       coverPath = `storage/${filename}`;
     }
 
+    const brochureFile = formData.get('brochure_file') as File | null;
+    let brochurePath = null;
+
+    if (brochureFile && brochureFile.size > 0) {
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      brochurePath = `storage/brochures/${filename}`;
+    }
+
     // Auto-generate slug from name if not provided
     let slug = formData.get('slug') as string;
     if (!slug) {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    await prisma.projects.create({
+    const createdProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
         slug: slug,
@@ -173,8 +191,33 @@ export async function createProject(formData: FormData) {
         meta_title: formData.get('meta_title') as string,
         meta_description: formData.get('meta_description') as string,
         cover_image: coverPath,
+        brochure_file: brochurePath,
       }
     });
+
+    // Handle multiple WebP images generated from PDF
+    const images = formData.getAll('images') as File[];
+    if (images && images.length > 0) {
+      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', createdProject.id.toString());
+      try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
+      
+      let nextSortOrder = 1;
+      for (const file of images) {
+        if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          await fs.writeFile(path.join(imgUploadDir, filename), buffer);
+
+          await prisma.projectImages.create({
+            data: {
+              project_id: createdProject.id,
+              image_path: `projects/${createdProject.id}/${filename}`,
+              sort_order: nextSortOrder++
+            }
+          });
+        }
+      }
+    }
 
     revalidatePath('/');
     revalidatePath('/admin/projects');
@@ -194,6 +237,10 @@ export async function deleteProject(id: number) {
       const filepath = path.join(process.cwd(), 'public', project.cover_image);
       try { await fs.unlink(filepath); } catch (e) { }
     }
+    if (project?.brochure_file) {
+      const filepath = path.join(process.cwd(), 'public', project.brochure_file);
+      try { await fs.unlink(filepath); } catch (e) { }
+    }
 
     await prisma.projects.delete({ where: { id } });
     revalidatePath('/');
@@ -208,6 +255,7 @@ export async function updateProject(id: number, formData: FormData) {
   await requireAuth();
   try {
     const file = formData.get('cover_image') as File | null;
+    const brochureFile = formData.get('brochure_file') as File | null;
     let updateData: any = {
       name: formData.get('name') as string,
       short_description: formData.get('short_description') as string,
@@ -238,10 +286,52 @@ export async function updateProject(id: number, formData: FormData) {
       updateData.cover_image = `storage/${filename}`;
     }
 
+    if (brochureFile && brochureFile.size > 0) {
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      updateData.brochure_file = `storage/brochures/${filename}`;
+    }
+
     await prisma.projects.update({
       where: { id },
       data: updateData
     });
+
+    // Handle multiple WebP images generated from PDF
+    const images = formData.getAll('images') as File[];
+    if (images && images.length > 0) {
+      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', id.toString());
+      try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
+      
+      const currentMax = await prisma.projectImages.aggregate({
+        where: { project_id: id },
+        _max: { sort_order: true }
+      });
+      let nextSortOrder = (currentMax._max.sort_order || 0) + 1;
+
+      for (const file of images) {
+        if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          await fs.writeFile(path.join(imgUploadDir, filename), buffer);
+
+          await prisma.projectImages.create({
+            data: {
+              project_id: id,
+              image_path: `projects/${id}/${filename}`,
+              sort_order: nextSortOrder++
+            }
+          });
+        }
+      }
+    }
 
     revalidatePath('/');
     revalidatePath('/admin/projects');

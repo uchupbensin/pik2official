@@ -25,23 +25,15 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const siteSetting = await prisma.siteSettings.findFirst();
-  const menusRaw = await prisma.menus.findMany({
+  const menus = await prisma.menus.findMany({
     where: { is_active: true },
     orderBy: { sort_order: "asc" },
   });
 
-  // Build menu hierarchy
-  const menus = menusRaw
-    .filter(m => m.parent_id === null)
-    .map(parent => ({
-      ...parent,
-      children: menusRaw.filter(child => child.parent_id === parent.id)
-    }));
-
   const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
   let cleanWa = waNumber.replace(/\D+/g, '');
   if (cleanWa.startsWith('0')) {
-      cleanWa = '62' + cleanWa.substring(1);
+    cleanWa = '62' + cleanWa.substring(1);
   }
   const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin bertanya mengenai properti di PIK 2.');
 
