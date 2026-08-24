@@ -12,13 +12,11 @@ type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 export default function ProjectForm({ project }: { project?: ProjectWithImages }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
   // PDF Extraction States
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState(0);
   const [pdfTotal, setPdfTotal] = useState(0);
   const [webpFiles, setWebpFiles] = useState<File[]>([]);
-  
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -27,7 +25,6 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    
     // Append generated WebP files
     webpFiles.forEach(file => {
       formData.append('images', file);
@@ -36,7 +33,9 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
       ? await updateProject(project.id, formData)
       : await createProject(formData);
 
-    if (result.success) {
+    let isSuccess = result.success;
+
+    if (isSuccess) {
       router.push('/admin/projects');
       router.refresh();
     } else {
@@ -185,7 +184,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               </div>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3 items-center">
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3 items-center md:col-span-2">
               <input type="checkbox" name="is_promo" defaultChecked={project?.is_promo} id="is_promo" className="w-5 h-5 rounded text-[#1E356A] focus:ring-[#1E356A]" />
               <label htmlFor="is_promo" className="text-sm font-medium text-gray-800 cursor-pointer">
                 Tandai sebagai Properti Promo (Akan muncul di halaman utama bagian Promo)

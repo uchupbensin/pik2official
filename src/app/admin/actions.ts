@@ -221,7 +221,7 @@ export async function createProject(formData: FormData) {
 
     revalidatePath('/');
     revalidatePath('/admin/projects');
-    return { success: true };
+    return { success: true, projectId: newProject.id };
   } catch (error: any) {
     console.error(error);
     return { success: false, error: error.message };
