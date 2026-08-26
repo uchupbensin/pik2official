@@ -405,3 +405,20 @@ export async function deleteProjectImage(imageId: number) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateProjectImageCaption(imageId: number, caption: string) {
+  await requireAuth();
+  try {
+    const image = await prisma.projectImages.update({
+      where: { id: imageId },
+      data: { caption: caption || null }
+    });
+    
+    revalidatePath('/');
+    revalidatePath(`/admin/projects/${image.project_id}/edit`);
+    revalidatePath(`/project/[slug]`);
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
-import { Building2, ListTree, Star, Link as LinkIcon, Clock } from 'lucide-react';
+import { Building2, ListTree, Star, Link as LinkIcon, Clock, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
@@ -17,129 +17,130 @@ export default async function AdminDashboard() {
         category: true,
         is_promo: true,
         created_at: true,
+        slug: true,
       }
     })
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Selamat Datang di Panel Admin</h2>
-        <p className="text-gray-600 mt-1">Berikut adalah ringkasan data website PIK 2 OFFICIAL saat ini.</p>
+    <div className="space-y-8">
+      <div className="mb-4">
+        <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Ikhtisar Panel</h2>
+        <p className="text-gray-500 mt-2 text-lg">Pantau dan kelola konten utama website Anda dari sini.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Stat Card 1 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4">
-          <div className="p-3 bg-blue-50 text-[#1E356A] rounded-xl">
-            <Building2 className="w-6 h-6" />
-          </div>
+        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between group hover:border-[#1E356A]/20 transition-all">
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Properti</p>
-            <h3 className="text-3xl font-bold text-gray-900 mt-1">{totalProjects}</h3>
+            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Properti</p>
+            <h3 className="text-4xl font-extrabold text-gray-900">{totalProjects}</h3>
+          </div>
+          <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-blue-100 text-[#1E356A] rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Building2 className="w-6 h-6" />
           </div>
         </div>
 
         {/* Stat Card 2 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4">
-          <div className="p-3 bg-green-50 text-[#81A649] rounded-xl">
-            <Star className="w-6 h-6" />
-          </div>
+        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between group hover:border-amber-500/20 transition-all">
           <div>
-            <p className="text-sm font-medium text-gray-500">Properti Promo</p>
-            <h3 className="text-3xl font-bold text-gray-900 mt-1">{promoProjects}</h3>
+            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">Properti Promo</p>
+            <h3 className="text-4xl font-extrabold text-gray-900">{promoProjects}</h3>
+          </div>
+          <div className="w-14 h-14 bg-gradient-to-br from-amber-50 to-amber-100 text-amber-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Star className="w-6 h-6" />
           </div>
         </div>
 
         {/* Stat Card 3 */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4">
-          <div className="p-3 bg-purple-50 text-purple-600 rounded-xl">
-            <ListTree className="w-6 h-6" />
-          </div>
+        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between group hover:border-purple-500/20 transition-all">
           <div>
-            <p className="text-sm font-medium text-gray-500">Total Menu</p>
-            <h3 className="text-3xl font-bold text-gray-900 mt-1">{totalMenus}</h3>
+            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Menu</p>
+            <h3 className="text-4xl font-extrabold text-gray-900">{totalMenus}</h3>
+          </div>
+          <div className="w-14 h-14 bg-gradient-to-br from-purple-50 to-purple-100 text-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <ListTree className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mt-8">
         {/* Recent Projects Table */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
+        <div className="xl:col-span-2 bg-white rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+          <div className="p-6 sm:p-8 flex justify-between items-center">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <Clock className="w-5 h-5 text-gray-400" />
-              Properti Terbaru
+              Baru Ditambahkan
             </h3>
-            <Link href="/admin/projects" className="text-sm text-[#1E356A] font-medium hover:underline">
-              Lihat Semua
+            <Link href="/admin/projects" className="text-sm font-semibold text-[#1E356A] hover:text-[#111827] flex items-center gap-1">
+              Lihat Semua <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Nama Properti</th>
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Kategori</th>
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {recentProjects.length > 0 ? (
-                  recentProjects.map((project) => (
-                    <tr key={project.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{project.name}</div>
-                        <div className="text-xs text-gray-500">
-                          {project.created_at ? new Date(project.created_at).toLocaleDateString('id-ID') : '-'}
+          <div className="px-6 sm:px-8 pb-6 sm:pb-8">
+            <div className="space-y-4">
+              {recentProjects.length > 0 ? (
+                recentProjects.map((project) => (
+                  <div key={project.id} className="flex items-center justify-between p-4 rounded-2xl border border-gray-50 hover:bg-gray-50/50 hover:border-gray-100 transition-all group">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400">
+                        <Building2 className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900 group-hover:text-[#1E356A] transition-colors">{project.name}</h4>
+                        <div className="flex items-center gap-3 mt-1">
+                          <span className="text-xs font-medium text-gray-500 capitalize">{project.category.replace('_', ' ')}</span>
+                          <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                          <span className="text-xs text-gray-400">
+                            {project.created_at ? new Date(project.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'}
+                          </span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="capitalize text-sm text-gray-700">{project.category}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {project.is_promo ? (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-md">Promo</span>
-                        ) : (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-md">Reguler</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link href={`/admin/projects/${project.id}/edit`} className="text-sm text-blue-600 font-medium hover:underline">
-                          Edit
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                      Belum ada properti ditambahkan.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {project.is_promo && (
+                        <span className="hidden sm:inline-flex px-3 py-1 bg-amber-50 text-amber-700 text-xs font-bold rounded-lg border border-amber-100/50">
+                          Promo
+                        </span>
+                      )}
+                      <Link href={`/admin/projects/${project.id}/edit`} className="px-4 py-2 rounded-xl bg-white border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                        Edit
+                      </Link>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                  Belum ada properti ditambahkan.
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Pintasan Cepat</h3>
-            <div className="space-y-3">
-              <Link href="/admin/projects" className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-[#1E356A] hover:text-white transition-all border border-transparent hover:shadow-md">
-                <span className="font-medium text-gray-700 group-hover:text-white">Kelola Properti</span>
-                <LinkIcon className="w-4 h-4 text-gray-400 group-hover:text-white/80" />
+        <div className="xl:col-span-1">
+          <div className="bg-[#111827] rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-6 sm:p-8 relative overflow-hidden text-white">
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-[#1E356A] blur-2xl opacity-50 pointer-events-none"></div>
+            
+            <h3 className="text-lg font-bold mb-6 relative z-10">Jalan Pintas</h3>
+            <div className="space-y-4 relative z-10">
+              <Link href="/admin/projects/create" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
+                <span className="font-semibold group-hover:text-[#111827]">Tambah Properti Baru</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+                </div>
               </Link>
-              <Link href="/admin/menus" className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-[#1E356A] hover:text-white transition-all border border-transparent hover:shadow-md">
-                <span className="font-medium text-gray-700 group-hover:text-white">Kelola Menu</span>
-                <LinkIcon className="w-4 h-4 text-gray-400 group-hover:text-white/80" />
+              <Link href="/admin/menus" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
+                <span className="font-semibold group-hover:text-[#111827]">Ubah Menu Navigasi</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+                </div>
               </Link>
-              <Link href="/admin/settings" className="group flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-[#1E356A] hover:text-white transition-all border border-transparent hover:shadow-md">
-                <span className="font-medium text-gray-700 group-hover:text-white">Ubah Pengaturan</span>
-                <LinkIcon className="w-4 h-4 text-gray-400 group-hover:text-white/80" />
+              <Link href="/admin/settings" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
+                <span className="font-semibold group-hover:text-[#111827]">Pengaturan Website</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+                </div>
               </Link>
             </div>
           </div>
