@@ -49,7 +49,6 @@ export default function Navbar({
     };
 
     const siteName = siteSetting?.site_name ?? 'PIK 2 OFFICIAL';
-    const topbarLabel = siteSetting?.topbar_label ?? 'Sales Property';
     const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
 
     let cleanWa = waNumber.replace(/\D+/g, '');

@@ -51,14 +51,12 @@ export async function updateSettings(formData: FormData) {
         site_name: formData.get('site_name') as string,
         site_tagline: formData.get('site_tagline') as string,
         sales_whatsapp_number: formData.get('sales_whatsapp_number') as string,
-        topbar_label: formData.get('topbar_label') as string,
       },
       create: {
         id: 1,
         site_name: formData.get('site_name') as string,
         site_tagline: formData.get('site_tagline') as string,
         sales_whatsapp_number: formData.get('sales_whatsapp_number') as string,
-        topbar_label: formData.get('topbar_label') as string,
       }
     });
 
@@ -66,23 +64,17 @@ export async function updateSettings(formData: FormData) {
     await prisma.homeSettings.upsert({
       where: { id: 1 },
       update: {
-        hero_youtube_url: formData.get('hero_youtube_url') as string,
         hero_title: formData.get('hero_title') as string,
         hero_description: formData.get('hero_description') as string,
         promo_title: formData.get('promo_title') as string,
-        promo_subtitle: formData.get('promo_subtitle') as string,
         promo_description: formData.get('promo_description') as string,
-        promo_benefits: formData.get('promo_benefits') as string,
       },
       create: {
         id: 1,
-        hero_youtube_url: formData.get('hero_youtube_url') as string,
         hero_title: formData.get('hero_title') as string,
         hero_description: formData.get('hero_description') as string,
         promo_title: formData.get('promo_title') as string,
-        promo_subtitle: formData.get('promo_subtitle') as string,
         promo_description: formData.get('promo_description') as string,
-        promo_benefits: formData.get('promo_benefits') as string,
       }
     });
 

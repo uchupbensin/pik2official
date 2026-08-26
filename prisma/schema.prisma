@@ -8,17 +8,10 @@ datasource db {
 
 model HomeSettings {
   id                 Int       @id @default(autoincrement())
-  hero_youtube_url   String?
   hero_title         String?
   hero_description   String?
-  hero_primary_cta   String?
-  hero_primary_url   String?
-  hero_secondary_cta String?
-  hero_secondary_url String?
-  promo_subtitle     String?
   promo_title        String?
   promo_description  String?
-  promo_benefits     String?
   created_at         DateTime? @default(now())
   updated_at         DateTime? @updatedAt
 
@@ -58,6 +51,7 @@ model Projects {
   category          String    @default("rumah")
   slug              String    @unique(map: "projects_slug_unique")
   short_description String?
+  features          String?
   location          String?
   maps_url          String?
   cover_image       String?
@@ -85,7 +79,6 @@ model SiteSettings {
   sales_whatsapp_number String?
   site_name             String    @default("PIK 2 OFFICIAL")
   site_tagline          String    @default("Katalog Properti & Hunian Pilihan di PIK 2")
-  topbar_label          String    @default("Sales Property")
   created_at            DateTime? @default(now())
   updated_at            DateTime? @updatedAt
 

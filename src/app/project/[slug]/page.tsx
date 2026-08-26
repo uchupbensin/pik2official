@@ -178,20 +178,14 @@ export default async function ProjectDetail({ params }: Props) {
               )}
             </div>
 
-            {/* Quick Benefits to make it look rich and informative */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mb-10">
-               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            {/* Quick Benefits - Now Dynamic! */}
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-10">
+              {(project.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature, idx) => (
+                <div key={idx} className="flex items-center gap-2 text-sm font-medium text-gray-700">
                   <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                  Akses Tol Langsung
-               </div>
-               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                  Bebas Banjir
-               </div>
-               <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                  Fasilitas Lengkap
-               </div>
+                  {feature.trim()}
+                </div>
+              ))}
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 mt-4">

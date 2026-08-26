@@ -38,27 +38,12 @@ export default async function Home({ searchParams }: Props) {
     const heroDesc = homeSetting?.hero_description || 'Temukan rumah, ruko, gudang, apartemen, dan kavling terbaik di kawasan strategis PIK 2.';
 
     let waLink = '';
-    if (homeSetting?.hero_secondary_cta) {
-        const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
-        let cleanWa = waNumber.replace(/\D+/g, '');
-        if (cleanWa.startsWith('0')) {
-            cleanWa = '62' + cleanWa.substring(1);
-        }
-        const secUrl = homeSetting.hero_secondary_url;
-        if (!secUrl || secUrl === '#contact') {
-            waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin konsultasi mengenai properti di PIK 2.');
-        } else {
-            waLink = secUrl;
-        }
+    const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
+    let cleanWa = waNumber.replace(/\D+/g, '');
+    if (cleanWa.startsWith('0')) {
+        cleanWa = '62' + cleanWa.substring(1);
     }
-
-    let embedUrl = null;
-    if (homeSetting?.hero_youtube_url) {
-        const match = homeSetting.hero_youtube_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-        if (match) {
-            embedUrl = 'https://www.youtube.com/embed/' + match[1];
-        }
-    }
+    waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin konsultasi mengenai properti di PIK 2.');
 
 
     return (
@@ -91,9 +76,9 @@ export default async function Home({ searchParams }: Props) {
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-4">
-                                <a href={homeSetting?.hero_primary_url || '#projects'} className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 transform hover:-translate-y-0.5">
+                                <a href="#projects" className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 transform hover:-translate-y-0.5">
                                     <svg className="w-5 h-5 text-[#81A649] group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                                    {homeSetting?.hero_primary_cta || 'Jelajahi Properti'}
+                                    Jelajahi Properti
                                 </a>
                             </div>
                         </div>
@@ -120,7 +105,7 @@ export default async function Home({ searchParams }: Props) {
                         <div className="text-center max-w-4xl mx-auto mb-16 lg:mb-24">
                             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-sm tracking-widest uppercase mb-6 shadow-sm border border-[#81A649]/20">
                                 <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                {homeSetting?.promo_subtitle || 'Hot Promo Bulan Ini'}
+                                Hot Promo Bulan Ini
                             </span>
                             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] tracking-tight leading-tight">
                                 {homeSetting?.promo_title || 'Penawaran Eksklusif & Terbatas'}
