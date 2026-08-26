@@ -257,7 +257,7 @@ export async function updateProject(id: number, formData: FormData) {
   try {
     const file = formData.get('cover_image') as File | null;
     const brochureFile = formData.get('brochure_file') as File | null;
-    let updateData: any = {
+    const updateData: any = {
       name: formData.get('name') as string,
       category: (formData.get('category') as string) || 'rumah',
       short_description: formData.get('short_description') as string,
@@ -268,7 +268,7 @@ export async function updateProject(id: number, formData: FormData) {
       meta_description: formData.get('meta_description') as string,
     };
 
-    let slug = formData.get('slug') as string;
+    const slug = formData.get('slug') as string;
     if (slug) {
       updateData.slug = slug;
     } else {
