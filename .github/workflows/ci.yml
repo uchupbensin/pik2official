@@ -40,23 +40,24 @@ jobs:
       run: npm ci
 
     - name: Initialize Dummy Database
-      if: ${{ secrets.DATABASE_URL == '' }}
+      if: env.HAS_DB == 'false'
       run: npx prisma db push
       env:
+        HAS_DB: ${{ secrets.DATABASE_URL != '' }}
         DATABASE_URL: "postgresql://user:pass@localhost:5432/dummy"
 
     - name: Generate Prisma Client
       run: npx prisma generate
       env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
 
     - name: Build Next.js app
       run: npm run build
       env:
         # Gunakan secrets jika ada, jika tidak (seperti PR dari fork), gunakan nilai dummy/lokal
-        DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
-        DIRECT_URL: ${{ secrets.DIRECT_URL != '' && secrets.DIRECT_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
-        BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN != '' && secrets.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_dummy1234567890dummy' }}
-        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD != '' && secrets.ADMIN_PASSWORD || 'dummy_password' }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET != '' && secrets.JWT_SECRET || 'dummy_secret' }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
+        DIRECT_URL: ${{ secrets.DIRECT_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
+        BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_dummy1234567890dummy' }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD || 'dummy_password' }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET || 'dummy_secret' }}
         NEXT_TELEMETRY_DISABLED: 1

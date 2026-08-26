@@ -133,6 +133,7 @@ export async function deleteMenu(id: number) {
 // Project Actions
 import fs from 'fs/promises';
 import path from 'path';
+import { put, del } from '@vercel/blob';
 
 export async function createProject(formData: FormData) {
   await requireAuth();
@@ -160,18 +161,10 @@ export async function createProject(formData: FormData) {
     let brochurePath = null;
 
     if (brochureFile && brochureFile.size > 0) {
-      const buffer = Buffer.from(await brochureFile.arrayBuffer());
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
-
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      brochurePath = `storage/brochures/${filename}`;
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const blob = await put(`brochures/${filename}`, buffer, { access: 'public' });
+      brochurePath = blob.url;
     }
 
     // Auto-generate slug from name if not provided
@@ -183,6 +176,7 @@ export async function createProject(formData: FormData) {
     const createdProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
+        category: (formData.get('category') as string) || 'rumah',
         slug: slug,
         short_description: formData.get('short_description') as string,
         location: formData.get('location') as string,
@@ -197,12 +191,14 @@ export async function createProject(formData: FormData) {
 
     // Handle multiple WebP images generated from PDF
     const images = formData.getAll('images') as File[];
+    const captions = formData.getAll('image_captions') as string[];
     if (images && images.length > 0) {
       const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', createdProject.id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
       
       let nextSortOrder = 1;
-      for (const file of images) {
+      for (let i = 0; i < images.length; i++) {
+        const file = images[i];
         if (file.size > 0) {
           const buffer = Buffer.from(await file.arrayBuffer());
           const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
@@ -212,6 +208,7 @@ export async function createProject(formData: FormData) {
             data: {
               project_id: createdProject.id,
               image_path: `projects/${createdProject.id}/${filename}`,
+              caption: captions[i] || null,
               sort_order: nextSortOrder++
             }
           });
@@ -238,8 +235,12 @@ export async function deleteProject(id: number) {
       try { await fs.unlink(filepath); } catch (e) { }
     }
     if (project?.brochure_file) {
-      const filepath = path.join(process.cwd(), 'public', project.brochure_file);
-      try { await fs.unlink(filepath); } catch (e) { }
+      if (project.brochure_file.startsWith('http')) {
+        try { await del(project.brochure_file); } catch (e) { }
+      } else {
+        const filepath = path.join(process.cwd(), 'public', project.brochure_file);
+        try { await fs.unlink(filepath); } catch (e) { }
+      }
     }
 
     await prisma.projects.delete({ where: { id } });
@@ -258,6 +259,7 @@ export async function updateProject(id: number, formData: FormData) {
     const brochureFile = formData.get('brochure_file') as File | null;
     let updateData: any = {
       name: formData.get('name') as string,
+      category: (formData.get('category') as string) || 'rumah',
       short_description: formData.get('short_description') as string,
       location: formData.get('location') as string,
       is_promo: formData.get('is_promo') === 'on',
@@ -287,16 +289,10 @@ export async function updateProject(id: number, formData: FormData) {
     }
 
     if (brochureFile && brochureFile.size > 0) {
-      const buffer = Buffer.from(await brochureFile.arrayBuffer());
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.brochure_file = `storage/brochures/${filename}`;
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const blob = await put(`brochures/${filename}`, buffer, { access: 'public' });
+      updateData.brochure_file = blob.url;
     }
 
     await prisma.projects.update({
@@ -306,6 +302,7 @@ export async function updateProject(id: number, formData: FormData) {
 
     // Handle multiple WebP images generated from PDF
     const images = formData.getAll('images') as File[];
+    const captions = formData.getAll('image_captions') as string[];
     if (images && images.length > 0) {
       const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
@@ -316,7 +313,8 @@ export async function updateProject(id: number, formData: FormData) {
       });
       let nextSortOrder = (currentMax._max.sort_order || 0) + 1;
 
-      for (const file of images) {
+      for (let i = 0; i < images.length; i++) {
+        const file = images[i];
         if (file.size > 0) {
           const buffer = Buffer.from(await file.arrayBuffer());
           const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
@@ -326,6 +324,7 @@ export async function updateProject(id: number, formData: FormData) {
             data: {
               project_id: id,
               image_path: `projects/${id}/${filename}`,
+              caption: captions[i] || null,
               sort_order: nextSortOrder++
             }
           });

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const isLoginPage = request.nextUrl.pathname === '/admin/login';
   const isAdminRoute = request.nextUrl.pathname.startsWith('/admin') && !isLoginPage;
 
@@ -23,5 +23,15 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/admin/:path*',
+  matcher: [
+    {
+      source: '/admin/:path*',
+      has: [
+        { type: 'header', key: 'accept' }
+      ],
+      missing: [
+        { type: 'header', key: 'next-action' }
+      ],
+    }
+  ],
 };
