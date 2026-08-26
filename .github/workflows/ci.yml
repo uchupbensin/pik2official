@@ -30,7 +30,10 @@ jobs:
     - name: Build Next.js app
       run: npm run build
       env:
-        # Menambahkan env sementara agar proses build tidak gagal
-        # Prisma dan Neon membutuhkan format URL PostgreSQL yang valid saat proses build
-        DATABASE_URL: "postgresql://user:pass@localhost/dummy"
+        # Gunakan secrets dari GitHub Repository settings
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
         NEXT_TELEMETRY_DISABLED: 1
