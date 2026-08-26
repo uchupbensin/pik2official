@@ -208,12 +208,12 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nama Properti <span className="text-red-500">*</span></label>
-              <input type="text" name="name" defaultValue={project?.name} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Tokyo Riverside" />
+              <input type="text" name="name" defaultValue={project?.name} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Tokyo Riverside" />
             </div>
             
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Kategori <span className="text-red-500">*</span></label>
-              <select name="category" defaultValue={project?.category || 'rumah'} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm text-gray-900">
+              <select name="category" defaultValue={project?.category || 'rumah'} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900">
                 <option value="rumah">Rumah</option>
                 <option value="ruko_gudang">Ruko & Gudang</option>
                 <option value="apartemen">Apartemen</option>
@@ -223,23 +223,23 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
             
             <div className="md:col-span-2 space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Deskripsi Singkat</label>
-              <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Ceritakan keunggulan properti ini secara singkat..."></textarea>
+              <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Ceritakan keunggulan properti ini secara singkat..."></textarea>
             </div>
             
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Lokasi / Area</label>
-              <input type="text" name="location" defaultValue={project?.location || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Pantai Indah Kapuk 2" />
+              <input type="text" name="location" defaultValue={project?.location || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Pantai Indah Kapuk 2" />
             </div>
             
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nomor WhatsApp Sales (Opsional)</label>
-              <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none font-mono text-sm" placeholder="62812345..." />
+              <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none font-mono text-sm" placeholder="62812345..." />
               <p className="text-xs text-gray-500">Gunakan format 62... Kosongkan untuk pakai nomor utama.</p>
             </div>
           </div>
           
           <div className="mt-5 pt-4 border-t border-gray-100 flex gap-3 items-center">
-            <input type="checkbox" name="is_promo" defaultChecked={project?.is_promo} id="is_promo" className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300" />
+            <input type="checkbox" name="is_promo" defaultChecked={project?.is_promo} id="is_promo" className="w-4 h-4 rounded text-[#1E356A] focus:ring-[#1E356A]/30 border-gray-300" />
             <label htmlFor="is_promo" className="text-sm font-medium text-gray-500 cursor-pointer">
               Tandai sebagai Properti Promo 🔥 (Muncul di utama)
             </label>
@@ -258,13 +258,13 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 text-center relative">
                 <input type="file" name="brochure_file" accept="application/pdf" onChange={handlePdfChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-blue-600">Pilih File PDF Brosur</p>
+                  <p className="text-sm font-medium text-[#1E356A]">Pilih File PDF Brosur</p>
                   <p className="text-xs text-gray-500 mt-1">Otomatis diekstrak menjadi galeri WebP.</p>
                 </div>
               </div>
               
               {isProcessingPdf && (
-                <div className="mt-3 text-sm text-blue-600 font-medium flex items-center gap-2">
+                <div className="mt-3 text-sm text-[#1E356A] font-medium flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" /> Memproses PDF... ({pdfProgress}/{pdfTotal})
                 </div>
               )}
@@ -301,7 +301,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                 {previewUrls.map((url, idx) => (
                   <div 
                     key={idx} 
-                    className={`relative flex flex-col rounded-xl border overflow-hidden transition-all shadow-sm ${selectedCoverIndex === idx ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200 bg-white'}`}
+                    className={`relative flex flex-col rounded-xl border overflow-hidden transition-all shadow-sm ${selectedCoverIndex === idx ? 'border-[#1E356A] bg-[#1E356A]/5' : 'border-gray-200 bg-white'}`}
                   >
                     <button 
                       type="button" 
@@ -318,7 +318,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                         Halaman {idx + 1}
                       </div>
                       {selectedCoverIndex === idx && (
-                        <div className="absolute top-2 right-2 bg-blue-600 text-white rounded-full p-1.5 shadow-md">
+                        <div className="absolute top-2 right-2 bg-[#1E356A] text-white rounded-full p-1.5 shadow-md">
                           <Check className="w-4 h-4" />
                         </div>
                       )}
@@ -333,7 +333,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                           setPdfCaptions(newCaptions);
                         }}
                         placeholder={`Tulis caption...`}
-                        className="w-full text-base text-gray-900 bg-gray-50 border border-gray-200 rounded-md focus:border-blue-400 focus:ring-1 focus:ring-blue-400 focus:bg-white px-3 py-2 outline-none transition-all placeholder:text-gray-400"
+                        className="w-full text-base text-gray-900 bg-gray-50 border border-gray-200 rounded-md focus:border-[#1E356A] focus:ring-[#1E356A]/20 focus:bg-white px-3 py-2 outline-none transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -415,7 +415,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           <button
             type="submit"
             disabled={isSaving || isProcessingPdf}
-            className="px-6 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-6 py-2.5 bg-[#1E356A] text-white text-sm font-semibold rounded-lg hover:bg-[#2B4A93] transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {isSaving ? <><Loader2 className="w-4 h-4 animate-spin" /> Menyimpan...</> : (isProcessingPdf ? 'Memproses WebP...' : 'Simpan Properti')}
           </button>

@@ -36,10 +36,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-gray-100 flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
         <div className="h-20 flex items-center justify-between px-8 border-b border-gray-50">
           <div className="flex items-center gap-3">
-            <div className="bg-[#111827] p-2 rounded-xl shadow-sm">
-              <img src="/pik2.png" alt="PIK 2" className="h-6 w-auto brightness-0 invert" />
+            <div className="bg-gradient-to-br from-[#1E356A] to-[#2B4A93] p-2 rounded-xl shadow-md shadow-blue-900/20">
+              <img src="/logo.png" alt="PIK 2" className="h-6 w-auto brightness-0 invert" />
             </div>
-            <span className="font-extrabold text-lg tracking-tight text-gray-900">Workspace</span>
+            <span className="font-extrabold text-lg tracking-tight text-[#1E356A]">Workspace</span>
           </div>
           <button 
             className="md:hidden text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-lg"
@@ -52,15 +52,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="px-6 py-4">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Main Menu</p>
           <nav className="space-y-1.5">
-            <Link href="/admin" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+            <Link href="/admin" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
               <LayoutDashboard className="w-5 h-5" />
               Dashboard
             </Link>
-            <Link href="/admin/projects" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/projects') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+            <Link href="/admin/projects" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/projects') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
               <Building2 className="w-5 h-5" />
               Properti
             </Link>
-            <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/menus') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+            <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/menus') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
               <MenuSquare className="w-5 h-5" />
               Menu Navigasi
             </Link>
@@ -68,7 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-8 mb-4">Sistem</p>
           <nav className="space-y-1.5">
-            <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/settings') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+            <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/settings') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
               <Settings className="w-5 h-5" />
               Pengaturan
             </Link>

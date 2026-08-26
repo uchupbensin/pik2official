@@ -72,7 +72,7 @@ export default async function AdminDashboard() {
               <Clock className="w-5 h-5 text-gray-400" />
               Baru Ditambahkan
             </h3>
-            <Link href="/admin/projects" className="text-sm font-semibold text-[#1E356A] hover:text-[#111827] flex items-center gap-1">
+            <Link href="/admin/projects" className="text-sm font-semibold text-[#1E356A] hover:text-[#2B4A93] flex items-center gap-1">
               Lihat Semua <ArrowUpRight className="w-4 h-4" />
             </Link>
           </div>
@@ -119,27 +119,27 @@ export default async function AdminDashboard() {
 
         {/* Quick Actions */}
         <div className="xl:col-span-1">
-          <div className="bg-[#111827] rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-6 sm:p-8 relative overflow-hidden text-white">
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-[#1E356A] blur-2xl opacity-50 pointer-events-none"></div>
+          <div className="bg-gradient-to-br from-[#1E356A] to-[#2B4A93] rounded-[1.5rem] shadow-lg shadow-blue-900/20 p-6 sm:p-8 relative overflow-hidden text-white">
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-[#81A649] blur-3xl opacity-30 pointer-events-none"></div>
             
             <h3 className="text-lg font-bold mb-6 relative z-10">Jalan Pintas</h3>
             <div className="space-y-4 relative z-10">
-              <Link href="/admin/projects/create" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
-                <span className="font-semibold group-hover:text-[#111827]">Tambah Properti Baru</span>
-                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+              <Link href="/admin/projects/create" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#1E356A]">
+                <span className="font-semibold group-hover:text-[#1E356A]">Tambah Properti Baru</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#1E356A]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#1E356A]" />
                 </div>
               </Link>
-              <Link href="/admin/menus" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
-                <span className="font-semibold group-hover:text-[#111827]">Ubah Menu Navigasi</span>
-                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+              <Link href="/admin/menus" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#1E356A]">
+                <span className="font-semibold group-hover:text-[#1E356A]">Ubah Menu Navigasi</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#1E356A]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#1E356A]" />
                 </div>
               </Link>
-              <Link href="/admin/settings" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#111827]">
-                <span className="font-semibold group-hover:text-[#111827]">Pengaturan Website</span>
-                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#111827]/5 flex items-center justify-center transition-colors">
-                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#111827]" />
+              <Link href="/admin/settings" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#1E356A]">
+                <span className="font-semibold group-hover:text-[#1E356A]">Pengaturan Website</span>
+                <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#1E356A]/5 flex items-center justify-center transition-colors">
+                  <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#1E356A]" />
                 </div>
               </Link>
             </div>

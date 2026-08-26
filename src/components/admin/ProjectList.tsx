@@ -79,7 +79,7 @@ export default function ProjectList({ projects }: { projects: Projects[] }) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <a href={`/project/${project.slug}`} target="_blank" className="p-2.5 rounded-xl text-gray-400 hover:text-[#1E356A] hover:bg-blue-50 transition-colors" title="Lihat Halaman">
+                  <a href={`/project/${project.slug}`} target="_blank" className="p-2.5 rounded-xl text-gray-400 hover:text-[#1E356A] hover:bg-[#1E356A]/5 transition-colors" title="Lihat Halaman">
                     <ExternalLink className="w-5 h-5" />
                   </a>
                   <Link href={`/admin/projects/${project.id}/edit`} className="p-2.5 rounded-xl text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors" title="Edit Properti">
