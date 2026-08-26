@@ -21,13 +21,9 @@ export default async function ProgresPage() {
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-red-50 text-red-600 font-bold text-sm mb-6 border border-red-100">
-            <PlayCircle className="w-5 h-5" />
-            Galeri Video
-          </div>
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#1E356A] tracking-tight mb-6">
             Pantau Progres <span className="text-[#81A649]">PIK 2</span>
           </h1>
@@ -45,7 +41,7 @@ export default async function ProgresPage() {
             return (
               <div key={video.id} className="bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
                 <div className="aspect-video w-full bg-gray-100 relative">
-                  <iframe 
+                  <iframe
                     src={embedUrl}
                     title={video.title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -65,9 +61,9 @@ export default async function ProgresPage() {
                         year: 'numeric'
                       })}
                     </span>
-                    <a 
-                      href={video.youtube_url} 
-                      target="_blank" 
+                    <a
+                      href={video.youtube_url}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center justify-center p-2 rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
                       title="Buka di YouTube"
