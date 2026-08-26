@@ -1,5 +1,6 @@
 import prisma from '@/lib/prisma';
 import ProjectCard from '@/components/ProjectCard';
+import PromoProjectCard from '@/components/PromoProjectCard';
 import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-react';
 
 export const revalidate = 0; // Or omit this for dynamic if you prefer
@@ -30,6 +31,9 @@ export default async function Home({ searchParams }: Props) {
         ]
     });
 
+    const promoProjects = projects.filter((p: any) => p.is_promo);
+    const regularProjects = projects.filter((p: any) => !p.is_promo);
+
     const heroTitle = homeSetting?.hero_title || 'Hunian Pilihan di PIK 2';
     const heroDesc = homeSetting?.hero_description || 'Temukan rumah, ruko, gudang, apartemen, dan kavling terbaik di kawasan strategis PIK 2.';
 
@@ -48,131 +52,116 @@ export default async function Home({ searchParams }: Props) {
         }
     }
 
-    let embedUrl = homeSetting?.hero_youtube_url;
-    if (embedUrl) {
-        const match = embedUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    let embedUrl = null;
+    if (homeSetting?.hero_youtube_url) {
+        const match = homeSetting.hero_youtube_url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
         if (match) {
             embedUrl = 'https://www.youtube.com/embed/' + match[1];
         }
     }
 
-    // Parse JSON benefits safely
-    let promoBenefits: string[] = [];
-    try {
-        if (homeSetting?.promo_benefits) {
-            promoBenefits = JSON.parse(homeSetting.promo_benefits);
-        }
-    } catch (e) {
-        console.error('Failed to parse promo_benefits', e);
-    }
+    const heroImageUrl = homeSetting?.hero_image
+        ? (homeSetting.hero_image.startsWith('http') ? homeSetting.hero_image : `/storage/${homeSetting.hero_image}`)
+        : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80";
 
     return (
         <>
-            {/* HERO SECTION */}
-            <section className="relative overflow-hidden bg-white">
-                {/* Decorative Background Mesh */}
-                <div className="absolute inset-0 z-0 opacity-40">
-                    <div className="absolute -top-24 -left-24 w-96 h-96 bg-[#1E356A] rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-                    <div className="absolute top-12 -right-24 w-96 h-96 bg-[#81A649] rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-32 left-32 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+            {/* ELEGANT HERO SECTION */}
+            <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden bg-white">
+                {/* Subtle Background Elements */}
+                <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-gray-50/30">
+                    <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-gradient-to-b from-[#1E356A]/5 to-transparent blur-[120px]"></div>
+                    <div className="absolute top-[40%] -left-[10%] w-[40%] h-[40%] rounded-full bg-gradient-to-t from-[#81A649]/5 to-transparent blur-[100px]"></div>
                 </div>
 
-                <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="text-center max-w-4xl mx-auto mb-12">
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] leading-tight tracking-tight">
-                            {heroTitle}
-                        </h1>
-                        <p className="mt-6 text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
-                            {heroDesc}
-                        </p>
-                        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
-                            {homeSetting?.hero_primary_cta && (
-                                <a href={homeSetting.hero_primary_url || '#projects'}
-                                    className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white text-base font-bold hover:shadow-[0_10px_30px_rgba(63,64,149,0.4)] hover:-translate-y-1 transition-all duration-300">
-                                    {homeSetting.hero_primary_cta}
-                                </a>
-                            )}
-                            {homeSetting?.hero_secondary_cta && (
-                                <a href={waLink} target="_blank" rel="noopener noreferrer"
-                                    className="w-full sm:w-auto px-8 py-4 rounded-full bg-white border-[2.5px] border-[#1E356A] text-[#1E356A] text-base font-bold hover:bg-gray-50 hover:shadow-lg transition-all duration-300">
-                                    {homeSetting.hero_secondary_cta}
-                                </a>
-                            )}
-                        </div>
-                    </div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="flex flex-col md:flex-row gap-12 lg:gap-16 items-center">
+                        
+                        {/* Text Content */}
+                        <div className="w-full md:w-[50%] lg:w-[45%] text-left order-2 md:order-1">
+                            {/* Checkmark Badge */}
+                            <div className="inline-flex items-center gap-2 bg-[#81A649]/10 text-[#81A649] text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest ring-1 ring-[#81A649]/30">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                                PIK 2 Official
+                            </div>
 
-                    {/* YouTube Video */}
-                    {embedUrl && (
-                        <div className="max-w-5xl mx-auto relative group mt-16">
-                            <div className="absolute -inset-1 bg-gradient-to-r from-[#1E356A] to-[#81A649] rounded-3xl blur opacity-25 group-hover:opacity-40 transition duration-1000 group-hover:duration-200"></div>
-                            <div className="relative aspect-video rounded-3xl overflow-hidden shadow-2xl bg-gray-900 border border-gray-800/50">
-                                <iframe src={embedUrl}
-                                    className="w-full h-full border-0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen></iframe>
+                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1E356A] mb-6 tracking-tight leading-[1.1]">
+                                {heroTitle}
+                            </h1>
+
+                            <p className="text-gray-500 text-lg leading-relaxed mb-10 max-w-lg font-light">
+                                {heroDesc}
+                            </p>
+
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <a href={homeSetting?.hero_primary_url || '#projects'} className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 transform hover:-translate-y-0.5">
+                                    <svg className="w-5 h-5 text-[#81A649] group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                    {homeSetting?.hero_primary_cta || 'Jelajahi Properti'}
+                                </a>
+                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white border border-gray-200 shadow-sm text-[#1E356A] hover:border-[#81A649] hover:text-[#81A649] transition-colors">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                    Tanya Sales
+                                </a>
                             </div>
                         </div>
-                    )}
+
+                        {/* Image Content */}
+                        <div className="w-full md:w-[50%] lg:w-[55%] order-1 md:order-2">
+                            <div className="relative w-full aspect-[4/3] md:aspect-[4/3] lg:aspect-[16/11] rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 group">
+                                <div className="absolute inset-0 bg-gray-900/10 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
+                                <img 
+                                    src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" 
+                                    alt="PIK 2 Properti" 
+                                    className="absolute inset-0 w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            {/* PROMO SECTION */}
-            {(homeSetting?.promo_title || homeSetting?.promo_description || promoBenefits.length > 0) && (
-                <section className="relative bg-white py-16 lg:py-24 border-t border-gray-100 overflow-hidden">
-                    <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center max-w-3xl mx-auto mb-16">
-                            {homeSetting?.promo_subtitle && (
-                                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-sm tracking-[0.15em] uppercase mb-6">
-                                    <span className="w-2 h-2 rounded-full bg-[#81A649] animate-pulse"></span>
-                                    {homeSetting.promo_subtitle}
-                                </div>
-                            )}
-                            {homeSetting?.promo_title && (
-                                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mt-2 leading-tight text-[#1E356A]">
-                                    {homeSetting.promo_title}
-                                </h2>
-                            )}
-                            {homeSetting?.promo_description && (
-                                <p className="mt-6 text-gray-500 text-lg sm:text-xl leading-relaxed">
-                                    {homeSetting.promo_description}
-                                </p>
-                            )}
-                        </div>
-                        
-                        {promoBenefits.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                                {promoBenefits.map((benefit, idx) => {
-                                    // Map dynamic icons based on index
-                                    const IconTag = [Building2, BookOpen, MessageCircle, MapPin][idx] || CheckCircle;
-                                    
-                                    return (
-                                        <div key={idx} className="group relative bg-white rounded-3xl p-8 text-center border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_15px_40px_rgba(30,53,106,0.08)] hover:-translate-y-2 transition-all duration-500 overflow-hidden flex flex-col items-center">
-                                            {/* Subtle gradient blob on hover */}
-                                            <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-[#1E356A]/5 to-[#81A649]/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-                                            
-                                            <div className="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-50 to-white border border-gray-100 shadow-sm flex items-center justify-center mb-8 transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                                                <div className="absolute inset-0 rounded-2xl bg-[#1E356A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                <IconTag className="w-9 h-9 text-[#1E356A] drop-shadow-sm" strokeWidth={1.5} />
-                                            </div>
-                                            <p className="relative text-base sm:text-lg font-medium text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors duration-300">
-                                                {benefit}
-                                            </p>
-                                        </div>
-                                    );
-                                })}
+            {/* PROMO SECTION (NEW DESIGN) */}
+            {promoProjects.length > 0 && (
+                <section className="bg-gray-50/50 py-20 lg:py-32 border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-4xl mx-auto mb-16 lg:mb-24">
+                            <p className="text-sm font-bold text-[#81A649] tracking-widest mb-3 uppercase">
+                                {homeSetting?.promo_subtitle || 'Penawaran Spesial'}
+                            </p>
+                            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] tracking-tight leading-tight">
+                                {homeSetting?.promo_title || 'Promo Terbatas'}
+                            </h2>
+                            <div className="w-16 h-1 bg-[#81A649] mx-auto mt-6 rounded-full"></div>
+                            <p className="mt-8 text-gray-500 text-lg max-w-2xl mx-auto font-light leading-relaxed">
+                                {homeSetting?.promo_description || 'Dapatkan berbagai keuntungan dan kemudahan pembayaran untuk unit pilihan Anda selama masa promo berlangsung.'}
+                            </p>
+                            <div className="mt-10 flex justify-center gap-4">
+                                <a href="#projects" className="px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-lg transition-all duration-300">
+                                    Lihat Proyek
+                                </a>
+                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 rounded-full bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] hover:bg-gray-50 hover:shadow-sm transition-all duration-300">
+                                    Hubungi Sales
+                                </a>
                             </div>
-                        )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {promoProjects.map((project: any) => (
+                                <PromoProjectCard key={project.id} project={project} />
+                            ))}
+                        </div>
                     </div>
                 </section>
             )}
 
             {/* PROJECTS SECTION */}
-            <section id="projects" className="bg-white border-t border-gray-100">
+            <section id="projects" className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-6">
+                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-6">
                         <div className="max-w-2xl">
-                            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
-                            <p className="text-gray-500 mt-3 text-lg">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
+                            <div className="w-16 h-1 bg-[#81A649] mt-6 rounded-full"></div>
+                            <p className="text-gray-500 mt-6 text-lg font-light">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
                         </div>
                         
                         {/* Elegant Search Bar */}
@@ -208,14 +197,14 @@ export default async function Home({ searchParams }: Props) {
                         </div>
                     )}
 
-                    {projects.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {projects.map((project: any) => (
+                    {regularProjects.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+                            {regularProjects.map((project: any) => (
                                 <ProjectCard key={project.id} project={project} />
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-white rounded-3xl border border-dashed border-gray-300 shadow-sm">
+                        <div className="text-center py-24 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
                             <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                             <p className="text-gray-500 text-lg font-medium">Belum ada properti yang dipublikasikan.</p>
                         </div>
