@@ -12,7 +12,7 @@ type Props = {
 export async function generateMetadata(
   { params }: Props
 ): Promise<Metadata> {
-  const slug = (await params).slug;
+  const slug = decodeURIComponent((await params).slug);
   const project = await prisma.projects.findUnique({
     where: { slug }
   });
@@ -28,7 +28,7 @@ export async function generateMetadata(
 }
 
 export default async function ProjectDetail({ params }: Props) {
-  const slug = (await params).slug;
+  const slug = decodeURIComponent((await params).slug);
 
   const project = await prisma.projects.findUnique({
     where: { slug },

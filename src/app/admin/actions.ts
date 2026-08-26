@@ -164,9 +164,11 @@ export async function createProject(formData: FormData) {
       brochurePath = blob.url;
     }
 
-    // Auto-generate slug from name if not provided
+    // Ensure slug is URL friendly
     let slug = formData.get('slug') as string;
-    if (!slug) {
+    if (slug) {
+      slug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    } else {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
@@ -267,9 +269,9 @@ export async function updateProject(id: number, formData: FormData) {
       youtube_url: formData.get('youtube_url') as string,
     };
 
-    const slug = formData.get('slug') as string;
+    let slug = formData.get('slug') as string;
     if (slug) {
-      updateData.slug = slug;
+      updateData.slug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     } else {
       updateData.slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
