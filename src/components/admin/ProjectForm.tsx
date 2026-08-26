@@ -237,10 +237,28 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <p className="text-xs text-gray-500">Gunakan format 62... Kosongkan untuk pakai nomor utama.</p>
             </div>
 
-            <div className="md:col-span-2 space-y-1">
-              <label className="block text-sm font-semibold text-gray-500">Link Video YouTube (Opsional)</label>
-              <input type="url" name="youtube_url" defaultValue={project?.youtube_url || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="https://youtube.com/watch?v=..." />
-              <p className="text-xs text-gray-500">Video ini akan ditampilkan di bawah deskripsi properti (sebelum E-Brosur).</p>
+            {/* Info Tambahan */}
+            <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-500 uppercase">Link Video YouTube (Opsional)</label>
+                <input
+                  type="url"
+                  name="youtube_url"
+                  defaultValue={project?.youtube_url || ''}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
+                  placeholder="https://youtube.com/watch?v=..."
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-gray-500 uppercase">Link Google Maps (Opsional)</label>
+                <input
+                  type="url"
+                  name="gmaps_url"
+                  defaultValue={project?.gmaps_url || ''}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
+                  placeholder="Link Google Maps..."
+                />
+              </div>
             </div>
           </div>
           

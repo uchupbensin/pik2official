@@ -75,6 +75,16 @@ export default async function ProjectDetail({ params }: Props) {
     }
   }
 
+  let gmapsEmbedUrl = null;
+  if (project.gmaps_url) {
+    if (project.gmaps_url.includes('<iframe') && project.gmaps_url.includes('src="')) {
+      const match = project.gmaps_url.match(/src="([^"]+)"/);
+      if (match) gmapsEmbedUrl = match[1];
+    } else {
+      gmapsEmbedUrl = project.gmaps_url;
+    }
+  }
+
   return (
     <>
       <main className="bg-white min-h-screen">
@@ -156,6 +166,28 @@ export default async function ProjectDetail({ params }: Props) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
                 title={`Video ${project.name}`}
+              ></iframe>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* GOOGLE MAPS SECTION */}
+      {gmapsEmbedUrl && (
+        <section className="bg-white py-16 lg:py-24 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10 lg:mb-14">
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-[#1E356A] tracking-tight mb-4">Lokasi & Peta</h2>
+              <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Kunjungi lokasi {project.name} secara langsung.</p>
+            </div>
+            <div className="aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
+              <iframe 
+                src={gmapsEmbedUrl} 
+                className="w-full h-full border-0 grayscale-[20%] group-hover:grayscale-0 transition-all duration-700" 
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Peta Lokasi ${project.name}`}
               ></iframe>
             </div>
           </div>

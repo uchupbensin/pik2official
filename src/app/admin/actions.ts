@@ -184,6 +184,7 @@ export async function createProject(formData: FormData) {
         meta_title: formData.get('meta_title') as string,
         meta_description: formData.get('meta_description') as string,
         youtube_url: formData.get('youtube_url') as string,
+        gmaps_url: formData.get('gmaps_url') as string,
         cover_image: coverPath,
         brochure_file: brochurePath,
       }
@@ -267,6 +268,7 @@ export async function updateProject(id: number, formData: FormData) {
       meta_title: formData.get('meta_title') as string,
       meta_description: formData.get('meta_description') as string,
       youtube_url: formData.get('youtube_url') as string,
+      gmaps_url: formData.get('gmaps_url') as string,
     };
 
     let slug = formData.get('slug') as string;

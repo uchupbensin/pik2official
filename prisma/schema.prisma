@@ -66,6 +66,7 @@ model Projects {
   meta_title        String?
   meta_description  String?
   youtube_url       String?
+  gmaps_url         String?
   created_at        DateTime? @default(now())
   updated_at        DateTime? @updatedAt
   sort_order        Int       @default(0)
