@@ -11,6 +11,21 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: dummy
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -24,16 +39,22 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Initialize Dummy Database
+      if: ${{ secrets.DATABASE_URL == '' }}
+      run: npx prisma db push
+      env:
+        DATABASE_URL: "postgresql://user:pass@localhost:5432/dummy"
+
     - name: Generate Prisma Client
       run: npx prisma generate
 
     - name: Build Next.js app
       run: npm run build
       env:
-        # Gunakan secrets dari GitHub Repository settings
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        DIRECT_URL: ${{ secrets.DIRECT_URL }}
-        BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        # Gunakan secrets jika ada, jika tidak (seperti PR dari fork), gunakan nilai dummy/lokal
+        DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
+        DIRECT_URL: ${{ secrets.DIRECT_URL != '' && secrets.DIRECT_URL || 'postgresql://user:pass@localhost:5432/dummy' }}
+        BLOB_READ_WRITE_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN != '' && secrets.BLOB_READ_WRITE_TOKEN || 'vercel_blob_rw_dummy1234567890dummy' }}
+        ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD != '' && secrets.ADMIN_PASSWORD || 'dummy_password' }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET != '' && secrets.JWT_SECRET || 'dummy_secret' }}
         NEXT_TELEMETRY_DISABLED: 1
