@@ -78,15 +78,24 @@ export default function GallerySlider({ images, projectName }: { images: Project
                                 alt={img.caption || `${projectName} - Image ${index + 1}`}
                                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                             />
-                            
-                            {/* Gradient Overlay for Text Readability */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none"></div>
+                            {/* Subtle Gradient Overlay for Text Readability */}
+                            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
 
-                            {/* Caption Text at Bottom Left */}
-                            <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10 right-6 z-10">
-                                <h3 className="text-white text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wide uppercase leading-tight drop-shadow-md">
-                                    {img.caption || projectName}
-                                </h3>
+                            {/* Simple, Unobtrusive Caption Text */}
+                            <div className="absolute bottom-6 left-6 md:bottom-8 md:left-8 z-10">
+                                {img.caption ? (
+                                    <div className="inline-block px-5 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                                        <p className="text-sm md:text-[15px] font-medium tracking-wide">
+                                            {img.caption}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="inline-block px-5 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/20 text-white shadow-sm">
+                                        <p className="text-sm md:text-[15px] font-medium tracking-wide">
+                                            {projectName}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

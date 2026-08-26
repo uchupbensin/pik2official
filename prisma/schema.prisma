@@ -59,6 +59,7 @@ model Projects {
   slug              String    @unique(map: "projects_slug_unique")
   short_description String?
   location          String?
+  maps_url          String?
   cover_image       String?
   brochure_file     String?
   is_promo          Boolean   @default(false)

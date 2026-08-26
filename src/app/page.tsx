@@ -116,15 +116,16 @@ export default async function Home({ searchParams }: Props) {
             {/* PROMO SECTION (NEW DESIGN) */}
             {promoProjects.length > 0 && (
                 <section id="promo" aria-label="Promo Properti PIK 2" className="bg-gradient-to-b from-gray-50 to-white py-20 lg:py-32 border-b border-gray-100">
-                    <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-4xl mx-auto mb-16 lg:mb-24">
-                            <span className="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 font-bold text-sm tracking-widest uppercase mb-4 shadow-sm border border-red-200">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-sm tracking-widest uppercase mb-6 shadow-sm border border-[#81A649]/20">
+                                <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 {homeSetting?.promo_subtitle || 'Hot Promo Bulan Ini'}
                             </span>
                             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] tracking-tight leading-tight">
                                 {homeSetting?.promo_title || 'Penawaran Eksklusif & Terbatas'}
                             </h2>
-                            <div className="w-20 h-1.5 bg-gradient-to-r from-[#25D366] to-[#128C7E] mx-auto mt-8 rounded-full"></div>
+                            <div className="w-20 h-1.5 bg-[#81A649] mx-auto mt-8 rounded-full opacity-80"></div>
                             <p className="mt-8 text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
                                 {homeSetting?.promo_description || 'Jangan lewatkan kesempatan emas ini! Dapatkan harga perdana, kemudahan cicilan, serta diskon spesial khusus untuk unit pilihan Anda selama kuota masih tersedia.'}
                             </p>
