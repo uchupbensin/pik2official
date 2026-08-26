@@ -1,17 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
-import { createProject, updateProject, uploadProjectImages } from '@/app/admin/actions';
+import React, { useState, useRef } from 'react';
+import { createProject, updateProject, deleteProjectImage } from '@/app/admin/actions';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
-import { Projects } from '@prisma/client';
+import { Projects, ProjectImages } from '@prisma/client';
 
-export default function ProjectForm({ project }: { project?: Projects }) {
+type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
+
+export default function ProjectForm({ project }: { project?: ProjectWithImages }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // PDF Extraction States
+  const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState(0);
   const [pdfTotal, setPdfTotal] = useState(0);
+  const [webpFiles, setWebpFiles] = useState<File[]>([]);
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -20,80 +25,90 @@ export default function ProjectForm({ project }: { project?: Projects }) {
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    const pdfFile = formData.get('brochure_pdf') as File | null;
-    
-    // Hapus brosur dari formData yang dikirim ke server action createProject 
-    // karena ukurannya bisa sangat besar (>10MB) dan bikin error, 
-    // padahal createProject tidak butuh PDF ini.
-    formData.delete('brochure_pdf');
+    // Append generated WebP files
+    webpFiles.forEach(file => {
+      formData.append('images', file);
+    });
+    const result = project 
+      ? await updateProject(project.id, formData)
+      : await createProject(formData);
 
-    let newProjectId: number | null = null;
-    let isSuccess = false;
-
-    if (project) {
-      const result = await updateProject(project.id, formData);
-      isSuccess = result.success;
-      if (!isSuccess) setError(result.error || 'Terjadi kesalahan saat menyimpan.');
-    } else {
-      const result = await createProject(formData);
-      isSuccess = result.success;
-      if (isSuccess && result.projectId) {
-        newProjectId = result.projectId;
-      } else if (!isSuccess) {
-        setError(result.error || 'Terjadi kesalahan saat menyimpan.');
-      }
-    }
-
-    if (isSuccess && newProjectId) {
-      if (pdfFile && pdfFile.size > 0 && pdfFile.type === 'application/pdf') {
-        try {
-          const pdfjsLib = await import('pdfjs-dist');
-          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
-          const arrayBuffer = await pdfFile.arrayBuffer();
-          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-          setPdfTotal(pdf.numPages);
-          
-          const extractedFiles: File[] = [];
-          for (let i = 1; i <= pdf.numPages; i++) {
-            setPdfProgress(i);
-            const page = await pdf.getPage(i);
-            const scale = 2.0; 
-            const viewport = page.getViewport({ scale });
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-
-            const renderContext: any = { canvasContext: context!, viewport: viewport };
-            await page.render(renderContext).promise;
-
-            const blob = await new Promise<Blob | null>((resolve) => {
-              canvas.toBlob(resolve, 'image/webp', 0.85);
-            });
-
-            if (blob) {
-              extractedFiles.push(new File([blob], `page_${i}.webp`, { type: 'image/webp' }));
-            }
-          }
-
-          for (let i = 0; i < extractedFiles.length; i++) {
-            const uploadData = new FormData();
-            uploadData.append('images', extractedFiles[i]);
-            await uploadProjectImages(newProjectId, uploadData);
-          }
-        } catch (err: any) {
-          console.error(err);
-          alert('Properti berhasil dibuat, tetapi gagal memproses brosur PDF: ' + err.message);
-        }
-      }
-    }
+    let isSuccess = result.success;
 
     if (isSuccess) {
       router.push('/admin/projects');
       router.refresh();
     } else {
+      setError(result.error || 'Terjadi kesalahan saat menyimpan.');
       setIsSaving(false);
+    }
+  }
+
+  async function handlePdfChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setWebpFiles([]);
+      return;
+    }
+    
+    if (file.type !== 'application/pdf') {
+      // It's still fine if they want to upload a raw PDF for download without conversion, 
+      // but if we want conversion it must be PDF.
+      return;
+    }
+
+    setIsProcessingPdf(true);
+    setPdfProgress(0);
+    setPdfTotal(0);
+    setWebpFiles([]); // reset
+
+    try {
+      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      setPdfTotal(pdf.numPages);
+      
+      const extractedFiles: File[] = [];
+
+      for (let i = 1; i <= pdf.numPages; i++) {
+        setPdfProgress(i);
+        const page = await pdf.getPage(i);
+        const scale = 2.0; 
+        const viewport = page.getViewport({ scale });
+        
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext: any = {
+          canvasContext: context!,
+          viewport: viewport
+        };
+        await page.render(renderContext).promise;
+
+        const blob = await new Promise<Blob | null>((resolve) => {
+          canvas.toBlob(resolve, 'image/webp', 0.85);
+        });
+
+        if (blob) {
+          extractedFiles.push(new File([blob], `page_${i}.webp`, { type: 'image/webp' }));
+        }
+      }
+      setWebpFiles(extractedFiles);
+    } catch (err: any) {
+      console.error(err);
+      alert('Terjadi kesalahan saat mengekstrak PDF: ' + err.message);
+    } finally {
+      setIsProcessingPdf(false);
+    }
+  }
+
+  async function handleDeleteImage(id: number) {
+    if (confirm('Yakin ingin menghapus gambar ini?')) {
+      await deleteProjectImage(id);
     }
   }
 
@@ -153,10 +168,30 @@ export default function ProjectForm({ project }: { project?: Projects }) {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Cover (Upload)</label>
-              <input type="file" name="cover_image" accept="image/*" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20" />
-              {project?.cover_image && <p className="text-xs text-gray-500 mt-2">Biarkan kosong jika tidak ingin mengubah cover.</p>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Gambar Cover (Upload)</label>
+                <input type="file" name="cover_image" accept="image/*" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20" />
+                {project?.cover_image && <p className="text-xs text-gray-500 mt-2">Biarkan kosong jika tidak ingin mengubah cover.</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">File E-Brosur (PDF)</label>
+                <input type="file" name="brochure_file" accept="application/pdf" onChange={handlePdfChange} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-100 file:text-red-700 hover:file:bg-red-200" />
+                {project?.brochure_file && <p className="text-xs text-gray-500 mt-2">File saat ini: <a href={`/${project.brochure_file}`} target="_blank" rel="noreferrer" className="text-blue-500 hover:underline">Lihat PDF</a></p>}
+                
+                {isProcessingPdf && (
+                  <div className="mt-4 flex items-center gap-2 text-[#1E356A]">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span className="text-sm font-medium">Memproses PDF... ({pdfProgress}/{pdfTotal})</span>
+                  </div>
+                )}
+                {!isProcessingPdf && webpFiles.length > 0 && (
+                  <div className="mt-4 text-green-600 text-sm font-medium flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4" />
+                    Berhasil mengekstrak {webpFiles.length} halaman dari PDF (Siap diunggah).
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3 items-center md:col-span-2">
@@ -165,14 +200,6 @@ export default function ProjectForm({ project }: { project?: Projects }) {
                 Tandai sebagai Properti Promo (Akan muncul di halaman utama bagian Promo)
               </label>
             </div>
-
-            {!project && (
-              <div className="md:col-span-2 p-5 bg-gray-50 border border-gray-200 rounded-xl mt-2">
-                <label className="block text-sm font-bold text-gray-800 mb-2">Upload E-Brochure (PDF) - <span className="font-normal text-gray-500">Opsional</span></label>
-                <input type="file" name="brochure_pdf" accept="application/pdf" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20" />
-                <p className="text-xs text-gray-500 mt-2">Brosur PDF akan otomatis diekstrak menjadi gambar saat proyek disimpan.</p>
-              </div>
-            )}
           </div>
         </div>
 
@@ -190,17 +217,50 @@ export default function ProjectForm({ project }: { project?: Projects }) {
           </div>
         </div>
 
+        {project?.project_images && (
+          <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-bold text-[#1E356A] mb-4 border-b pb-2">Gambar Brosur (Tersimpan)</h3>
+            {project.project_images.length === 0 ? (
+              <p className="text-gray-500 text-sm">Belum ada halaman brosur yang tersimpan.</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                {project.project_images.map((img) => (
+                  <div key={img.id} className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[3/4] bg-gray-100">
+                    <img 
+                      src={`/storage/${img.image_path}`} 
+                      alt={`Brochure ${img.id}`} 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <button 
+                        type="button"
+                        onClick={() => handleDeleteImage(img.id)}
+                        className="p-2 bg-red-500 text-white rounded-full hover:bg-red-600 hover:scale-110 transition-all"
+                        title="Hapus Gambar"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                    <div className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded-md font-mono">
+                      #{img.sort_order}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex justify-end gap-4">
           <Link href="/admin/projects" className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors">
             Batal
           </Link>
           <button
             type="submit"
-            disabled={isSaving}
-            className="px-8 py-3 bg-[#1E356A] text-white rounded-xl font-bold hover:bg-[#14244B] transition-colors disabled:opacity-70 flex items-center gap-2"
+            disabled={isSaving || isProcessingPdf}
+            className="px-8 py-3 bg-[#1E356A] text-white rounded-xl font-bold hover:bg-[#14244B] transition-colors disabled:opacity-70"
           >
-            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isSaving ? (pdfTotal > 0 ? `Memproses PDF (${pdfProgress}/${pdfTotal})...` : 'Menyimpan...') : 'Simpan Properti'}
+            {isSaving ? 'Menyimpan...' : (isProcessingPdf ? 'Memproses PDF...' : 'Simpan Properti')}
           </button>
         </div>
       </form>

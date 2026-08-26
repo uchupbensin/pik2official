@@ -9,7 +9,7 @@ export const metadata = {
 export default async function MenusPage() {
   const menus = await prisma.menus.findMany({
     orderBy: [
-      { parent_id: 'asc' },
+      { category: 'asc' },
       { sort_order: 'asc' }
     ]
   });

@@ -1,16 +1,15 @@
 import { PrismaClient } from '@prisma/client'
-import { PrismaNeon } from '@prisma/adapter-neon'
-import { neonConfig } from '@neondatabase/serverless'
-
-// Note: Node 22 has native WebSocket, so we don't need 'ws'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 const prismaClientSingleton = () => {
-  // Gunakan Prisma biasa (tanpa Neon Adapter) jika di CI menggunakan database localhost
+  // Gunakan Prisma biasa (tanpa Adapter) jika di CI menggunakan database localhost atau jika DATABASE_URL tidak ada (saat build)
   if (process.env.DATABASE_URL?.includes('localhost') || process.env.DATABASE_URL?.includes('127.0.0.1')) {
     return new PrismaClient()
   }
   
-  const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL as string })
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+  const adapter = new PrismaPg(pool)
   return new PrismaClient({ adapter })
 }
 

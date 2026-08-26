@@ -11,33 +11,11 @@ async function requireAuth() {
   if (!payload) throw new Error('Unauthorized');
 }
 
-import { headers } from 'next/headers';
-
-// Simple in-memory rate limiter (per instance)
-const loginAttempts = new Map<string, { count: number, lastAttempt: number }>();
-const MAX_ATTEMPTS = 5;
-const LOCKOUT_TIME = 15 * 60 * 1000; // 15 minutes
-
 export async function login(formData: FormData) {
-  const headersList = await headers();
-  const ip = headersList.get('x-forwarded-for') || 'unknown-ip';
-  const now = Date.now();
-  const attempt = loginAttempts.get(ip);
-
-  if (attempt && attempt.count >= MAX_ATTEMPTS) {
-    if (now - attempt.lastAttempt < LOCKOUT_TIME) {
-      return { success: false, error: 'Terlalu banyak percobaan login. Silakan coba lagi dalam 15 menit.' };
-    } else {
-      loginAttempts.delete(ip);
-    }
-  }
-
   const password = formData.get('password') as string;
   const adminPassword = process.env.ADMIN_PASSWORD;
 
   if (password === adminPassword) {
-    loginAttempts.delete(ip);
-    
     // Set an HTTP-only cookie
     const cookieStore = await cookies();
     const token = await signToken({ role: 'admin' });
@@ -51,7 +29,6 @@ export async function login(formData: FormData) {
     return { success: true };
   }
 
-  loginAttempts.set(ip, { count: (attempt?.count || 0) + 1, lastAttempt: now });
   return { success: false, error: 'Password salah.' };
 }
 
@@ -122,15 +99,15 @@ export async function updateSettings(formData: FormData) {
 export async function createMenu(formData: FormData) {
   await requireAuth();
   try {
-    const parent_id = formData.get('parent_id') ? parseInt(formData.get('parent_id') as string) : null;
+    const category = formData.get('category') as string || null;
     await prisma.menus.create({
       data: {
         label: formData.get('label') as string,
         url: formData.get('url') as string,
+        category: category,
         sort_order: parseInt(formData.get('sort_order') as string) || 0,
         is_active: formData.get('is_active') === 'on',
         open_in_new_tab: formData.get('open_in_new_tab') === 'on',
-        parent_id: parent_id,
       }
     });
     revalidatePath('/');
@@ -154,7 +131,6 @@ export async function deleteMenu(id: number) {
 }
 
 // Project Actions
-import { put, del } from '@vercel/blob';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -165,11 +141,37 @@ export async function createProject(formData: FormData) {
     let coverPath = null;
 
     if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const blob = await put(`storage/${filename}`, file, {
-        access: 'public',
-      });
-      coverPath = blob.url;
+      const uploadDir = path.join(process.cwd(), 'public/storage');
+
+      // Ensure dir exists
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      coverPath = `storage/${filename}`;
+    }
+
+    const brochureFile = formData.get('brochure_file') as File | null;
+    let brochurePath = null;
+
+    if (brochureFile && brochureFile.size > 0) {
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      brochurePath = `storage/brochures/${filename}`;
     }
 
     // Auto-generate slug from name if not provided
@@ -178,7 +180,7 @@ export async function createProject(formData: FormData) {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    const newProject = await prisma.projects.create({
+    const createdProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
         slug: slug,
@@ -188,14 +190,38 @@ export async function createProject(formData: FormData) {
         whatsapp_number: formData.get('whatsapp_number') as string,
         meta_title: formData.get('meta_title') as string,
         meta_description: formData.get('meta_description') as string,
-        category: formData.get('category') as string || 'rumah',
         cover_image: coverPath,
+        brochure_file: brochurePath,
       }
     });
 
+    // Handle multiple WebP images generated from PDF
+    const images = formData.getAll('images') as File[];
+    if (images && images.length > 0) {
+      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', createdProject.id.toString());
+      try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
+      
+      let nextSortOrder = 1;
+      for (const file of images) {
+        if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          await fs.writeFile(path.join(imgUploadDir, filename), buffer);
+
+          await prisma.projectImages.create({
+            data: {
+              project_id: createdProject.id,
+              image_path: `projects/${createdProject.id}/${filename}`,
+              sort_order: nextSortOrder++
+            }
+          });
+        }
+      }
+    }
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
-    return { success: true, projectId: newProject.id };
+    return { success: true, projectId: createdProject.id };
   } catch (error: any) {
     console.error(error);
     return { success: false, error: error.message };
@@ -205,21 +231,15 @@ export async function createProject(formData: FormData) {
 export async function deleteProject(id: number) {
   await requireAuth();
   try {
-    const project = await prisma.projects.findUnique({ 
-      where: { id },
-      include: { project_images: true } 
-    });
-    
-    if (project?.cover_image && project.cover_image.startsWith('http')) {
-      try { await del(project.cover_image); } catch (e) { }
+    const project = await prisma.projects.findUnique({ where: { id } });
+    if (project?.cover_image) {
+      // Optional: Delete file
+      const filepath = path.join(process.cwd(), 'public', project.cover_image);
+      try { await fs.unlink(filepath); } catch (e) { }
     }
-
-    if (project?.project_images) {
-      for (const img of project.project_images) {
-        if (img.image_path && img.image_path.startsWith('http')) {
-          try { await del(img.image_path); } catch (e) { }
-        }
-      }
+    if (project?.brochure_file) {
+      const filepath = path.join(process.cwd(), 'public', project.brochure_file);
+      try { await fs.unlink(filepath); } catch (e) { }
     }
 
     await prisma.projects.delete({ where: { id } });
@@ -235,6 +255,7 @@ export async function updateProject(id: number, formData: FormData) {
   await requireAuth();
   try {
     const file = formData.get('cover_image') as File | null;
+    const brochureFile = formData.get('brochure_file') as File | null;
     let updateData: any = {
       name: formData.get('name') as string,
       short_description: formData.get('short_description') as string,
@@ -243,7 +264,6 @@ export async function updateProject(id: number, formData: FormData) {
       whatsapp_number: formData.get('whatsapp_number') as string,
       meta_title: formData.get('meta_title') as string,
       meta_description: formData.get('meta_description') as string,
-      category: formData.get('category') as string || 'rumah',
     };
 
     let slug = formData.get('slug') as string;
@@ -254,23 +274,64 @@ export async function updateProject(id: number, formData: FormData) {
     }
 
     if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const blob = await put(`storage/${filename}`, file, {
-        access: 'public',
-      });
-      updateData.cover_image = blob.url;
-      
-      // Delete old image if it's a blob url
-      const oldProject = await prisma.projects.findUnique({ where: { id } });
-      if (oldProject?.cover_image && oldProject.cover_image.startsWith('http')) {
-        try { await del(oldProject.cover_image); } catch (e) { }
+      const uploadDir = path.join(process.cwd(), 'public/storage');
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
       }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      updateData.cover_image = `storage/${filename}`;
+    }
+
+    if (brochureFile && brochureFile.size > 0) {
+      const buffer = Buffer.from(await brochureFile.arrayBuffer());
+      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      updateData.brochure_file = `storage/brochures/${filename}`;
     }
 
     await prisma.projects.update({
       where: { id },
       data: updateData
     });
+
+    // Handle multiple WebP images generated from PDF
+    const images = formData.getAll('images') as File[];
+    if (images && images.length > 0) {
+      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', id.toString());
+      try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
+      
+      const currentMax = await prisma.projectImages.aggregate({
+        where: { project_id: id },
+        _max: { sort_order: true }
+      });
+      let nextSortOrder = (currentMax._max.sort_order || 0) + 1;
+
+      for (const file of images) {
+        if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          await fs.writeFile(path.join(imgUploadDir, filename), buffer);
+
+          await prisma.projectImages.create({
+            data: {
+              project_id: id,
+              image_path: `projects/${id}/${filename}`,
+              sort_order: nextSortOrder++
+            }
+          });
+        }
+      }
+    }
 
     revalidatePath('/');
     revalidatePath('/admin/projects');
@@ -287,6 +348,13 @@ export async function uploadProjectImages(projectId: number, formData: FormData)
     const files = formData.getAll('images') as File[];
     if (!files || files.length === 0) return { success: false, error: 'No files provided' };
 
+    const uploadDir = path.join(process.cwd(), 'public/storage/projects', projectId.toString());
+    try {
+      await fs.access(uploadDir);
+    } catch {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
+
     // Get current max sort_order
     const currentMax = await prisma.projectImages.aggregate({
       where: { project_id: projectId },
@@ -296,15 +364,14 @@ export async function uploadProjectImages(projectId: number, formData: FormData)
 
     for (const file of files) {
       if (file.size > 0) {
+        const buffer = Buffer.from(await file.arrayBuffer());
         const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
-        const blob = await put(`projects/${projectId}/${filename}`, file, {
-          access: 'public',
-        });
+        await fs.writeFile(path.join(uploadDir, filename), buffer);
 
         await prisma.projectImages.create({
           data: {
             project_id: projectId,
-            image_path: blob.url,
+            image_path: `projects/${projectId}/${filename}`,
             sort_order: nextSortOrder++
           }
         });
@@ -326,9 +393,8 @@ export async function deleteProjectImage(imageId: number) {
     const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };
 
-    if (image.image_path && image.image_path.startsWith('http')) {
-      try { await del(image.image_path); } catch (e) { }
-    }
+    const filepath = path.join(process.cwd(), 'public/storage', image.image_path);
+    try { await fs.unlink(filepath); } catch (e) { }
 
     await prisma.projectImages.delete({ where: { id: imageId } });
 

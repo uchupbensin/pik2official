@@ -39,12 +39,13 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
               <input type="text" name="url" required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: /about atau https://..." />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Menu Induk (Opsional)</label>
-              <select name="parent_id" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]">
-                <option value="">-- Tidak Ada --</option>
-                {menus.filter(m => !m.parent_id).map(m => (
-                  <option key={m.id} value={m.id}>{m.label}</option>
-                ))}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Pilih Kategori Dropdown</label>
+              <select name="category" className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]">
+                <option value="">-- Tanpa Kategori (Sembunyikan) --</option>
+                <option value="RUMAH">RUMAH</option>
+                <option value="RUKO & GUDANG">RUKO & GUDANG</option>
+                <option value="APARTEMEN">APARTEMEN</option>
+                <option value="KAVLING">KAVLING</option>
               </select>
             </div>
             <div className="flex gap-4">
@@ -79,6 +80,7 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Label</th>
                 <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">URL</th>
                 <th className="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Urutan</th>
@@ -89,9 +91,13 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
               {menus.map((menu) => (
                 <tr key={menu.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-[#1E356A]/10 text-[#1E356A]">
+                      {menu.category || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      {menu.parent_id && <span className="text-gray-300 mr-2">└─</span>}
-                      <span className={`font-medium ${menu.parent_id ? 'text-gray-600' : 'text-gray-900'}`}>{menu.label}</span>
+                      <span className="font-medium text-gray-900">{menu.label}</span>
                       {!menu.is_active && <span className="ml-2 px-2 py-0.5 rounded text-xs bg-red-100 text-red-800">Nonaktif</span>}
                     </div>
                   </td>
@@ -106,7 +112,7 @@ export default function MenuList({ menus }: { menus: Menus[] }) {
               ))}
               {menus.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-8 text-center text-gray-500">Belum ada menu navigasi.</td>
+                  <td colSpan={5} className="px-6 py-8 text-center text-gray-500">Belum ada menu navigasi.</td>
                 </tr>
               )}
             </tbody>
