@@ -155,7 +155,7 @@ export default function BrochureUploader({ projectId, existingImages }: Brochure
             {existingImages.map((img) => (
               <div key={img.id} className="relative group rounded-xl overflow-hidden border border-gray-200 aspect-[3/4] bg-gray-100">
                 <img 
-                  src={`/storage/${img.image_path}`} 
+                  src={img.image_path.startsWith('http') ? img.image_path : `/storage/${img.image_path}`} 
                   alt={`Brochure ${img.id}`} 
                   className="w-full h-full object-cover"
                 />

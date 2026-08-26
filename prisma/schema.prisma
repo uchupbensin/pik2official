@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider  = "postgresql"
 }
 
 model HomeSettings {
@@ -60,6 +60,7 @@ model ProjectImages {
 model Projects {
   id                Int       @id @default(autoincrement())
   name              String
+  category          String    @default("rumah")
   slug              String    @unique(map: "projects_slug_unique")
   short_description String?
   location          String?
