@@ -75,16 +75,6 @@ export default async function ProjectDetail({ params }: Props) {
     }
   }
 
-  let gmapsEmbedUrl = null;
-  if (project.gmaps_url) {
-    if (project.gmaps_url.includes('<iframe') && project.gmaps_url.includes('src="')) {
-      const match = project.gmaps_url.match(/src="([^"]+)"/);
-      if (match) gmapsEmbedUrl = match[1];
-    } else {
-      gmapsEmbedUrl = project.gmaps_url;
-    }
-  }
-
   return (
     <>
       <main className="bg-white min-h-screen">
@@ -173,22 +163,32 @@ export default async function ProjectDetail({ params }: Props) {
       )}
 
       {/* GOOGLE MAPS SECTION */}
-      {gmapsEmbedUrl && (
+      {project.gmaps_url && (
         <section className="bg-white py-16 lg:py-24 border-t border-gray-100">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-10 lg:mb-14">
               <h2 className="text-3xl lg:text-4xl font-extrabold text-[#1E356A] tracking-tight mb-4">Lokasi & Peta</h2>
               <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Kunjungi lokasi {project.name} secara langsung.</p>
             </div>
-            <div className="aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
+            
+            <div className="relative aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
+              {/* Iframe otomatis menggunakan nama lokasi */}
               <iframe 
-                src={gmapsEmbedUrl} 
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(project.location || project.name)}&t=&z=14&ie=UTF8&iwloc=&output=embed`} 
                 className="w-full h-full border-0 grayscale-[20%] group-hover:grayscale-0 transition-all duration-700" 
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 title={`Peta Lokasi ${project.name}`}
               ></iframe>
+              
+              {/* Tombol Buka di Maps overlay */}
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+                <a href={project.gmaps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md text-[#1E356A] px-6 py-3 rounded-full font-bold shadow-lg hover:bg-[#1E356A] hover:text-white transition-colors duration-300">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" strokeWidth="2"/></svg>
+                  Buka di Google Maps
+                </a>
+              </div>
             </div>
           </div>
         </section>
