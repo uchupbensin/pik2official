@@ -60,9 +60,6 @@ export default async function Home({ searchParams }: Props) {
         }
     }
 
-    const heroImageUrl = homeSetting?.hero_image
-        ? (homeSetting.hero_image.startsWith('http') ? homeSetting.hero_image : `/storage/${homeSetting.hero_image}`)
-        : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80";
 
     return (
         <>
@@ -98,10 +95,6 @@ export default async function Home({ searchParams }: Props) {
                                     <svg className="w-5 h-5 text-[#81A649] group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                     {homeSetting?.hero_primary_cta || 'Jelajahi Properti'}
                                 </a>
-                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-white border border-gray-200 shadow-sm text-[#1E356A] hover:border-[#81A649] hover:text-[#81A649] transition-colors">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
-                                    Tanya Sales
-                                </a>
                             </div>
                         </div>
 
@@ -122,25 +115,26 @@ export default async function Home({ searchParams }: Props) {
 
             {/* PROMO SECTION (NEW DESIGN) */}
             {promoProjects.length > 0 && (
-                <section className="bg-gray-50/50 py-20 lg:py-32 border-b border-gray-100">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section id="promo" aria-label="Promo Properti PIK 2" className="bg-gradient-to-b from-gray-50 to-white py-20 lg:py-32 border-b border-gray-100">
+                    <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center max-w-4xl mx-auto mb-16 lg:mb-24">
-                            <p className="text-sm font-bold text-[#81A649] tracking-widest mb-3 uppercase">
-                                {homeSetting?.promo_subtitle || 'Penawaran Spesial'}
-                            </p>
+                            <span className="inline-block px-4 py-1.5 rounded-full bg-red-100 text-red-600 font-bold text-sm tracking-widest uppercase mb-4 shadow-sm border border-red-200">
+                                {homeSetting?.promo_subtitle || 'Hot Promo Bulan Ini'}
+                            </span>
                             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] tracking-tight leading-tight">
-                                {homeSetting?.promo_title || 'Promo Terbatas'}
+                                {homeSetting?.promo_title || 'Penawaran Eksklusif & Terbatas'}
                             </h2>
-                            <div className="w-16 h-1 bg-[#81A649] mx-auto mt-6 rounded-full"></div>
-                            <p className="mt-8 text-gray-500 text-lg max-w-2xl mx-auto font-light leading-relaxed">
-                                {homeSetting?.promo_description || 'Dapatkan berbagai keuntungan dan kemudahan pembayaran untuk unit pilihan Anda selama masa promo berlangsung.'}
+                            <div className="w-20 h-1.5 bg-gradient-to-r from-[#25D366] to-[#128C7E] mx-auto mt-8 rounded-full"></div>
+                            <p className="mt-8 text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                                {homeSetting?.promo_description || 'Jangan lewatkan kesempatan emas ini! Dapatkan harga perdana, kemudahan cicilan, serta diskon spesial khusus untuk unit pilihan Anda selama kuota masih tersedia.'}
                             </p>
-                            <div className="mt-10 flex justify-center gap-4">
-                                <a href="#projects" className="px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-lg transition-all duration-300">
-                                    Lihat Proyek
+                            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#1E356A] text-white font-bold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 hover:-translate-y-1">
+                                    <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    Klaim Promo Sekarang
                                 </a>
-                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="px-8 py-3.5 rounded-full bg-white border border-gray-300 text-gray-700 font-semibold text-[15px] hover:bg-gray-50 hover:shadow-sm transition-all duration-300">
-                                    Hubungi Sales
+                                <a href="#projects" className="px-8 py-4 rounded-full bg-white border border-gray-200 text-gray-700 font-bold text-[15px] hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all duration-300">
+                                    Lihat Detail Unit
                                 </a>
                             </div>
                         </div>
@@ -165,9 +159,9 @@ export default async function Home({ searchParams }: Props) {
                         </div>
                         
                         {/* Elegant Search Bar */}
-                        <div className="w-full lg:w-96">
-                            <form method="GET" action="/#projects" className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <div className="w-full sm:w-[400px] lg:w-[450px]">
+                            <form method="GET" action="/#projects" className="group flex items-center bg-gray-50 border border-gray-200 rounded-2xl p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-[#1E356A]/20 focus-within:border-[#1E356A] focus-within:bg-white transition-all">
+                                <div className="pl-3 pr-2 flex items-center pointer-events-none">
                                     <svg className="h-5 w-5 text-gray-400 group-focus-within:text-[#1E356A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
@@ -177,9 +171,9 @@ export default async function Home({ searchParams }: Props) {
                                     name="q"
                                     defaultValue={searchQuery}
                                     placeholder="Cari rumah, ruko, apartemen..."
-                                    className="block w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] focus:bg-white transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+                                    className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2.5 w-full text-base"
                                 />
-                                <button type="submit" className="absolute inset-y-1.5 right-1.5 bg-[#1E356A] text-white px-5 rounded-xl text-sm font-semibold hover:bg-[#2B4A93] transition-colors shadow-sm flex items-center justify-center">
+                                <button type="submit" className="bg-[#1E356A] text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#2B4A93] transition-colors shadow-sm whitespace-nowrap ml-1 flex-shrink-0">
                                     Cari
                                 </button>
                             </form>
