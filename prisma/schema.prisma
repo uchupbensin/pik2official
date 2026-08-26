@@ -44,6 +44,7 @@ model ProjectImages {
   id         Int       @id @default(autoincrement())
   project_id Int
   image_path String
+  caption    String?
   sort_order Int       @default(0)
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt

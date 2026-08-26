@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
@@ -13,87 +11,106 @@ import {
   X
 } from 'lucide-react';
 import { logout } from '@/app/admin/actions';
+import { usePathname } from 'next/navigation';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (path: string) => pathname === path || (path !== '/admin' && pathname.startsWith(path));
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-[#F8F9FA] flex font-sans">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/50 z-40 md:hidden"
+          className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#1E356A] text-white flex flex-col shadow-xl z-50 transform transition-transform duration-300 md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-16 flex items-center justify-between px-6 bg-[#14244B] border-b border-white/10">
-          <div className="flex items-center">
-            <img src="/pik2.png" alt="PIK 2" className="h-8 w-auto brightness-0 invert" />
-            <span className="ml-3 font-bold text-lg tracking-tight">Admin Panel</span>
+      <aside className={`fixed inset-y-0 left-0 w-72 bg-white border-r border-gray-100 flex flex-col z-50 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+        <div className="h-20 flex items-center justify-between px-8 border-b border-gray-50">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#111827] p-2 rounded-xl shadow-sm">
+              <img src="/pik2.png" alt="PIK 2" className="h-6 w-auto brightness-0 invert" />
+            </div>
+            <span className="font-extrabold text-lg tracking-tight text-gray-900">Workspace</span>
           </div>
           <button 
-            className="md:hidden text-white/80 hover:text-white"
+            className="md:hidden text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-lg"
             onClick={() => setIsSidebarOpen(false)}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
         
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          <Link href="/admin" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
-            <LayoutDashboard className="w-5 h-5" />
-            Dashboard
-          </Link>
-          <Link href="/admin/projects" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
-            <Building2 className="w-5 h-5" />
-            Properti
-          </Link>
-          <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
-            <MenuSquare className="w-5 h-5" />
-            Menu Navigasi
-          </Link>
-          <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all font-medium">
-            <Settings className="w-5 h-5" />
-            Pengaturan Web
-          </Link>
-        </nav>
+        <div className="px-6 py-4">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Main Menu</p>
+          <nav className="space-y-1.5">
+            <Link href="/admin" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <LayoutDashboard className="w-5 h-5" />
+              Dashboard
+            </Link>
+            <Link href="/admin/projects" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/projects') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <Building2 className="w-5 h-5" />
+              Properti
+            </Link>
+            <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/menus') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <MenuSquare className="w-5 h-5" />
+              Menu Navigasi
+            </Link>
+          </nav>
 
-        <div className="p-4 border-t border-white/10 space-y-2">
-          <a href="/" target="_blank" className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-[#81A649] transition-all font-medium">
-            <Globe className="w-5 h-5" />
-            Lihat Website
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mt-8 mb-4">Sistem</p>
+          <nav className="space-y-1.5">
+            <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/settings') ? 'bg-[#111827] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <Settings className="w-5 h-5" />
+              Pengaturan
+            </Link>
+          </nav>
+        </div>
+
+        <div className="mt-auto p-6 space-y-2">
+          <a href="/" target="_blank" className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-xl transition-all font-semibold text-sm border border-gray-100 shadow-sm">
+            <Globe className="w-5 h-5 text-gray-400" />
+            Buka Website
           </a>
           <form action={logout}>
-            <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 text-red-300 hover:text-red-200 hover:bg-red-500/10 rounded-xl transition-all font-medium">
+            <button type="submit" className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl transition-all font-semibold text-sm">
               <LogOut className="w-5 h-5" />
-              Keluar
+              Keluar Sesi
             </button>
           </form>
         </div>
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 md:ml-0">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-8 shadow-sm z-10">
+      <div className="flex-1 flex flex-col min-w-0 md:ml-0 h-screen overflow-hidden">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 sm:px-10 z-10 sticky top-0">
           <div className="flex items-center gap-4">
             <button 
-              className="md:hidden p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsSidebarOpen(true)}
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h1 className="text-xl font-bold text-gray-800">Manajemen Konten</h1>
           </div>
           <div className="flex items-center gap-4">
-             <div className="h-8 w-8 rounded-full bg-[#81A649] text-white flex items-center justify-center font-bold text-sm">A</div>
-             <span className="text-sm font-semibold text-gray-700 hidden sm:block">Administrator</span>
+             <div className="flex flex-col items-end hidden sm:flex">
+               <span className="text-sm font-bold text-gray-900">Administrator</span>
+               <span className="text-xs font-medium text-gray-500">Super Admin</span>
+             </div>
+             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#1E356A] to-blue-400 text-white flex items-center justify-center font-bold shadow-md">
+               A
+             </div>
           </div>
         </header>
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
-          {children}
+        <main className="flex-1 p-6 sm:p-10 overflow-auto bg-[#F8F9FA]">
+          <div className="max-w-6xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>
