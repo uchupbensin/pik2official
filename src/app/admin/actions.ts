@@ -95,35 +95,32 @@ export async function updateSettings(formData: FormData) {
   }
 }
 
-// Menus Actions
-export async function createMenu(formData: FormData) {
+// Progress Actions
+export async function createProgress(formData: FormData) {
   await requireAuth();
   try {
-    const category = formData.get('category') as string || null;
-    await prisma.menus.create({
+    await prisma.progress.create({
       data: {
-        label: formData.get('label') as string,
-        url: formData.get('url') as string,
-        category: category,
-        sort_order: parseInt(formData.get('sort_order') as string) || 0,
-        is_active: formData.get('is_active') === 'on',
-        open_in_new_tab: formData.get('open_in_new_tab') === 'on',
+        title: formData.get('title') as string,
+        youtube_url: formData.get('youtube_url') as string,
       }
     });
     revalidatePath('/');
-    revalidatePath('/admin/menus');
+    revalidatePath('/admin/progress');
+    revalidatePath('/progres');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
 }
 
-export async function deleteMenu(id: number) {
+export async function deleteProgress(id: number) {
   await requireAuth();
   try {
-    await prisma.menus.delete({ where: { id } });
+    await prisma.progress.delete({ where: { id } });
     revalidatePath('/');
-    revalidatePath('/admin/menus');
+    revalidatePath('/admin/progress');
+    revalidatePath('/progres');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -184,6 +181,7 @@ export async function createProject(formData: FormData) {
         whatsapp_number: formData.get('whatsapp_number') as string,
         meta_title: formData.get('meta_title') as string,
         meta_description: formData.get('meta_description') as string,
+        youtube_url: formData.get('youtube_url') as string,
         cover_image: coverPath,
         brochure_file: brochurePath,
       }
@@ -266,6 +264,7 @@ export async function updateProject(id: number, formData: FormData) {
       whatsapp_number: formData.get('whatsapp_number') as string,
       meta_title: formData.get('meta_title') as string,
       meta_description: formData.get('meta_description') as string,
+      youtube_url: formData.get('youtube_url') as string,
     };
 
     const slug = formData.get('slug') as string;
@@ -418,6 +417,77 @@ export async function updateProjectImageCaption(imageId: number, caption: string
     revalidatePath(`/project/[slug]`);
     return { success: true };
   } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateProjectSortOrders(updates: { id: number, sort_order: number }[]) {
+  await requireAuth();
+  try {
+    // Prisma doesn't support bulk update with different values natively in a single query yet,
+    // so we use a transaction
+    await prisma.$transaction(
+      updates.map(update => 
+        prisma.projects.update({
+          where: { id: update.id },
+          data: { sort_order: update.sort_order }
+        })
+      )
+    );
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error updating sort orders:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function editProgress(id: number, formData: FormData) {
+  await requireAuth();
+  
+  try {
+    const title = formData.get('title') as string;
+    const youtube_url = formData.get('youtube_url') as string;
+
+    if (!title || !youtube_url) {
+      throw new Error("Judul dan link YouTube wajib diisi.");
+    }
+
+    await prisma.progress.update({
+      where: { id },
+      data: {
+        title,
+        youtube_url,
+      }
+    });
+
+    revalidatePath('/admin/progress');
+    revalidatePath('/progres');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Terjadi kesalahan saat menyimpan video' };
+  }
+}
+
+export async function updateProgressSortOrders(updates: { id: number, sort_order: number }[]) {
+  await requireAuth();
+  try {
+    await prisma.$transaction(
+      updates.map(update => 
+        prisma.progress.update({
+          where: { id: update.id },
+          data: { sort_order: update.sort_order }
+        })
+      )
+    );
+    
+    revalidatePath('/admin/progress');
+    revalidatePath('/progres');
+    return { success: true };
+  } catch (error: any) {
+    console.error('Error updating progress sort orders:', error);
     return { success: false, error: error.message };
   }
 }

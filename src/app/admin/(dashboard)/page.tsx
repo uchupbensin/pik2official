@@ -4,10 +4,10 @@ import { Building2, ListTree, Star, Link as LinkIcon, Clock, ArrowUpRight } from
 import Link from 'next/link';
 
 export default async function AdminDashboard() {
-  const [totalProjects, promoProjects, totalMenus, recentProjects] = await Promise.all([
+  const [totalProjects, promoProjects, totalProgress, recentProjects] = await Promise.all([
     prisma.projects.count(),
     prisma.projects.count({ where: { is_promo: true } }),
-    prisma.menus.count(),
+    prisma.progress.count(),
     prisma.projects.findMany({
       orderBy: { created_at: 'desc' },
       take: 5,
@@ -53,12 +53,12 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Stat Card 3 */}
-        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between group hover:border-purple-500/20 transition-all">
+        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-center justify-between group hover:border-red-500/20 transition-all">
           <div>
-            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">Total Menu</p>
-            <h3 className="text-4xl font-extrabold text-gray-900">{totalMenus}</h3>
+            <p className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1">Video Progres</p>
+            <h3 className="text-4xl font-extrabold text-gray-900">{totalProgress}</h3>
           </div>
-          <div className="w-14 h-14 bg-gradient-to-br from-purple-50 to-purple-100 text-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+          <div className="w-14 h-14 bg-gradient-to-br from-red-50 to-red-100 text-red-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
             <ListTree className="w-6 h-6" />
           </div>
         </div>
@@ -130,8 +130,8 @@ export default async function AdminDashboard() {
                   <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#1E356A]" />
                 </div>
               </Link>
-              <Link href="/admin/menus" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#1E356A]">
-                <span className="font-semibold group-hover:text-[#1E356A]">Ubah Menu Navigasi</span>
+              <Link href="/admin/progress" className="group flex items-center justify-between p-4 bg-white/10 rounded-2xl hover:bg-white border border-white/5 hover:border-transparent transition-all hover:text-[#1E356A]">
+                <span className="font-semibold group-hover:text-[#1E356A]">Kelola Video Progres</span>
                 <div className="w-8 h-8 rounded-full bg-white/20 group-hover:bg-[#1E356A]/5 flex items-center justify-center transition-colors">
                   <ArrowUpRight className="w-4 h-4 text-white group-hover:text-[#1E356A]" />
                 </div>

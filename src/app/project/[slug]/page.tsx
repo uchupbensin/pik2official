@@ -58,6 +58,23 @@ export default async function ProjectDetail({ params }: Props) {
   }
   const projectWaLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent(`Halo, saya tertarik dengan ${project.name} di PIK 2. Mohon info lebih lanjut.`);
 
+  let youtubeEmbedUrl = null;
+  if (project.youtube_url) {
+    try {
+      let videoId = '';
+      if (project.youtube_url.includes('youtu.be/')) {
+        videoId = project.youtube_url.split('youtu.be/')[1]?.split('?')[0];
+      } else if (project.youtube_url.includes('youtube.com/watch')) {
+        videoId = new URL(project.youtube_url).searchParams.get('v') || '';
+      }
+      if (videoId) {
+        youtubeEmbedUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    } catch (e) {
+      console.error('Invalid youtube url', e);
+    }
+  }
+
   return (
     <>
       <main className="bg-white min-h-screen">
@@ -123,6 +140,27 @@ export default async function ProjectDetail({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* YOUTUBE VIDEO SECTION */}
+      {youtubeEmbedUrl && (
+        <section className="bg-gray-50/50 py-16 lg:py-24 border-t border-gray-100">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10 lg:mb-14">
+              <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">Video Show unit & Progress</h2>
+              <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Tonton cuplikan langsung dari {project.name}.</p>
+            </div>
+            <div className="aspect-video w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-blue-900/10 border border-gray-200/60 bg-gray-900">
+              <iframe 
+                src={youtubeEmbedUrl} 
+                className="w-full h-full border-0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowFullScreen
+                title={`Video ${project.name}`}
+              ></iframe>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Minimalist E-Brochure Gallery */}
       {project.project_images && project.project_images.length > 0 && (

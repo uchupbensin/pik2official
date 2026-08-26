@@ -25,19 +25,16 @@ model HomeSettings {
   @@map("home_settings")
 }
 
-model Menus {
-  id              Int       @id @default(autoincrement())
-  label           String
-  url             String
-  category        String?
-  sort_order      Int       @default(0)
-  is_active       Boolean   @default(true)
-  open_in_new_tab Boolean   @default(false)
-  created_at      DateTime? @default(now())
-  updated_at      DateTime? @updatedAt
+model Progress {
+  id          Int       @id @default(autoincrement())
+  title       String
+  youtube_url String
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @updatedAt
+  sort_order  Int       @default(0)
 
-  @@index([category, sort_order], map: "menus_category_sort_order_index")
-  @@map("menus")
+  @@index([sort_order], map: "progress_sort_order_index")
+  @@map("progress")
 }
 
 model ProjectImages {
@@ -68,13 +65,16 @@ model Projects {
   whatsapp_number   String?
   meta_title        String?
   meta_description  String?
+  youtube_url       String?
   created_at        DateTime? @default(now())
   updated_at        DateTime? @updatedAt
+  sort_order        Int       @default(0)
 
   project_images    ProjectImages[]
 
   @@index([is_promo], map: "projects_is_promo_index")
   @@index([slug], map: "projects_slug_index")
+  @@index([sort_order], map: "projects_sort_order_index")
   @@map("projects")
 }
 

@@ -236,6 +236,12 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none font-mono text-sm" placeholder="62812345..." />
               <p className="text-xs text-gray-500">Gunakan format 62... Kosongkan untuk pakai nomor utama.</p>
             </div>
+
+            <div className="md:col-span-2 space-y-1">
+              <label className="block text-sm font-semibold text-gray-500">Link Video YouTube (Opsional)</label>
+              <input type="url" name="youtube_url" defaultValue={project?.youtube_url || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="https://youtube.com/watch?v=..." />
+              <p className="text-xs text-gray-500">Video ini akan ditampilkan di bawah deskripsi properti (sebelum E-Brosur).</p>
+            </div>
           </div>
           
           <div className="mt-5 pt-4 border-t border-gray-100 flex gap-3 items-center">

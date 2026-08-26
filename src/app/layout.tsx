@@ -26,8 +26,8 @@ export default async function RootLayout({
 }>) {
   const siteSetting = await prisma.siteSettings.findFirst();
   const projects = await prisma.projects.findMany({
-    select: { name: true, slug: true, category: true },
-    orderBy: { name: "asc" }
+    select: { name: true, slug: true, category: true, sort_order: true },
+    orderBy: { sort_order: "asc" }
   });
 
   const menus = [

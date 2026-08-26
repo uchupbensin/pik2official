@@ -7,7 +7,8 @@ import {
   LayoutDashboard, 
   Building2, 
   Settings, 
-  MenuSquare, 
+  MenuSquare,
+  PlayCircle,
   LogOut,
   Globe,
   Menu,
@@ -60,9 +61,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Building2 className="w-5 h-5" />
               Properti
             </Link>
-            <Link href="/admin/menus" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/menus') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
-              <MenuSquare className="w-5 h-5" />
-              Menu Navigasi
+            <Link href="/admin/progress" onClick={() => setIsSidebarOpen(false)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-semibold text-sm ${isActive('/admin/progress') ? 'bg-gradient-to-r from-[#1E356A] to-[#2B4A93] text-white shadow-md shadow-blue-900/20' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}>
+              <PlayCircle className="w-5 h-5" />
+              Progres PIK 2
             </Link>
           </nav>
 
