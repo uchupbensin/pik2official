@@ -5,6 +5,35 @@ import { Metadata } from 'next';
 
 export const revalidate = 0;
 
+async function resolveGmapsQuery(url: string, fallbackQuery: string) {
+  if (!url) return fallbackQuery;
+  try {
+    const res = await fetch(url, { redirect: 'follow', next: { revalidate: 86400 } });
+    const finalUrl = res.url;
+    
+    // Extract exact pin coordinates
+    const pinMatch = finalUrl.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+    if (pinMatch) {
+      return `${pinMatch[1]},${pinMatch[2]}`;
+    }
+    
+    // Extract viewport coordinates as fallback
+    const viewMatch = finalUrl.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+    if (viewMatch) {
+      return `${viewMatch[1]},${viewMatch[2]}`;
+    }
+
+    // Extract place name
+    const placeMatch = finalUrl.match(/\/place\/([^\/]+)\//);
+    if (placeMatch) {
+      return decodeURIComponent(placeMatch[1].replace(/\+/g, ' '));
+    }
+  } catch (e) {
+    console.error("Failed to resolve gmaps url:", e);
+  }
+  return fallbackQuery;
+}
+
 type Props = {
   params: Promise<{ slug: string }>
 }
@@ -72,6 +101,20 @@ export default async function ProjectDetail({ params }: Props) {
       }
     } catch (e) {
       console.error('Invalid youtube url', e);
+    }
+  }
+
+  let finalMapEmbedUrl = null;
+  if (project.gmaps_url) {
+    if (project.gmaps_url.includes('<iframe') && project.gmaps_url.includes('src="')) {
+      const match = project.gmaps_url.match(/src="([^"]+)"/);
+      if (match) finalMapEmbedUrl = match[1];
+    } else if (project.gmaps_url.includes('embed')) {
+      finalMapEmbedUrl = project.gmaps_url;
+    } else {
+      const fallbackQuery = encodeURIComponent(project.location || project.name);
+      const resolvedQuery = await resolveGmapsQuery(project.gmaps_url, fallbackQuery);
+      finalMapEmbedUrl = `https://maps.google.com/maps?q=${resolvedQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
     }
   }
 
@@ -172,9 +215,9 @@ export default async function ProjectDetail({ params }: Props) {
             </div>
             
             <div className="relative aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
-              {/* Iframe otomatis menggunakan nama lokasi */}
+              {/* Iframe otomatis menggunakan nama lokasi atau koordinat asli */}
               <iframe 
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(project.location || project.name)}&t=&z=14&ie=UTF8&iwloc=&output=embed`} 
+                src={finalMapEmbedUrl!} 
                 className="w-full h-full border-0 grayscale-[20%] group-hover:grayscale-0 transition-all duration-700" 
                 allowFullScreen
                 loading="lazy"
