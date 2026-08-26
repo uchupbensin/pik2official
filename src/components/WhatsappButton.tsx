@@ -1,6 +1,15 @@
+'use client';
+
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function WhatsappButton({ link }: { link: string }) {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <a href={link} target="_blank" rel="noopener noreferrer"
        style={{ backgroundColor: '#81A649', color: 'white' }}

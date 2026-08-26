@@ -148,14 +148,15 @@ export default async function ProjectDetail({ params }: Props) {
 
         {/* Text Block - Angled on Desktop, Standard on Mobile */}
         <div 
-          className="relative lg:absolute top-0 left-0 w-full lg:w-[65%] xl:w-[60%] h-full z-10 bg-gradient-to-br from-white via-[#f4f9f6] to-[#e6f0eb] lg:[clip-path:polygon(0_0,100%_0,75%_100%,0_100%)] flex flex-col justify-center py-16 lg:py-0 shadow-[20px_0_50px_rgba(0,0,0,0.05)]"
+          className="relative w-full lg:w-[65%] xl:w-[60%] min-h-full z-10 bg-gradient-to-br from-white via-[#f4f9f6] to-[#e6f0eb] lg:[clip-path:polygon(0_0,100%_0,75%_100%,0_100%)] flex flex-col justify-center py-16 lg:py-24 shadow-[20px_0_50px_rgba(0,0,0,0.05)]"
         >
           {/* Content Container */}
-          <div className="w-full max-w-2xl px-6 sm:px-12 lg:px-20 xl:px-24 mt-0 lg:mt-16">
+          <div className="w-full max-w-2xl px-6 sm:px-12 lg:px-20 xl:px-24">
             
             {project.is_promo && (
               <div className="inline-flex items-center gap-2 bg-red-50 text-red-600 text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest border border-red-100 shadow-sm">
-                <span className="animate-pulse">🔥</span> Promo Terbatas
+                <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                Promo Terbatas
               </div>
             )}
             
@@ -296,7 +297,7 @@ export default async function ProjectDetail({ params }: Props) {
               </div>
               <div className="aspect-[4/3] sm:aspect-video w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 bg-gray-50">
                   <iframe 
-                      src={project.maps_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.86877995648!2d106.6329705972656!3d-6.046897100000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a1d82b3a987d7%3A0xc3cf9c98ba9c1e19!2sPantai%20Indah%20Kapuk%202!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"}
+                      src={project.gmaps_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.86877995648!2d106.6329705972656!3d-6.046897100000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a1d82b3a987d7%3A0xc3cf9c98ba9c1e19!2sPantai%20Indah%20Kapuk%202!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"}
                       width="100%" 
                       height="100%" 
                       style={{ border: 0 }} 

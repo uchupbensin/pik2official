@@ -111,12 +111,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
              </div>
           </div>
         </header>
-        <main className="flex-1 p-6 sm:p-10 overflow-auto bg-[#F8F9FA]">
+        <main className="flex-1 p-6 sm:p-10 pb-24 md:pb-10 overflow-auto bg-[#F8F9FA]">
           <div className="max-w-6xl mx-auto">
             {children}
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 flex items-center justify-around px-2 py-3 shadow-[0_-5px_30px_rgba(0,0,0,0.05)] pb-safe">
+        <Link href="/admin" className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${isActive('/admin') ? 'text-[#1E356A]' : 'text-gray-400 hover:text-gray-600'}`}>
+          <LayoutDashboard className={`w-5 h-5 ${isActive('/admin') ? 'fill-blue-50/50' : ''}`} />
+          <span className="text-[10px] font-semibold">Home</span>
+        </Link>
+        <Link href="/admin/projects" className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${isActive('/admin/projects') ? 'text-[#1E356A]' : 'text-gray-400 hover:text-gray-600'}`}>
+          <Building2 className={`w-5 h-5 ${isActive('/admin/projects') ? 'fill-blue-50/50' : ''}`} />
+          <span className="text-[10px] font-semibold">Properti</span>
+        </Link>
+        <Link href="/admin/progress" className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all ${isActive('/admin/progress') ? 'text-[#1E356A]' : 'text-gray-400 hover:text-gray-600'}`}>
+          <PlayCircle className={`w-5 h-5 ${isActive('/admin/progress') ? 'fill-blue-50/50' : ''}`} />
+          <span className="text-[10px] font-semibold">Progres</span>
+        </Link>
+        <button onClick={() => setIsSidebarOpen(true)} className="flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all text-gray-400 hover:text-gray-600">
+          <MenuSquare className="w-5 h-5" />
+          <span className="text-[10px] font-semibold">Menu</span>
+        </button>
+      </nav>
     </div>
   );
 }
