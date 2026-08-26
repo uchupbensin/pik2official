@@ -4,10 +4,26 @@ import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-
 
 export const revalidate = 0; // Or omit this for dynamic if you prefer
 
-export default async function Home() {
+type Props = {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+};
+
+export default async function Home({ searchParams }: Props) {
+    const resolvedParams = await searchParams;
+    const searchQuery = (resolvedParams?.q as string) || '';
+
     const homeSetting = await prisma.homeSettings.findFirst();
     const siteSetting = await prisma.siteSettings.findFirst();
+    
     const projects = await prisma.projects.findMany({
+        where: searchQuery ? {
+            OR: [
+                { name: { contains: searchQuery, mode: 'insensitive' } },
+                { location: { contains: searchQuery, mode: 'insensitive' } },
+                { short_description: { contains: searchQuery, mode: 'insensitive' } },
+                { category: { contains: searchQuery, mode: 'insensitive' } }
+            ]
+        } : undefined,
         orderBy: [
             { is_promo: 'desc' },
             { id: 'desc' }
@@ -153,12 +169,44 @@ export default async function Home() {
             {/* PROJECTS SECTION */}
             <section id="projects" className="bg-white border-t border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12">
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-6">
                         <div className="max-w-2xl">
                             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
                             <p className="text-gray-500 mt-3 text-lg">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
                         </div>
+                        
+                        {/* Elegant Search Bar */}
+                        <div className="w-full lg:w-96">
+                            <form method="GET" action="/#projects" className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-[#1E356A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    name="q"
+                                    defaultValue={searchQuery}
+                                    placeholder="Cari rumah, ruko, apartemen..."
+                                    className="block w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] focus:bg-white transition-all shadow-[0_2px_10px_rgba(0,0,0,0.02)]"
+                                />
+                                <button type="submit" className="absolute inset-y-1.5 right-1.5 bg-[#1E356A] text-white px-5 rounded-xl text-sm font-semibold hover:bg-[#2B4A93] transition-colors shadow-sm flex items-center justify-center">
+                                    Cari
+                                </button>
+                            </form>
+                        </div>
                     </div>
+
+                    {searchQuery && (
+                        <div className="mb-8 flex items-center justify-between bg-[#1E356A]/5 rounded-2xl p-4 border border-[#1E356A]/10">
+                            <p className="text-[#1E356A] font-medium">
+                                Menampilkan hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span>
+                            </p>
+                            <a href="/#projects" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+                                Hapus Filter
+                            </a>
+                        </div>
+                    )}
 
                     {projects.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
