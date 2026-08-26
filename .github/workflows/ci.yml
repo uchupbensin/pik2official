@@ -31,6 +31,6 @@ jobs:
       run: npm run build
       env:
         # Menambahkan env sementara agar proses build tidak gagal
-        # (Beberapa library mungkin butuh env walau hanya saat build)
-        DATABASE_URL: "file:./dev.db"
+        # Prisma dan Neon membutuhkan format URL PostgreSQL yang valid saat proses build
+        DATABASE_URL: "postgresql://user:pass@localhost/dummy"
         NEXT_TELEMETRY_DISABLED: 1

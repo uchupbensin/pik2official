@@ -137,9 +137,19 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                 <input type="text" name="name" defaultValue={project?.name} required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="Contoh: Tokyo Riverside" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Slug URL (Biarkan kosong untuk generate otomatis)</label>
-                <input type="text" name="slug" defaultValue={project?.slug} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="contoh: tokyo-riverside" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kategori Properti <span className="text-red-500">*</span></label>
+                <select name="category" defaultValue={project?.category || 'rumah'} required className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]">
+                  <option value="rumah">RUMAH</option>
+                  <option value="ruko_gudang">RUKO & GUDANG</option>
+                  <option value="apartemen">APARTEMEN</option>
+                  <option value="kavling">KAVLING</option>
+                </select>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Slug URL (Biarkan kosong untuk generate otomatis)</label>
+              <input type="text" name="slug" defaultValue={project?.slug} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" placeholder="contoh: tokyo-riverside" />
             </div>
 
             <div>

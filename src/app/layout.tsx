@@ -25,15 +25,40 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const siteSetting = await prisma.siteSettings.findFirst();
-  const menus = await prisma.menus.findMany({
-    where: { is_active: true },
-    orderBy: { sort_order: "asc" },
+  const projects = await prisma.projects.findMany({
+    select: { name: true, slug: true, category: true },
+    orderBy: { name: "asc" }
   });
+
+  const menus = [
+    { label: "HOME", url: "/" },
+    { label: "PROGRES PIK 2", url: "/progres" },
+    { 
+      label: "RUMAH", 
+      url: "#", 
+      children: projects.filter(p => p.category === 'rumah').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+    },
+    { 
+      label: "RUKO & GUDANG", 
+      url: "#", 
+      children: projects.filter(p => p.category === 'ruko_gudang').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+    },
+    { 
+      label: "APARTEMEN", 
+      url: "#", 
+      children: projects.filter(p => p.category === 'apartemen').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+    },
+    { 
+      label: "KAVLING", 
+      url: "#", 
+      children: projects.filter(p => p.category === 'kavling').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+    }
+  ];
 
   const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
   let cleanWa = waNumber.replace(/\D+/g, '');
   if (cleanWa.startsWith('0')) {
-    cleanWa = '62' + cleanWa.substring(1);
+      cleanWa = '62' + cleanWa.substring(1);
   }
   const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin bertanya mengenai properti di PIK 2.');
 
