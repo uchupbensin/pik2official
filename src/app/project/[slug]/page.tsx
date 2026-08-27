@@ -267,7 +267,7 @@ export default async function ProjectDetail({ params }: Props) {
                           {/* Image Box */}
                           <div className="relative w-full overflow-hidden rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.06)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 border border-gray-100 bg-white">
                               <img 
-                                src={image.image_path.startsWith('http') ? image.image_path : `/uploads/${image.image_path}`} 
+                                src={image.image_path.startsWith('http') ? image.image_path : `/api/uploads/${image.image_path}`} 
                                 alt={image.caption || `${project.name} - Image ${index + 1}`}
                                 loading="lazy"
                                 className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-700 ease-out" 
