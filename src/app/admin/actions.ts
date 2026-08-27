@@ -338,50 +338,7 @@ export async function updateProject(id: number, formData: FormData) {
   }
 }
 
-export async function uploadProjectImages(projectId: number, formData: FormData) {
-  await requireAuth();
-  try {
-    const files = formData.getAll('images') as File[];
-    if (!files || files.length === 0) return { success: false, error: 'No files provided' };
 
-    const uploadDir = path.join(process.cwd(), 'public/storage/projects', projectId.toString());
-    try {
-      await fs.access(uploadDir);
-    } catch {
-      await fs.mkdir(uploadDir, { recursive: true });
-    }
-
-    // Get current max sort_order
-    const currentMax = await prisma.projectImages.aggregate({
-      where: { project_id: projectId },
-      _max: { sort_order: true }
-    });
-    let nextSortOrder = (currentMax._max.sort_order || 0) + 1;
-
-    for (const file of files) {
-      if (file.size > 0) {
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
-        await fs.writeFile(path.join(uploadDir, filename), buffer);
-
-        await prisma.projectImages.create({
-          data: {
-            project_id: projectId,
-            image_path: `projects/${projectId}/${filename}`,
-            sort_order: nextSortOrder++
-          }
-        });
-      }
-    }
-
-    revalidatePath('/');
-    revalidatePath(`/admin/projects/${projectId}/edit`);
-    return { success: true };
-  } catch (error: any) {
-    console.error(error);
-    return { success: false, error: error.message };
-  }
-}
 
 export async function deleteProjectImage(imageId: number) {
   await requireAuth();
