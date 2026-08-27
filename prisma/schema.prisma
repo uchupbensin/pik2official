@@ -79,7 +79,6 @@ model SiteSettings {
   sales_whatsapp_number String?
   site_name             String    @default("PIK 2 OFFICIAL")
   site_tagline          String    @default("Katalog Properti & Hunian Pilihan di PIK 2")
-  topbar_label          String    @default("Sales Property")
   created_at            DateTime? @default(now())
   updated_at            DateTime? @updatedAt
 
