@@ -11,7 +11,7 @@ type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 
 
 
-export default function ProjectForm({ project }: { project?: ProjectWithImages }) {
+export default function ProjectForm({ project }: { project?: any }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -394,7 +394,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
             <p className="text-xs text-gray-500 mb-4">Ubah label gambar dengan langsung mengetik di kotaknya.</p>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-              {project.project_images.map((img) => (
+              {project.project_images.map((img: any) => (
                 <div key={img.id} className="relative group border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                   <div className="aspect-[3/4] bg-gray-200">
                     <img
