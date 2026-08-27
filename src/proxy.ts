@@ -26,12 +26,6 @@ export const config = {
   matcher: [
     {
       source: '/admin/:path*',
-      has: [
-        { type: 'header', key: 'accept' }
-      ],
-      missing: [
-        { type: 'header', key: 'next-action' }
-      ],
     }
   ],
 };

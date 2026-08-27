@@ -49,6 +49,7 @@ model Projects {
   id                Int       @id @default(autoincrement())
   name              String
   category          String    @default("rumah")
+  group_name        String?
   slug              String    @unique(map: "projects_slug_unique")
   short_description String?
   features          String?

@@ -77,9 +77,34 @@ export default async function RootLayout({
 }>) {
   const siteSetting = await prisma.siteSettings.findFirst();
   const projects = await prisma.projects.findMany({
-    select: { name: true, slug: true, category: true, sort_order: true },
+    select: { name: true, slug: true, category: true, group_name: true, sort_order: true },
     orderBy: { sort_order: "asc" }
   });
+
+  function buildMenuChildren(category: string) {
+    const categoryProjects = projects.filter(p => p.category === category);
+    const groups = Array.from(new Set(categoryProjects.map(p => p.group_name).filter(Boolean)));
+    
+    const children: any[] = [];
+    
+    // 1. Add grouped projects
+    groups.forEach(group => {
+      const groupedProjects = categoryProjects.filter(p => p.group_name === group);
+      children.push({
+        label: group as string,
+        url: "#",
+        children: groupedProjects.map(p => ({ label: p.name, url: `/project/${p.slug}` }))
+      });
+    });
+    
+    // 2. Add ungrouped projects directly
+    const ungroupedProjects = categoryProjects.filter(p => !p.group_name);
+    ungroupedProjects.forEach(p => {
+      children.push({ label: p.name, url: `/project/${p.slug}` });
+    });
+    
+    return children.length > 0 ? children : undefined;
+  }
 
   const menus = [
     { label: "HOME", url: "/" },
@@ -87,22 +112,22 @@ export default async function RootLayout({
     { 
       label: "RUMAH", 
       url: "#", 
-      children: projects.filter(p => p.category === 'rumah').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+      children: buildMenuChildren('rumah')
     },
     { 
       label: "RUKO & GUDANG", 
       url: "#", 
-      children: projects.filter(p => p.category === 'ruko_gudang').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+      children: buildMenuChildren('ruko_gudang')
     },
     { 
       label: "APARTEMEN", 
       url: "#", 
-      children: projects.filter(p => p.category === 'apartemen').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+      children: buildMenuChildren('apartemen')
     },
     { 
       label: "KAVLING", 
       url: "#", 
-      children: projects.filter(p => p.category === 'kavling').map(p => ({ label: p.name, url: `/project/${p.slug}` })) 
+      children: buildMenuChildren('kavling')
     }
   ];
 

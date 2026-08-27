@@ -222,6 +222,12 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
             </div>
             
             <div className="md:col-span-2 space-y-1">
+              <label className="block text-sm font-semibold text-gray-500">Nama Grup / Tahap (Opsional)</label>
+              <input type="text" name="group_name" defaultValue={project?.group_name || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: RUMAH TAHAP 3 (MILENIAL)" />
+              <p className="text-xs text-gray-500 mt-1">Jika diisi, properti ini akan dikelompokkan ke dalam menu dengan nama ini.</p>
+            </div>
+            
+            <div className="md:col-span-2 space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Deskripsi Singkat</label>
               <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Ceritakan keunggulan properti ini secara singkat..."></textarea>
             </div>

@@ -19,7 +19,7 @@ export default function Navbar({
     menus: MenuItem[];
 }) {
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [openDropdowns, setOpenDropdowns] = useState<Record<number, boolean>>({});
+    const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
     const [isScrolled, setIsScrolled] = useState(false);
     const pathname = usePathname();
 
@@ -44,7 +44,7 @@ export default function Navbar({
         };
     }, []);
 
-    const toggleDropdown = (id: number) => {
+    const toggleDropdown = (id: string) => {
         setOpenDropdowns(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
@@ -90,14 +90,35 @@ export default function Navbar({
                                             <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
                                                 <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl overflow-hidden py-2 relative">
                                                     <div className="absolute top-0 left-0 right-0 h-1 bg-[#81A649]"></div>
-                                                    {menu.children!.map((child) => (
-                                                        <Link href={child.url}
-                                                            key={child.label}
-                                                            target={child.url.startsWith('http') ? '_blank' : '_self'}
-                                                            className="block px-5 py-3 text-sm font-medium text-gray-600 hover:bg-[#1E356A] hover:text-white transition-colors">
-                                                            {child.label}
-                                                        </Link>
-                                                    ))}
+                                                    {menu.children!.map((child) => {
+                                                        const hasGrandChildren = child.children && child.children.length > 0;
+                                                        return (
+                                                        <div key={child.label} className="relative group/sub">
+                                                            <Link href={child.url}
+                                                                target={child.url.startsWith('http') ? '_blank' : '_self'}
+                                                                className="flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-600 hover:bg-[#1E356A] hover:text-white transition-colors">
+                                                                {child.label}
+                                                                {hasGrandChildren && (
+                                                                    <svg className="w-3.5 h-3.5 text-gray-400 group-hover/sub:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                                                                )}
+                                                            </Link>
+                                                            {hasGrandChildren && (
+                                                                <div className="absolute left-full top-0 pl-1 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 w-56 z-50">
+                                                                    <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl overflow-hidden py-2 relative">
+                                                                        <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#81A649]"></div>
+                                                                        {child.children!.map((grandChild) => (
+                                                                            <Link href={grandChild.url}
+                                                                                key={grandChild.label}
+                                                                                target={grandChild.url.startsWith('http') ? '_blank' : '_self'}
+                                                                                className="block px-5 py-3 text-sm font-medium text-gray-600 hover:bg-[#1E356A] hover:text-white transition-colors">
+                                                                                {grandChild.label}
+                                                                            </Link>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )})}
                                                 </div>
                                             </div>
                                         )}
@@ -137,20 +158,43 @@ export default function Navbar({
                                 return hasChildren ? (
                                     <div key={menu.label} className="rounded-xl overflow-hidden">
                                         <button type="button" className={`w-full flex items-center justify-between px-4 py-3.5 text-left text-[15px] font-semibold transition-colors ${isTransparent ? 'text-white hover:bg-white/10' : 'text-gray-700 hover:bg-gray-50'}`}
-                                            onClick={() => toggleDropdown(menu.label as any)}>
+                                            onClick={() => toggleDropdown(menu.label)}>
                                             <span>{menu.label}</span>
-                                            <svg className={`w-4 h-4 transition-transform duration-300 ${openDropdowns[menu.label as any] ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                            <svg className={`w-4 h-4 transition-transform duration-300 ${openDropdowns[menu.label] ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                                         </button>
-                                        <div className={`overflow-hidden transition-all duration-300 ${openDropdowns[menu.label as any] ? 'max-h-60' : 'max-h-0'}`}>
+                                        <div className={`overflow-hidden transition-all duration-300 ${openDropdowns[menu.label] ? 'max-h-[800px] overflow-y-auto' : 'max-h-0'}`}>
                                             <div className="pl-6 pr-4 py-2 space-y-1">
-                                                {menu.children!.map((child) => (
-                                                    <Link href={child.url}
-                                                        key={child.label}
-                                                        target={child.url.startsWith('http') ? '_blank' : '_self'}
-                                                        className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${isTransparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-[#1E356A] hover:bg-gray-50'}`}>
-                                                        {child.label}
-                                                    </Link>
-                                                ))}
+                                                {menu.children!.map((child) => {
+                                                    const hasGrandChildren = child.children && child.children.length > 0;
+                                                    const childKey = `${menu.label}-${child.label}`;
+                                                    return hasGrandChildren ? (
+                                                        <div key={child.label} className="rounded-lg overflow-hidden">
+                                                            <button type="button" className={`w-full flex items-center justify-between px-4 py-2.5 text-left text-sm font-medium transition-colors ${isTransparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:bg-gray-50'}`}
+                                                                onClick={() => toggleDropdown(childKey)}>
+                                                                <span>{child.label}</span>
+                                                                <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${openDropdowns[childKey] ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                                            </button>
+                                                            <div className={`overflow-hidden transition-all duration-300 ${openDropdowns[childKey] ? 'max-h-96' : 'max-h-0'}`}>
+                                                                <div className="pl-4 pr-2 py-1 space-y-1 border-l-2 border-gray-100 ml-4 mt-1 mb-2">
+                                                                    {child.children!.map((grandChild) => (
+                                                                        <Link href={grandChild.url}
+                                                                            key={grandChild.label}
+                                                                            className={`block px-4 py-2 text-sm font-medium rounded-lg transition-colors ${isTransparent ? 'text-white/70 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-[#1E356A] hover:bg-gray-50'}`}>
+                                                                            {grandChild.label}
+                                                                        </Link>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <Link href={child.url}
+                                                            key={child.label}
+                                                            target={child.url.startsWith('http') ? '_blank' : '_self'}
+                                                            className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-colors ${isTransparent ? 'text-white/80 hover:text-white hover:bg-white/10' : 'text-gray-600 hover:text-[#1E356A] hover:bg-gray-50'}`}>
+                                                            {child.label}
+                                                        </Link>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </div>

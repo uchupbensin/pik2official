@@ -1,8 +1,10 @@
 'use server';
 
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { signToken, verifyToken } from '@/lib/auth';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 async function requireAuth() {
   const cookieStore = await cookies();
@@ -11,25 +13,129 @@ async function requireAuth() {
   if (!payload) throw new Error('Unauthorized');
 }
 
-export async function login(formData: FormData) {
-  const password = formData.get('password') as string;
-  const adminPassword = process.env.ADMIN_PASSWORD;
+// File-based rate limiting for login attempts (persists across server workers)
+const RATE_LIMIT_FILE = path.join(process.cwd(), '.rate-limit.json');
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
 
-  if (password === adminPassword) {
-    // Set an HTTP-only cookie
-    const cookieStore = await cookies();
-    const token = await signToken({ role: 'admin' });
-    cookieStore.set('admin_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 60 * 60 * 24 * 7, // 1 week
-      path: '/admin',
-    });
+type RateLimitData = Record<string, { count: number; lockedUntil: number }>;
 
-    return { success: true };
+async function readRateLimitData(): Promise<RateLimitData> {
+  try {
+    const data = await fs.readFile(RATE_LIMIT_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    return {};
+  }
+}
+
+async function writeRateLimitData(data: RateLimitData): Promise<void> {
+  try {
+    await fs.writeFile(RATE_LIMIT_FILE, JSON.stringify(data), 'utf-8');
+  } catch {
+    // Ignore write errors
+  }
+}
+
+async function getClientIP(): Promise<string> {
+  const headerList = await headers();
+  const forwarded = headerList.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  const realIP = headerList.get('x-real-ip');
+  if (realIP) return realIP.trim();
+  return 'unknown';
+}
+
+async function checkRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number; lockedUntil?: number }> {
+  const now = Date.now();
+  const data = await readRateLimitData();
+  const record = data[ip];
+
+  // Active lockout — deny
+  if (record && record.lockedUntil > now) {
+    return { allowed: false, remaining: 0, lockedUntil: record.lockedUntil };
   }
 
-  return { success: false, error: 'Password salah.' };
+  // Expired lockout — clear and start fresh
+  if (record && record.lockedUntil > 0 && record.lockedUntil <= now) {
+    delete data[ip];
+    await writeRateLimitData(data);
+  }
+
+  const currentCount = data[ip]?.count ?? 0;
+  return { allowed: true, remaining: MAX_ATTEMPTS - currentCount };
+}
+
+async function recordFailedAttempt(ip: string) {
+  const now = Date.now();
+  const data = await readRateLimitData();
+  const record = data[ip] ?? { count: 0, lockedUntil: 0 };
+  record.count += 1;
+
+  if (record.count >= MAX_ATTEMPTS) {
+    record.lockedUntil = now + LOCKOUT_DURATION;
+    record.count = 0;
+  }
+
+  data[ip] = record;
+  await writeRateLimitData(data);
+}
+
+async function clearRateLimit(ip: string) {
+  const data = await readRateLimitData();
+  delete data[ip];
+  await writeRateLimitData(data);
+}
+
+export async function login(formData: FormData) {
+  console.log('[LOGIN] Server action called');
+  try {
+    const ip = await getClientIP();
+    console.log('[LOGIN] IP:', ip);
+    const rateCheck = await checkRateLimit(ip);
+    console.log('[LOGIN] Rate check:', rateCheck);
+
+    if (!rateCheck.allowed) {
+      const remainingMinutes = rateCheck.lockedUntil
+        ? Math.ceil((rateCheck.lockedUntil - Date.now()) / 60000)
+        : 5;
+      return {
+        success: false,
+        error: `Terlalu banyak percobaan. Coba lagi dalam ${remainingMinutes} menit.`,
+      };
+    }
+
+    const password = formData.get('password') as string;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    console.log('[LOGIN] Password check:', password === adminPassword ? 'MATCH' : 'NO MATCH');
+
+    if (password === adminPassword) {
+      // Clear rate limit on successful login
+      await clearRateLimit(ip);
+
+      // Set an HTTP-only cookie
+      const cookieStore = await cookies();
+      const token = await signToken({ role: 'admin' });
+      cookieStore.set('admin_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: '/admin',
+      });
+
+      return { success: true };
+    }
+
+    // Record failed attempt for rate limiting
+    await recordFailedAttempt(ip);
+    console.log('[LOGIN] Failed attempt recorded');
+
+    return { success: false, error: 'Password salah.' };
+  } catch (error) {
+    console.error('[LOGIN] Error:', error);
+    return { success: false, error: 'Terjadi kesalahan server.' };
+  }
 }
 
 export async function logout() {
@@ -120,8 +226,6 @@ export async function deleteProgress(id: number) {
 }
 
 // Project Actions
-import fs from 'fs/promises';
-import path from 'path';
 import { put, del } from '@vercel/blob';
 
 export async function createProject(formData: FormData) {
@@ -168,6 +272,7 @@ export async function createProject(formData: FormData) {
       data: {
         name: formData.get('name') as string,
         category: (formData.get('category') as string) || 'rumah',
+        group_name: (formData.get('group_name') as string) || null,
         slug: slug,
         short_description: formData.get('short_description') as string,
         features: formData.get('features') as string,
@@ -254,6 +359,7 @@ export async function updateProject(id: number, formData: FormData) {
     const updateData: any = {
       name: formData.get('name') as string,
       category: (formData.get('category') as string) || 'rumah',
+      group_name: (formData.get('group_name') as string) || null,
       short_description: formData.get('short_description') as string,
       features: formData.get('features') as string,
       location: formData.get('location') as string,
