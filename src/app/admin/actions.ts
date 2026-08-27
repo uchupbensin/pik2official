@@ -226,7 +226,8 @@ export async function deleteProgress(id: number) {
 }
 
 // Project Actions
-import { put, del } from '@vercel/blob';
+// Removed vercel blob as VPS doesn't have token
+// import { put, del } from '@vercel/blob';
 
 export async function createProject(formData: FormData) {
   try {
@@ -256,8 +257,16 @@ export async function createProject(formData: FormData) {
     if (brochureFile && brochureFile.size > 0) {
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
       const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const blob = await put(`brochures/${filename}`, buffer, { access: 'public' });
-      brochurePath = blob.url;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      brochurePath = `storage/brochures/${filename}`;
     }
 
     // Ensure slug is URL friendly
@@ -334,12 +343,9 @@ export async function deleteProject(id: number) {
       try { await fs.unlink(filepath); } catch (e) { }
     }
     if (project?.brochure_file) {
-      if (project.brochure_file.startsWith('http')) {
-        try { await del(project.brochure_file); } catch (e) { }
-      } else {
-        const filepath = path.join(process.cwd(), 'public', project.brochure_file);
-        try { await fs.unlink(filepath); } catch (e) { }
-      }
+      // Just delete local file
+      const filepath = path.join(process.cwd(), 'public', project.brochure_file);
+      try { await fs.unlink(filepath); } catch (e) { }
     }
 
     await prisma.projects.delete({ where: { id } });
@@ -394,8 +400,14 @@ export async function updateProject(id: number, formData: FormData) {
     if (brochureFile && brochureFile.size > 0) {
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
       const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const blob = await put(`brochures/${filename}`, buffer, { access: 'public' });
-      updateData.brochure_file = blob.url;
+      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      try {
+        await fs.access(uploadDir);
+      } catch {
+        await fs.mkdir(uploadDir, { recursive: true });
+      }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      updateData.brochure_file = `storage/brochures/${filename}`;
     }
 
     await prisma.projects.update({
