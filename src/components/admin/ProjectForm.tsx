@@ -9,6 +9,8 @@ import { Projects, ProjectImages } from '@prisma/client';
 
 type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 
+
+
 export default function ProjectForm({ project }: { project?: ProjectWithImages }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);

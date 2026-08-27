@@ -60,10 +60,6 @@ export async function generateMetadata(): Promise<Metadata> {
       description: desc,
       images: ["/logo.png"],
     },
-    icons: {
-      icon: "/logo.png",
-      apple: "/logo.png",
-    },
     alternates: {
       canonical: "https://pik2official.com",
     },

@@ -88,8 +88,8 @@ export default function Navbar({
                                         {/* Dropdown */}
                                         {hasChildren && (
                                             <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
-                                                <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl overflow-hidden py-2 relative">
-                                                    <div className="absolute top-0 left-0 right-0 h-1 bg-[#81A649]"></div>
+                                                <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl py-2 relative">
+                                                    <div className="absolute top-0 left-0 right-0 h-1 bg-[#81A649] rounded-t-2xl"></div>
                                                     {menu.children!.map((child) => {
                                                         const hasGrandChildren = child.children && child.children.length > 0;
                                                         return (
@@ -104,8 +104,8 @@ export default function Navbar({
                                                             </Link>
                                                             {hasGrandChildren && (
                                                                 <div className="absolute left-full top-0 pl-1 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 w-56 z-50">
-                                                                    <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl overflow-hidden py-2 relative">
-                                                                        <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#81A649]"></div>
+                                                                    <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl py-2 relative">
+                                                                        <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#81A649] rounded-l-2xl"></div>
                                                                         {child.children!.map((grandChild) => (
                                                                             <Link href={grandChild.url}
                                                                                 key={grandChild.label}
