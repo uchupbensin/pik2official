@@ -126,9 +126,9 @@ export default async function ProjectDetail({ params }: Props) {
         
         {/* Mobile Image (Visible only on mobile) */}
         <div className="w-full h-[40vh] sm:h-[50vh] lg:hidden relative z-0">
-          {project.cover_image && (
+          {project?.cover_image && (
             <img 
-              src={project.cover_image.startsWith('http') ? project.cover_image : `/${project.cover_image}`} 
+              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/uploads/${project.cover_image}`} 
               alt={project.name}
               className="w-full h-full object-cover object-center"
             />
@@ -137,9 +137,9 @@ export default async function ProjectDetail({ params }: Props) {
 
         {/* Desktop Image (Absolute full bleed, visible only on desktop) */}
         <div className="hidden lg:block absolute inset-0 z-0">
-          {project.cover_image && (
+          {project?.cover_image && (
             <img 
-              src={project.cover_image.startsWith('http') ? project.cover_image : `/${project.cover_image}`} 
+              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/uploads/${project.cover_image}`} 
               alt={project.name}
               className="w-full h-full object-cover object-right"
             />
@@ -181,10 +181,10 @@ export default async function ProjectDetail({ params }: Props) {
 
             {/* Quick Benefits - Now Dynamic! */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-10">
-              {(project.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature: string, idx: number) => (
+              {(project?.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature: string, idx: number) => (
                 <div key={idx} className="flex items-center gap-2 text-sm font-medium text-gray-700">
                   <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600">✓</div>
-                  {feature.trim()}
+                  {feature?.trim()}
                 </div>
               ))}
             </div>
@@ -267,8 +267,8 @@ export default async function ProjectDetail({ params }: Props) {
                           {/* Image Box */}
                           <div className="relative w-full overflow-hidden rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.06)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 border border-gray-100 bg-white">
                               <img 
-                                src={image.image_path.startsWith('http') ? image.image_path : `/api/uploads/${image.image_path}`} 
-                                alt={image.caption || `${project.name} - Image ${index + 1}`}
+                                src={image?.image_path?.startsWith('http') ? image.image_path : `/api/uploads/${image?.image_path}`} 
+                                alt={image?.caption || `${project.name} - Image ${index + 1}`}
                                 loading="lazy"
                                 className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-700 ease-out" 
                               />

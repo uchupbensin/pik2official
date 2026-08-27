@@ -4,10 +4,10 @@ import { Projects } from '@prisma/client';
 
 export default function ProjectCard({ project }: { project: Projects }) {
   // We'll assume cover_image holds the path/URL to the image
-  const coverUrl = project.cover_image 
-    ? (project.cover_image.startsWith('http') 
+  const coverUrl = project?.cover_image 
+    ? (project.cover_image?.startsWith('http') 
         ? project.cover_image 
-        : project.cover_image.startsWith('uploads/') 
+        : project.cover_image?.startsWith('uploads/') 
           ? `/api/${project.cover_image}` 
           : `/api/uploads/${project.cover_image}`)
     : null;
