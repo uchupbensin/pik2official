@@ -52,15 +52,21 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
       formData.set('cover_image', webpFiles[selectedCoverIndex]);
     }
 
-    const result = project
-      ? await updateProject(project.id, formData)
-      : await createProject(formData);
+    try {
+      const result = project
+        ? await updateProject(project.id, formData)
+        : await createProject(formData);
 
-    if (result.success) {
-      router.push('/admin/projects');
-      router.refresh();
-    } else {
-      setError(result.error || 'Terjadi kesalahan saat menyimpan.');
+      if (result.success) {
+        router.push('/admin/projects');
+        router.refresh();
+      } else {
+        setError(result.error || 'Terjadi kesalahan saat menyimpan.');
+        setIsSaving(false);
+      }
+    } catch (err: any) {
+      console.error('Submit error:', err);
+      setError(err.message || 'Terjadi kesalahan jaringan atau server.');
       setIsSaving(false);
     }
   }
