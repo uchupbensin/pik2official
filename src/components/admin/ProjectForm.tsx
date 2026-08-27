@@ -398,7 +398,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                 <div key={img.id} className="relative group border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                   <div className="aspect-[3/4] bg-gray-200">
                     <img
-                      src={`/storage/${img.image_path}`}
+                      src={`/uploads/${img.image_path}`}
                       alt={img.caption || `Brochure ${img.id}`}
                       className="w-full h-full object-cover"
                     />

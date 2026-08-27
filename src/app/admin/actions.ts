@@ -238,7 +238,7 @@ export async function createProject(formData: FormData) {
     if (file && file.size > 0) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage');
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
 
       // Ensure dir exists
       try {
@@ -248,7 +248,7 @@ export async function createProject(formData: FormData) {
       }
 
       await fs.writeFile(path.join(uploadDir, filename), buffer);
-      coverPath = `storage/${filename}`;
+      coverPath = `uploads/${filename}`;
     }
 
     const brochureFile = formData.get('brochure_file') as File | null;
@@ -257,7 +257,7 @@ export async function createProject(formData: FormData) {
     if (brochureFile && brochureFile.size > 0) {
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
       const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      const uploadDir = path.join(process.cwd(), 'public/uploads/brochures');
       
       try {
         await fs.access(uploadDir);
@@ -266,7 +266,7 @@ export async function createProject(formData: FormData) {
       }
 
       await fs.writeFile(path.join(uploadDir, filename), buffer);
-      brochurePath = `storage/brochures/${filename}`;
+      brochurePath = `uploads/brochures/${filename}`;
     }
 
     // Ensure slug is URL friendly
@@ -301,7 +301,7 @@ export async function createProject(formData: FormData) {
     const images = formData.getAll('images') as File[];
     const captions = formData.getAll('image_captions') as string[];
     if (images && images.length > 0) {
-      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', createdProject.id.toString());
+      const imgUploadDir = path.join(process.cwd(), 'public/uploads/projects', createdProject.id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
 
       let nextSortOrder = 1;
@@ -387,27 +387,27 @@ export async function updateProject(id: number, formData: FormData) {
     if (file && file.size > 0) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/storage');
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
       try {
         await fs.access(uploadDir);
       } catch {
         await fs.mkdir(uploadDir, { recursive: true });
       }
       await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.cover_image = `storage/${filename}`;
+      updateData.cover_image = `uploads/${filename}`;
     }
 
     if (brochureFile && brochureFile.size > 0) {
       const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
       const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), 'public/storage/brochures');
+      const uploadDir = path.join(process.cwd(), 'public/uploads/brochures');
       try {
         await fs.access(uploadDir);
       } catch {
         await fs.mkdir(uploadDir, { recursive: true });
       }
       await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.brochure_file = `storage/brochures/${filename}`;
+      updateData.brochure_file = `uploads/brochures/${filename}`;
     }
 
     await prisma.projects.update({
@@ -419,7 +419,7 @@ export async function updateProject(id: number, formData: FormData) {
     const images = formData.getAll('images') as File[];
     const captions = formData.getAll('image_captions') as string[];
     if (images && images.length > 0) {
-      const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', id.toString());
+      const imgUploadDir = path.join(process.cwd(), 'public/uploads/projects', id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
 
       const currentMax = await prisma.projectImages.aggregate({
@@ -464,7 +464,7 @@ export async function deleteProjectImage(imageId: number) {
     const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };
 
-    const filepath = path.join(process.cwd(), 'public/storage', image.image_path);
+    const filepath = path.join(process.cwd(), 'public/uploads', image.image_path);
     try { await fs.unlink(filepath); } catch (e) { }
 
     await prisma.projectImages.delete({ where: { id: imageId } });

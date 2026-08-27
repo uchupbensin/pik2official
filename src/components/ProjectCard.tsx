@@ -7,9 +7,9 @@ export default function ProjectCard({ project }: { project: Projects }) {
   const coverUrl = project.cover_image 
     ? (project.cover_image.startsWith('http') 
         ? project.cover_image 
-        : project.cover_image.startsWith('storage/') 
+        : project.cover_image.startsWith('uploads/') 
           ? `/${project.cover_image}` 
-          : `/storage/${project.cover_image}`)
+          : `/uploads/${project.cover_image}`)
     : null;
   const alt = `${project.name} PIK 2`;
 
