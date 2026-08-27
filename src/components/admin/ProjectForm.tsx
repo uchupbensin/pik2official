@@ -246,7 +246,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
 
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nomor WhatsApp Sales (Opsional)</label>
-              <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none font-mono text-sm" placeholder="62812345..." />
+              <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none font-mono text-sm text-gray-900" placeholder="62812345..." />
               <p className="text-xs text-gray-500">Gunakan format 62... Kosongkan untuk pakai nomor utama.</p>
             </div>
 
@@ -258,7 +258,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                   type="url"
                   name="youtube_url"
                   defaultValue={project?.youtube_url || ''}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
                   placeholder="https://youtube.com/watch?v=..."
                 />
               </div>
@@ -268,7 +268,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                   type="url"
                   name="gmaps_url"
                   defaultValue={project?.gmaps_url || ''}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
                   placeholder="https://maps.app.goo.gl/..."
                 />
                 <p className="text-xs text-gray-500 mt-1">Cukup tempelkan link Google Maps biasa. Peta akan ditampilkan secara otomatis.</p>
