@@ -170,6 +170,7 @@ export async function createProject(formData: FormData) {
         category: (formData.get('category') as string) || 'rumah',
         slug: slug,
         short_description: formData.get('short_description') as string,
+        features: formData.get('features') as string,
         location: formData.get('location') as string,
         is_promo: formData.get('is_promo') === 'on',
         whatsapp_number: formData.get('whatsapp_number') as string,
@@ -188,7 +189,7 @@ export async function createProject(formData: FormData) {
     if (images && images.length > 0) {
       const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', createdProject.id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
-      
+
       let nextSortOrder = 1;
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
@@ -254,6 +255,7 @@ export async function updateProject(id: number, formData: FormData) {
       name: formData.get('name') as string,
       category: (formData.get('category') as string) || 'rumah',
       short_description: formData.get('short_description') as string,
+      features: formData.get('features') as string,
       location: formData.get('location') as string,
       is_promo: formData.get('is_promo') === 'on',
       whatsapp_number: formData.get('whatsapp_number') as string,
@@ -301,7 +303,7 @@ export async function updateProject(id: number, formData: FormData) {
     if (images && images.length > 0) {
       const imgUploadDir = path.join(process.cwd(), 'public/storage/projects', id.toString());
       try { await fs.access(imgUploadDir); } catch { await fs.mkdir(imgUploadDir, { recursive: true }); }
-      
+
       const currentMax = await prisma.projectImages.aggregate({
         where: { project_id: id },
         _max: { sort_order: true }
@@ -407,7 +409,7 @@ export async function updateProjectImageCaption(imageId: number, caption: string
       where: { id: imageId },
       data: { caption: caption || null }
     });
-    
+
     revalidatePath('/');
     revalidatePath(`/admin/projects/${image.project_id}/edit`);
     revalidatePath(`/project/[slug]`);
@@ -423,14 +425,14 @@ export async function updateProjectSortOrders(updates: { id: number, sort_order:
     // Prisma doesn't support bulk update with different values natively in a single query yet,
     // so we use a transaction
     await prisma.$transaction(
-      updates.map(update => 
+      updates.map(update =>
         prisma.projects.update({
           where: { id: update.id },
           data: { sort_order: update.sort_order }
         })
       )
     );
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true };
@@ -442,7 +444,7 @@ export async function updateProjectSortOrders(updates: { id: number, sort_order:
 
 export async function editProgress(id: number, formData: FormData) {
   await requireAuth();
-  
+
   try {
     const title = formData.get('title') as string;
     const youtube_url = formData.get('youtube_url') as string;
@@ -471,14 +473,14 @@ export async function updateProgressSortOrders(updates: { id: number, sort_order
   await requireAuth();
   try {
     await prisma.$transaction(
-      updates.map(update => 
+      updates.map(update =>
         prisma.progress.update({
           where: { id: update.id },
           data: { sort_order: update.sort_order }
         })
       )
     );
-    
+
     revalidatePath('/admin/progress');
     revalidatePath('/progres');
     return { success: true };

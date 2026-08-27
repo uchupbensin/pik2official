@@ -225,6 +225,11 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <label className="block text-sm font-semibold text-gray-500">Deskripsi Singkat</label>
               <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Ceritakan keunggulan properti ini secara singkat..."></textarea>
             </div>
+
+            <div className="md:col-span-2 space-y-1">
+              <label className="block text-sm font-semibold text-gray-500">Keunggulan / Checkmarks (Pisahkan dengan koma)</label>
+              <textarea name="features" defaultValue={project?.features || ''} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Akses Tol Langsung, Bebas Banjir, Fasilitas Lengkap..."></textarea>
+            </div>
             
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Lokasi / Area</label>
