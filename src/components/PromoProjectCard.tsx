@@ -10,7 +10,7 @@ export default function PromoProjectCard({ project }: { project: any }) {
             {/* Top Image Section */}
             <Link href={projectUrl} target={isExternal ? '_blank' : '_self'} className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 block">
                 <img 
-                    src={project.cover_image ? (project.cover_image.startsWith('http') ? project.cover_image : `/${project.cover_image}`) : '/pik2.png'} 
+                    src={project?.cover_image ? (project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`) : '/pik2.png'} 
                     alt={project.name}
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                 />

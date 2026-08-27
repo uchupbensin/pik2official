@@ -128,7 +128,7 @@ export default async function ProjectDetail({ params }: Props) {
         <div className="w-full h-[40vh] sm:h-[50vh] lg:hidden relative z-0">
           {project?.cover_image && (
             <img 
-              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/uploads/${project.cover_image}`} 
+              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
               alt={project.name}
               className="w-full h-full object-cover object-center"
             />
@@ -139,7 +139,7 @@ export default async function ProjectDetail({ params }: Props) {
         <div className="hidden lg:block absolute inset-0 z-0">
           {project?.cover_image && (
             <img 
-              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/uploads/${project.cover_image}`} 
+              src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
               alt={project.name}
               className="w-full h-full object-cover object-right"
             />

@@ -143,7 +143,7 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                                   <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                                     {project.cover_image ? (
                                       <img 
-                                        src={project.cover_image.startsWith('http') ? project.cover_image : `/${project.cover_image}`} 
+                                        src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
                                         alt={project.name} 
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                                         draggable={false}

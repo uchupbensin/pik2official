@@ -330,8 +330,11 @@ export default function ProjectForm({ project }: { project?: any }) {
                 </div>
               </div>
               {project?.cover_image && (
-                <div className="mt-2 text-xs text-gray-500 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-green-500" /> Cover sudah ada. Upload baru untuk menimpa.
+                <div className="mt-4 mb-4">
+                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Saat Ini:</p>
+                  <div className="relative w-full max-w-xs rounded-lg overflow-hidden border border-gray-200">
+                    <img src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} alt="Current Cover" className="w-full h-auto block" />
+                  </div>
                 </div>
               )}
             </div>
