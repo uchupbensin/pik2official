@@ -148,8 +148,8 @@ import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
 export async function updateSettings(formData: FormData) {
-  await requireAuth();
   try {
+    await requireAuth();
     // 1. Update SiteSettings (id = 1)
     await prisma.siteSettings.upsert({
       where: { id: 1 },
@@ -195,8 +195,8 @@ export async function updateSettings(formData: FormData) {
 
 // Progress Actions
 export async function createProgress(formData: FormData) {
-  await requireAuth();
   try {
+    await requireAuth();
     await prisma.progress.create({
       data: {
         title: formData.get('title') as string,
@@ -213,8 +213,8 @@ export async function createProgress(formData: FormData) {
 }
 
 export async function deleteProgress(id: number) {
-  await requireAuth();
   try {
+    await requireAuth();
     await prisma.progress.delete({ where: { id } });
     revalidatePath('/');
     revalidatePath('/admin/progress');
@@ -229,8 +229,8 @@ export async function deleteProgress(id: number) {
 import { put, del } from '@vercel/blob';
 
 export async function createProject(formData: FormData) {
-  await requireAuth();
   try {
+    await requireAuth();
     const file = formData.get('cover_image') as File | null;
     let coverPath = null;
 
@@ -325,8 +325,8 @@ export async function createProject(formData: FormData) {
 }
 
 export async function deleteProject(id: number) {
-  await requireAuth();
   try {
+    await requireAuth();
     const project = await prisma.projects.findUnique({ where: { id } });
     if (project?.cover_image) {
       // Optional: Delete file
@@ -352,8 +352,8 @@ export async function deleteProject(id: number) {
 }
 
 export async function updateProject(id: number, formData: FormData) {
-  await requireAuth();
   try {
+    await requireAuth();
     const file = formData.get('cover_image') as File | null;
     const brochureFile = formData.get('brochure_file') as File | null;
     const updateData: any = {
@@ -447,8 +447,8 @@ export async function updateProject(id: number, formData: FormData) {
 
 
 export async function deleteProjectImage(imageId: number) {
-  await requireAuth();
   try {
+    await requireAuth();
     const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };
 
@@ -466,8 +466,8 @@ export async function deleteProjectImage(imageId: number) {
 }
 
 export async function updateProjectImageCaption(imageId: number, caption: string) {
-  await requireAuth();
   try {
+    await requireAuth();
     const image = await prisma.projectImages.update({
       where: { id: imageId },
       data: { caption: caption || null }
@@ -483,8 +483,8 @@ export async function updateProjectImageCaption(imageId: number, caption: string
 }
 
 export async function updateProjectSortOrders(updates: { id: number, sort_order: number }[]) {
-  await requireAuth();
   try {
+    await requireAuth();
     // Prisma doesn't support bulk update with different values natively in a single query yet,
     // so we use a transaction
     await prisma.$transaction(
@@ -506,9 +506,8 @@ export async function updateProjectSortOrders(updates: { id: number, sort_order:
 }
 
 export async function editProgress(id: number, formData: FormData) {
-  await requireAuth();
-
   try {
+    await requireAuth();
     const title = formData.get('title') as string;
     const youtube_url = formData.get('youtube_url') as string;
 
@@ -533,8 +532,8 @@ export async function editProgress(id: number, formData: FormData) {
 }
 
 export async function updateProgressSortOrders(updates: { id: number, sort_order: number }[]) {
-  await requireAuth();
   try {
+    await requireAuth();
     await prisma.$transaction(
       updates.map(update =>
         prisma.progress.update({

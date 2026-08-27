@@ -14,7 +14,7 @@ type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 export default function ProjectForm({ project }: { project?: ProjectWithImages }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // PDF Extraction States
   const [isProcessingPdf, setIsProcessingPdf] = useState(false);
   const [pdfProgress, setPdfProgress] = useState(0);
@@ -38,7 +38,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
     setError(null);
 
     const formData = new FormData(e.currentTarget);
-    
+
     // Append generated WebP files and their captions
     webpFiles.forEach((file, idx) => {
       formData.append('images', file);
@@ -51,8 +51,8 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
       // Override cover_image with the selected WebP file from PDF
       formData.set('cover_image', webpFiles[selectedCoverIndex]);
     }
-    
-    const result = project 
+
+    const result = project
       ? await updateProject(project.id, formData)
       : await createProject(formData);
 
@@ -74,7 +74,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
       setSelectedCoverIndex(null);
       return;
     }
-    
+
     if (file.type !== 'application/pdf') {
       return;
     }
@@ -106,15 +106,15 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       setPdfTotal(pdf.numPages);
-      
+
       const extractedFiles: File[] = [];
 
       for (let i = 1; i <= pdf.numPages; i++) {
         setPdfProgress(i);
         const page = await pdf.getPage(i);
-        const scale = 2.0; 
+        const scale = 2.0;
         const viewport = page.getViewport({ scale });
-        
+
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.height = viewport.height;
@@ -134,7 +134,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           extractedFiles.push(new File([blob], `page_${i}.webp`, { type: 'image/webp' }));
         }
       }
-      
+
       setWebpFiles(extractedFiles);
       setPreviewUrls(extractedFiles.map(f => URL.createObjectURL(f)));
       setPdfCaptions(new Array(extractedFiles.length).fill(''));
@@ -206,13 +206,13 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           <h3 className="text-lg font-bold text-gray-600 mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">
             Informasi Dasar
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nama Properti <span className="text-red-500">*</span></label>
               <input type="text" name="name" defaultValue={project?.name} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Tokyo Riverside" />
             </div>
-            
+
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Kategori <span className="text-red-500">*</span></label>
               <select name="category" defaultValue={project?.category || 'rumah'} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900">
@@ -222,13 +222,13 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                 <option value="kavling">Kavling</option>
               </select>
             </div>
-            
+
             <div className="md:col-span-2 space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nama Grup / Tahap (Opsional)</label>
               <input type="text" name="group_name" defaultValue={project?.group_name || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: RUMAH TAHAP 3 (MILENIAL)" />
               <p className="text-xs text-gray-500 mt-1">Jika diisi, properti ini akan dikelompokkan ke dalam menu dengan nama ini.</p>
             </div>
-            
+
             <div className="md:col-span-2 space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Deskripsi Singkat</label>
               <textarea name="short_description" defaultValue={project?.short_description || ''} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Ceritakan keunggulan properti ini secara singkat..."></textarea>
@@ -238,12 +238,12 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <label className="block text-sm font-semibold text-gray-500">Keunggulan / Checkmarks (Pisahkan dengan koma)</label>
               <textarea name="features" defaultValue={project?.features || ''} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Akses Tol Langsung, Bebas Banjir, Fasilitas Lengkap..."></textarea>
             </div>
-            
+
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Lokasi / Area</label>
               <input type="text" name="location" defaultValue={project?.location || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" placeholder="Contoh: Pantai Indah Kapuk 2" />
             </div>
-            
+
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Nomor WhatsApp Sales (Opsional)</label>
               <input type="text" name="whatsapp_number" defaultValue={project?.whatsapp_number || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none font-mono text-sm" placeholder="62812345..." />
@@ -275,7 +275,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               </div>
             </div>
           </div>
-          
+
           <div className="mt-5 pt-4 border-t border-gray-100 flex gap-3 items-center">
             <input type="checkbox" name="is_promo" defaultChecked={project?.is_promo} id="is_promo" className="w-4 h-4 rounded text-[#1E356A] focus:ring-[#1E356A]/30 border-gray-300" />
             <label htmlFor="is_promo" className="text-sm font-medium text-gray-500 cursor-pointer">
@@ -289,7 +289,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           <h3 className="text-lg font-bold text-gray-600 mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">
             Media & Brosur
           </h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-semibold text-gray-500 mb-2">Upload E-Brosur (PDF)</label>
@@ -300,13 +300,13 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                   <p className="text-xs text-gray-500 mt-1">Otomatis diekstrak menjadi galeri WebP.</p>
                 </div>
               </div>
-              
+
               {isProcessingPdf && (
                 <div className="mt-3 text-sm text-[#1E356A] font-medium flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" /> Memproses PDF... ({pdfProgress}/{pdfTotal})
                 </div>
               )}
-              
+
               {!isProcessingPdf && webpFiles.length > 0 && (
                 <div className="mt-3 text-xs text-green-600 font-medium flex items-center gap-1">
                   <CheckCircle2 className="w-4 h-4" /> Berhasil mengekstrak {webpFiles.length} halaman.
@@ -337,19 +337,19 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <label className="block text-sm font-semibold text-gray-500 mb-3">Halaman Brosur (Pilih Cover & Isi Label):</label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 {previewUrls.map((url, idx) => (
-                  <div 
-                    key={idx} 
+                  <div
+                    key={idx}
                     className={`relative flex flex-col rounded-xl border overflow-hidden transition-all shadow-sm ${selectedCoverIndex === idx ? 'border-[#1E356A] bg-[#1E356A]/5' : 'border-gray-200 bg-white'}`}
                   >
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       onClick={() => handleDeletePage(idx)}
                       className="absolute top-2 left-2 z-10 p-1.5 bg-red-500/90 hover:bg-red-600 text-white rounded-lg shadow-sm backdrop-blur-sm transition-colors"
                       title="Hapus Halaman"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
-                    
+
                     <div className="relative aspect-[3/4] cursor-pointer" onClick={() => setSelectedCoverIndex(idx)}>
                       <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-2 px-2 text-white text-xs font-medium font-mono text-center">
@@ -386,18 +386,18 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
           <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
             <h3 className="text-lg font-bold text-gray-600 mb-2 border-b border-gray-100 pb-3">Galeri Brosur Tersimpan</h3>
             <p className="text-xs text-gray-500 mb-4">Ubah label gambar dengan langsung mengetik di kotaknya.</p>
-            
+
             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
               {project.project_images.map((img) => (
                 <div key={img.id} className="relative group border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                   <div className="aspect-[3/4] bg-gray-200">
-                    <img 
-                      src={`/storage/${img.image_path}`} 
-                      alt={img.caption || `Brochure ${img.id}`} 
+                    <img
+                      src={`/storage/${img.image_path}`}
+                      alt={img.caption || `Brochure ${img.id}`}
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <button 
+                  <button
                     type="button"
                     onClick={() => handleDeleteImage(img.id)}
                     className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
@@ -409,11 +409,11 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
                     #{img.sort_order}
                   </div>
                   <div className="p-2 border-t border-gray-200 bg-white">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       defaultValue={img.caption || ''}
                       onBlur={(e) => handleCaptionChange(img.id, e.target.value)}
-                      placeholder="Label..." 
+                      placeholder="Label..."
                       className="w-full text-sm md:text-base text-center border-none focus:ring-0 px-0 py-1 text-gray-900"
                     />
                   </div>
@@ -426,7 +426,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
         {/* SECTION: SEO */}
         <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
           <h3 className="text-lg font-bold text-gray-600 mb-4 border-b border-gray-100 pb-3">SEO (Mesin Pencari)</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">URL Slug</label>
@@ -437,7 +437,7 @@ export default function ProjectForm({ project }: { project?: ProjectWithImages }
               <label className="block text-sm font-semibold text-gray-500">Meta Title</label>
               <input type="text" name="meta_title" defaultValue={project?.meta_title || ''} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none text-gray-900" />
             </div>
-            
+
             <div className="md:col-span-2 space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Meta Description</label>
               <textarea name="meta_description" defaultValue={project?.meta_description || ''} rows={2} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none text-gray-900"></textarea>
