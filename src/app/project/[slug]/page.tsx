@@ -66,7 +66,7 @@ export default async function ProjectDetail({ params }: Props) {
         orderBy: { sort_order: 'asc' }
       }
     }
-  });
+  }) as any;
 
   if (!project) {
     notFound();
@@ -181,7 +181,7 @@ export default async function ProjectDetail({ params }: Props) {
 
             {/* Quick Benefits - Now Dynamic! */}
             <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 mb-10">
-              {(project.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature, idx) => (
+              {(project.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature: string, idx: number) => (
                 <div key={idx} className="flex items-center gap-2 text-sm font-medium text-gray-700">
                   <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600">✓</div>
                   {feature.trim()}
@@ -262,7 +262,7 @@ export default async function ProjectDetail({ params }: Props) {
               </div>
               
               <div className="space-y-16 lg:space-y-24">
-                  {project.project_images.map((image, index) => (
+                  {project.project_images.map((image: any, index: number) => (
                       <div className="flex flex-col items-center group" key={image.id}>
                           {/* Image Box */}
                           <div className="relative w-full overflow-hidden rounded-[1.5rem] lg:rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.06)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-500 border border-gray-100 bg-white">
