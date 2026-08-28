@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
                       <div>
                         <h4 className="font-bold text-gray-900 group-hover:text-[#1E356A] transition-colors">{project.name}</h4>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xs font-medium text-gray-500 capitalize">{project.category.replace('_', ' ')}</span>
+                          <span className="text-xs font-medium text-gray-500 capitalize">{project.category?.replace('_', ' ') || '-'}</span>
                           <span className="w-1 h-1 rounded-full bg-gray-300"></span>
                           <span className="text-xs text-gray-400">
                             {project.created_at ? new Date(project.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-'}
