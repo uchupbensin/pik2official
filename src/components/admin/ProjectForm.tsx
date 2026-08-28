@@ -39,6 +39,9 @@ export default function ProjectForm({ project }: { project?: any }) {
 
     const formData = new FormData(e.currentTarget);
 
+    // Mencegah PDF dikirim ke server untuk menghemat kuota dan memori
+    formData.delete('brochure_file');
+
     // Append generated WebP files and their captions
     webpFiles.forEach((file, idx) => {
       formData.append('images', file);

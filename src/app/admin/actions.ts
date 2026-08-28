@@ -252,23 +252,8 @@ export async function createProject(formData: FormData) {
       coverPath = `uploads/${filename}`;
     }
 
-    const brochureFile = formData.get('brochure_file') as File | null;
+    // (Brosur PDF tidak lagi disimpan ke server, hanya digunakan di client untuk render WebP)
     let brochurePath = null;
-
-    if (brochureFile && brochureFile.size > 0) {
-      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
-      const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), 'public/uploads/brochures');
-      
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      brochurePath = `uploads/brochures/${filename}`;
-    }
 
     // Ensure slug is URL friendly
     let slug = formData.get('slug') as string;
@@ -396,19 +381,6 @@ export async function updateProject(id: number, formData: FormData) {
       }
       await fs.writeFile(path.join(uploadDir, filename), buffer);
       updateData.cover_image = `uploads/${filename}`;
-    }
-
-    if (brochureFile && brochureFile.size > 0) {
-      const filename = `${Date.now()}-brochure-${brochureFile.name.replace(/\s+/g, '-')}`;
-      const buffer = Buffer.from(await brochureFile.arrayBuffer());
-      const uploadDir = path.join(process.cwd(), 'public/uploads/brochures');
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.brochure_file = `uploads/brochures/${filename}`;
     }
 
     await prisma.projects.update({
