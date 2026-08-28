@@ -39,10 +39,6 @@ export default function ProjectForm({ project }: { project?: any }) {
 
     const formData = new FormData(e.currentTarget);
 
-    // Mencegah PDF dikirim ke server untuk menghemat kuota dan memori
-    // Kita overwrite dengan file kosong berukuran 0 byte agar tidak memicu bug "Unexpected end of form" di Next.js
-    formData.set('brochure_file', new File([], 'empty.pdf', { type: 'application/pdf' }));
-
     // Append generated WebP files and their captions
     webpFiles.forEach((file, idx) => {
       formData.append('images', file);
