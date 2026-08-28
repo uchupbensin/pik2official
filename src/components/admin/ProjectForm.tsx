@@ -131,7 +131,9 @@ export default function ProjectForm({ project }: { project?: any }) {
       for (let i = 1; i <= pdf.numPages; i++) {
         setPdfProgress(i);
         const page = await pdf.getPage(i);
-        const scale = 2.0;
+        // Optimasi: Gunakan scale 1.5 (cukup untuk web) agar ukuran WebP tidak terlalu raksasa
+        // Jika scale 2.0, PDF dengan 30 halaman bisa menghasilkan 40MB data yang membuat Next.js crash
+        const scale = 1.5;
         const viewport = page.getViewport({ scale });
 
         const canvas = document.createElement('canvas');
@@ -146,7 +148,8 @@ export default function ProjectForm({ project }: { project?: any }) {
         await page.render(renderContext).promise;
 
         const blob = await new Promise<Blob | null>((resolve) => {
-          canvas.toBlob(resolve, 'image/webp', 0.85);
+          // Optimasi: Quality 0.7 untuk menekan ukuran file hingga 70% lebih kecil
+          canvas.toBlob(resolve, 'image/webp', 0.7);
         });
 
         if (blob) {
