@@ -3,17 +3,17 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model HomeSettings {
-  id                 Int       @id @default(autoincrement())
-  hero_title         String?
-  hero_description   String?
-  promo_title        String?
-  promo_description  String?
-  created_at         DateTime? @default(now())
-  updated_at         DateTime? @updatedAt
+  id                Int       @id @default(autoincrement())
+  hero_title        String?
+  hero_description  String?
+  promo_title       String?
+  promo_description String?
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @updatedAt
 
   @@map("home_settings")
 }
@@ -34,11 +34,10 @@ model ProjectImages {
   id         Int       @id @default(autoincrement())
   project_id Int
   image_path String
-  caption    String?
   sort_order Int       @default(0)
   created_at DateTime? @default(now())
   updated_at DateTime? @updatedAt
-
+  caption    String?
   projects   Projects  @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([project_id, sort_order], map: "project_images_project_id_sort_order_index")
@@ -46,27 +45,26 @@ model ProjectImages {
 }
 
 model Projects {
-  id                Int       @id @default(autoincrement())
+  id                Int             @id @default(autoincrement())
   name              String
-  category          String    @default("rumah")
-  group_name        String?
-  slug              String    @unique(map: "projects_slug_unique")
+  slug              String          @unique(map: "projects_slug_unique")
   short_description String?
-  features          String?
   location          String?
-  maps_url          String?
   cover_image       String?
-  brochure_file     String?
-  is_promo          Boolean   @default(false)
+  is_promo          Boolean         @default(false)
   whatsapp_number   String?
   meta_title        String?
   meta_description  String?
+  created_at        DateTime?       @default(now())
+  updated_at        DateTime?       @updatedAt
+  category          String          @default("rumah")
+  brochure_file     String?
+  sort_order        Int             @default(0)
   youtube_url       String?
   gmaps_url         String?
-  created_at        DateTime? @default(now())
-  updated_at        DateTime? @updatedAt
-  sort_order        Int       @default(0)
-
+  features          String?
+  group_name        String?
+  maps_url          String?
   project_images    ProjectImages[]
 
   @@index([is_promo], map: "projects_is_promo_index")
