@@ -36,26 +36,33 @@ export default function ProjectForm({ project }: { project?: any }) {
     e.preventDefault();
     setIsSaving(true);
     setError(null);
+    const rawFormData = new FormData(e.currentTarget);
+    const newFormData = new FormData();
 
-    const formData = new FormData(e.currentTarget);
+    // Salin semua data asli ke FormData baru (KECUALI file PDF brosur untuk hemat bandwidth)
+    for (const [key, value] of rawFormData.entries()) {
+      if (key !== 'brochure_file') {
+        newFormData.append(key, value);
+      }
+    }
 
-    // Append generated WebP files and their captions
+    // Tambahkan file WebP hasil ekstrak
     webpFiles.forEach((file, idx) => {
-      formData.append('images', file);
-      formData.append('image_captions', pdfCaptions[idx] || '');
+      newFormData.append('images', file);
+      newFormData.append('image_captions', pdfCaptions[idx] || '');
     });
 
     // Check if user uploaded a manual cover image
-    const manualCover = formData.get('cover_image') as File | null;
+    const manualCover = newFormData.get('cover_image') as File | null;
     if ((!manualCover || manualCover.size === 0) && selectedCoverIndex !== null && webpFiles[selectedCoverIndex]) {
       // Override cover_image with the selected WebP file from PDF
-      formData.set('cover_image', webpFiles[selectedCoverIndex]);
+      newFormData.set('cover_image', webpFiles[selectedCoverIndex]);
     }
 
     try {
       const result = project
-        ? await updateProject(project.id, formData)
-        : await createProject(formData);
+        ? await updateProject(project.id, newFormData)
+        : await createProject(newFormData);
 
       if (result.success) {
         router.push('/admin/projects');
