@@ -39,11 +39,17 @@ export default function ProjectForm({ project }: { project?: any }) {
     const rawFormData = new FormData(e.currentTarget);
     const newFormData = new FormData();
 
-    // Salin semua data asli ke FormData baru (KECUALI file PDF brosur untuk hemat bandwidth)
+    // Salin semua data asli ke FormData baru
     for (const [key, value] of rawFormData.entries()) {
-      if (key !== 'brochure_file') {
-        newFormData.append(key, value);
+      // 1. Jangan ikutkan brochure_file (sudah tidak dipakai di backend)
+      // 2. Jangan ikutkan File kosong (size 0) karena memicu bug "Unexpected end of form" di Next.js
+      if (key === 'brochure_file') continue;
+      
+      if (value instanceof File && value.size === 0) {
+        continue;
       }
+      
+      newFormData.append(key, value);
     }
 
     // Tambahkan file WebP hasil ekstrak
