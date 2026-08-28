@@ -65,6 +65,12 @@ export default function ProjectForm({ project }: { project?: any }) {
       newFormData.set('cover_image', webpFiles[selectedCoverIndex]);
     }
 
+    // Jika tidak ada cover_image sama sekali, hapus field kosong agar parser tidak error
+    const finalCover = newFormData.get('cover_image') as File | null;
+    if (finalCover && finalCover.size === 0) {
+      newFormData.delete('cover_image');
+    }
+
     try {
       const result = project
         ? await updateProject(project.id, newFormData)
