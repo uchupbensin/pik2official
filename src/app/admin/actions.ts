@@ -263,12 +263,12 @@ export async function createProject(formData: FormData) {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    // Pastikan slug unik (hindari Prisma Unique Constraint Error)
+    // Pastikan slug unik (jika sudah ada, kembalikan error ke pengguna)
     const existingSlug = await prisma.projects.findUnique({
       where: { slug: slug }
     });
     if (existingSlug) {
-      slug = `${slug}-${Math.random().toString(36).substring(2, 6)}`;
+      return { success: false, error: 'Properti dengan nama tersebut sudah ada. Silakan gunakan nama properti atau tahap yang berbeda.' };
     }
 
     const createdProject = await prisma.projects.create({
