@@ -263,6 +263,14 @@ export async function createProject(formData: FormData) {
       slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
+    // Pastikan slug unik (hindari Prisma Unique Constraint Error)
+    const existingSlug = await prisma.projects.findUnique({
+      where: { slug: slug }
+    });
+    if (existingSlug) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 6)}`;
+    }
+
     const createdProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
