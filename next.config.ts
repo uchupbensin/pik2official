@@ -16,13 +16,13 @@ const securityHeaders = [
     value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://wa.me; frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com; worker-src 'self' blob: https://cdnjs.cloudflare.com; frame-ancestors 'none';",
   },
 ];
-
 const nextConfig: NextConfig = {
   output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',
     },
+    middlewareClientMaxBodySize: '50mb',
   },
   async headers() {
     return [
