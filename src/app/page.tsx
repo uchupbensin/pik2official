@@ -12,27 +12,51 @@ type Props = {
 export default async function Home({ searchParams }: Props) {
     const resolvedParams = await searchParams;
     const searchQuery = (resolvedParams?.q as string) || '';
+    const currentPage = parseInt((resolvedParams?.page as string) || '1');
+    const pageSize = 6;
+    const skip = (currentPage - 1) * pageSize;
 
     const homeSetting = await prisma.homeSettings.findFirst();
     const siteSetting = await prisma.siteSettings.findFirst();
 
-    const projects = await prisma.projects.findMany({
-        where: searchQuery ? {
-            OR: [
-                { name: { contains: searchQuery, mode: 'insensitive' } },
-                { location: { contains: searchQuery, mode: 'insensitive' } },
-                { short_description: { contains: searchQuery, mode: 'insensitive' } },
-                { category: { contains: searchQuery, mode: 'insensitive' } }
-            ]
-        } : undefined,
-        orderBy: [
-            { is_promo: 'desc' },
-            { id: 'desc' }
+    // Query untuk pencarian
+    const searchFilter = searchQuery ? {
+        OR: [
+            { name: { contains: searchQuery, mode: 'insensitive' } },
+            { location: { contains: searchQuery, mode: 'insensitive' } },
+            { short_description: { contains: searchQuery, mode: 'insensitive' } },
+            { category: { contains: searchQuery, mode: 'insensitive' } }
         ]
+    } : {};
+
+    // 1. Ambil Promo Projects (Tanpa Pagination)
+    const promoProjects = await prisma.projects.findMany({
+        where: {
+            is_promo: true,
+            ...searchFilter
+        },
+        orderBy: { id: 'desc' }
     });
 
-    const promoProjects = projects.filter((p: any) => p.is_promo);
-    const regularProjects = projects.filter((p: any) => !p.is_promo);
+    // 2. Ambil Regular Projects (Dengan Pagination)
+    const regularProjects = await prisma.projects.findMany({
+        where: {
+            is_promo: false,
+            ...searchFilter
+        },
+        orderBy: { id: 'desc' },
+        skip: skip,
+        take: pageSize
+    });
+
+    // 3. Hitung total regular projects untuk pagination
+    const totalRegularProjects = await prisma.projects.count({
+        where: {
+            is_promo: false,
+            ...searchFilter
+        }
+    });
+    const totalPages = Math.ceil(totalRegularProjects / pageSize);
 
     const heroTitle = homeSetting?.hero_title || 'Hunian Pilihan di PIK 2';
     const heroDesc = homeSetting?.hero_description || 'Temukan rumah, ruko, gudang, apartemen, dan kavling terbaik di kawasan strategis PIK 2.';
@@ -177,11 +201,36 @@ export default async function Home({ searchParams }: Props) {
                     )}
 
                     {regularProjects.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
-                            {regularProjects.map((project: any) => (
-                                <ProjectCard key={project.id} project={project} />
-                            ))}
-                        </div>
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+                                {regularProjects.map((project: any) => (
+                                    <ProjectCard key={project.id} project={project} />
+                                ))}
+                            </div>
+                            
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="mt-16 flex items-center justify-center gap-2">
+                                    {Array.from({ length: totalPages }).map((_, i) => {
+                                        const pageNumber = i + 1;
+                                        const isActive = pageNumber === currentPage;
+                                        return (
+                                            <a
+                                                key={pageNumber}
+                                                href={`/?page=${pageNumber}${searchQuery ? `&q=${searchQuery}` : ''}#projects`}
+                                                className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-all ${
+                                                    isActive 
+                                                        ? 'bg-[#1E356A] text-white shadow-md' 
+                                                        : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                                                }`}
+                                            >
+                                                {pageNumber}
+                                            </a>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="text-center py-24 bg-gray-50 rounded-[2rem] border border-dashed border-gray-200">
                             <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
