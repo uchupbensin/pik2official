@@ -20,7 +20,7 @@ export default async function Home({ searchParams }: Props) {
     const siteSetting = await prisma.siteSettings.findFirst();
 
     // Query untuk pencarian
-    const searchFilter = searchQuery ? {
+    const searchFilter: any = searchQuery ? {
         OR: [
             { name: { contains: searchQuery, mode: 'insensitive' } },
             { location: { contains: searchQuery, mode: 'insensitive' } },
