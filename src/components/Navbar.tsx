@@ -165,7 +165,7 @@ export default function Navbar({
                     </div>
 
                     {/* Mobile menu */}
-                    <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-screen opacity-100 py-3 pb-6' : 'max-h-0 opacity-0'}`}>
+                    <div className={`lg:hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-[85vh] overflow-y-auto opacity-100 py-3 pb-6' : 'max-h-0 overflow-hidden opacity-0'}`}>
                         <div className={`pt-2 space-y-1 rounded-2xl ${isTransparent ? 'bg-white/10 backdrop-blur-md border border-white/20 p-4' : 'border-t border-gray-100'}`}>
                             {menus.map((menu) => {
                                 const hasChildren = menu.children && menu.children.length > 0;
