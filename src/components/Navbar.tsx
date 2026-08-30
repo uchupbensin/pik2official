@@ -188,7 +188,7 @@ export default function Navbar({
                                                                 <span>{child.label}</span>
                                                                 <svg className={`w-3.5 h-3.5 transition-transform duration-300 ${openDropdowns[childKey] ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                                                             </button>
-                                                            <div className={`overflow-hidden transition-all duration-300 ${openDropdowns[childKey] ? 'max-h-96' : 'max-h-0'}`}>
+                                                            <div className={`overflow-hidden transition-all duration-300 ${openDropdowns[childKey] ? 'max-h-[1000px]' : 'max-h-0'}`}>
                                                                 <div className="pl-4 pr-2 py-1 space-y-1 border-l-2 border-gray-100 ml-4 mt-1 mb-2">
                                                                     {child.children!.map((grandChild) => (
                                                                         <Link href={grandChild.url}
