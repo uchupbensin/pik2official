@@ -1,22 +1,30 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { deleteProject, updateProjectSortOrders } from '@/app/admin/actions';
+import { deleteProject, updateProjectSortOrders, renameCategory } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
 import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical } from 'lucide-react';
 import Link from 'next/link';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
-const CATEGORIES = [
-  { id: 'rumah', label: 'Rumah' },
-  { id: 'ruko_gudang', label: 'Ruko & Gudang' },
-  { id: 'apartemen', label: 'Apartemen' },
-  { id: 'kavling', label: 'Kavling' },
-];
 
 export default function ProjectList({ projects: initialProjects }: { projects: Projects[] }) {
   const [projects, setProjects] = useState(initialProjects);
   const [isSaving, setIsSaving] = useState(false);
+
+  const baseCategories = [
+    { id: 'rumah', label: 'Rumah' },
+    { id: 'ruko_gudang', label: 'Ruko & Gudang' },
+    { id: 'apartemen', label: 'Apartemen' },
+    { id: 'kavling', label: 'Kavling' },
+  ];
+
+  const uniqueCategories = Array.from(new Set(projects.map(p => p.category).filter(Boolean)));
+  const customCategories = uniqueCategories
+    .filter(cat => !baseCategories.find(bc => bc.id === cat))
+    .map(cat => ({ id: cat, label: cat.replace(/_/g, ' ').toUpperCase() }));
+
+  const activeCategories = [...baseCategories, ...customCategories];
 
   // Sync state if props change (e.g., from server revalidation)
   useEffect(() => {
@@ -71,6 +79,26 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
     }
   }
 
+  async function handleRenameCategory(oldCatId: string, oldCatLabel: string) {
+    const newName = window.prompt(`Ubah nama kategori "${oldCatLabel}":\n(PERHATIAN: Ini akan mengubah kategori pada semua properti di dalamnya)`, oldCatLabel);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldCatId) {
+      setIsSaving(true);
+      try {
+        const result = await renameCategory(oldCatId, newName.trim());
+        if (!result.success) {
+          alert(result.error);
+        } else {
+          // Trigger a local refresh by reloading the page or we just let Next.js revalidate do its thing
+          window.location.reload();
+        }
+      } catch (err) {
+        alert('Gagal mengubah nama kategori');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  }
+
   // Helper to group projects
   const getProjectsByCategory = (categoryId: string) => {
     return projects.filter(p => p.category === categoryId).sort((a, b) => a.sort_order - b.sort_order);
@@ -98,13 +126,22 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
 
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="space-y-6">
-          {CATEGORIES.map((cat) => {
+          {activeCategories.map((cat) => {
             const catProjects = getProjectsByCategory(cat.id);
             
             return (
               <div key={cat.id} className="bg-white rounded-[1.5rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden">
                 <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                  <h4 className="font-bold text-[#1E356A] text-lg uppercase tracking-wide">{cat.label}</h4>
+                  <div className="flex items-center gap-3">
+                    <h4 className="font-bold text-[#1E356A] text-lg uppercase tracking-wide">{cat.label}</h4>
+                    <button 
+                      onClick={() => handleRenameCategory(cat.id, cat.label)} 
+                      className="text-gray-400 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-md transition-colors" 
+                      title="Edit Nama Kategori"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  </div>
                   <span className="bg-white text-gray-500 text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
                     {catProjects.length} Properti
                   </span>

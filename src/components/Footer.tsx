@@ -14,11 +14,11 @@ export default function Footer({
     siteSetting: SiteSettings | null;
     menus: MenuItem[];
 }) {
-    const siteName = siteSetting?.site_name ?? 'PIK 2 OFFICIAL';
-    const siteTagline = siteSetting?.site_tagline ?? 'Kawasan Residensial & Komersial Elite di Jakarta Utara';
+    const siteName = siteSetting?.site_name || 'PIK 2 OFFICIAL';
+    const siteTagline = siteSetting?.site_tagline || 'Kawasan Residensial & Komersial Elite di Jakarta Utara';
     const siteDescription = 'Dapatkan informasi resmi dan terbaru mengenai hunian eksklusif, ruko premium, apartemen mewah, serta lahan komersial strategis di kawasan mega proyek PIK 2.';
 
-    const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
+    const waNumber = siteSetting?.sales_whatsapp_number || '6281234567890';
     let cleanWa = waNumber.replace(/\D+/g, '');
     if (cleanWa.startsWith('0')) {
         cleanWa = '62' + cleanWa.substring(1);

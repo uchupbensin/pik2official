@@ -13,8 +13,8 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteSetting = await prisma.siteSettings.findFirst();
-  const siteName = siteSetting?.site_name ?? "PIK 2 OFFICIAL";
-  const tagline = siteSetting?.site_tagline ?? "Kawasan Residensial & Komersial Elite di Jakarta Utara";
+  const siteName = siteSetting?.site_name || "PIK 2 OFFICIAL";
+  const tagline = siteSetting?.site_tagline || "Kawasan Residensial & Komersial Elite di Jakarta Utara";
   const desc = "Website Marketing Resmi PIK 2. Dapatkan penawaran eksklusif, harga terbaik, dan informasi lengkap mengenai rumah, apartemen, ruko, hingga kavling komersial di kawasan elit PIK 2.";
 
   return {
@@ -80,9 +80,9 @@ export default async function RootLayout({
   function buildMenuChildren(category: string) {
     const categoryProjects = projects.filter(p => p.category === category);
     const groups = Array.from(new Set(categoryProjects.map(p => p.group_name).filter(Boolean)));
-    
+
     const children: any[] = [];
-    
+
     // 1. Add grouped projects
     groups.forEach(group => {
       const groupedProjects = categoryProjects.filter(p => p.group_name === group);
@@ -92,45 +92,34 @@ export default async function RootLayout({
         children: groupedProjects.map(p => ({ label: p.name, url: `/project/${p.slug}` }))
       });
     });
-    
+
     // 2. Add ungrouped projects directly
     const ungroupedProjects = categoryProjects.filter(p => !p.group_name);
     ungroupedProjects.forEach(p => {
       children.push({ label: p.name, url: `/project/${p.slug}` });
     });
-    
+
     return children.length > 0 ? children : undefined;
   }
+
+  const baseCategories = ['rumah', 'ruko_gudang', 'apartemen', 'kavling'];
+  const dbCategories = projects.map(p => p.category).filter(Boolean);
+  const existingCategories = Array.from(new Set([...baseCategories, ...dbCategories]));
 
   const menus = [
     { label: "HOME", url: "/" },
     { label: "PROGRES PIK 2", url: "/progres" },
-    { 
-      label: "RUMAH", 
-      url: "#", 
-      children: buildMenuChildren('rumah')
-    },
-    { 
-      label: "RUKO & GUDANG", 
-      url: "#", 
-      children: buildMenuChildren('ruko_gudang')
-    },
-    { 
-      label: "APARTEMEN", 
-      url: "#", 
-      children: buildMenuChildren('apartemen')
-    },
-    { 
-      label: "KAVLING", 
-      url: "#", 
-      children: buildMenuChildren('kavling')
-    }
+    ...existingCategories.map(cat => ({
+      label: cat.replace(/_/g, ' ').toUpperCase(),
+      url: "#",
+      children: buildMenuChildren(cat)
+    }))
   ];
 
   const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
   let cleanWa = waNumber.replace(/\D+/g, '');
   if (cleanWa.startsWith('0')) {
-      cleanWa = '62' + cleanWa.substring(1);
+    cleanWa = '62' + cleanWa.substring(1);
   }
   const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin bertanya mengenai properti di PIK 2.');
 

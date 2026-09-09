@@ -3,10 +3,10 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { 
-  LayoutDashboard, 
-  Building2, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Building2,
+  Settings,
   MenuSquare,
   PlayCircle,
   LogOut,
@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#F8F9FA] flex font-sans">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
@@ -42,14 +42,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
             <span className="font-extrabold text-lg tracking-tight text-[#1E356A]">Workspace</span>
           </div>
-          <button 
+          <button
             className="md:hidden text-gray-400 hover:text-gray-600 bg-gray-50 p-2 rounded-lg"
             onClick={() => setIsSidebarOpen(false)}
           >
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="px-6 py-4">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Main Menu</p>
           <nav className="space-y-1.5">
@@ -94,7 +94,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex-1 flex flex-col min-w-0 md:ml-0 h-screen overflow-hidden">
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-100 flex items-center justify-between px-6 sm:px-10 z-10 sticky top-0">
           <div className="flex items-center gap-4">
-            <button 
+            <button
               className="md:hidden p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
               onClick={() => setIsSidebarOpen(true)}
             >
@@ -102,13 +102,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </button>
           </div>
           <div className="flex items-center gap-4">
-             <div className="flex flex-col items-end hidden sm:flex">
-               <span className="text-sm font-bold text-gray-900">Administrator</span>
-               <span className="text-xs font-medium text-gray-500">Super Admin</span>
-             </div>
-             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#1E356A] to-blue-400 text-white flex items-center justify-center font-bold shadow-md">
-               A
-             </div>
+            <div className="flex flex-col items-end hidden sm:flex">
+              <span className="text-sm font-bold text-gray-900">Administrator</span>
+              <span className="text-xs font-medium text-gray-500">Super Admin</span>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#1E356A] to-blue-400 text-white flex items-center justify-center font-bold shadow-md">
+              A
+            </div>
           </div>
         </header>
         <main className="flex-1 p-6 sm:p-10 pb-24 md:pb-10 overflow-auto bg-[#F8F9FA]">

@@ -48,8 +48,8 @@ export default function Navbar({
         setOpenDropdowns(prev => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const siteName = siteSetting?.site_name ?? 'PIK 2 OFFICIAL';
-    const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
+    const siteName = siteSetting?.site_name || 'PIK 2 OFFICIAL';
+    const waNumber = siteSetting?.sales_whatsapp_number || '6281234567890';
 
     let cleanWa = waNumber.replace(/\D+/g, '');
     if (cleanWa.startsWith('0')) {

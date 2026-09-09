@@ -11,7 +11,7 @@ type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 
 
 
-export default function ProjectForm({ project }: { project?: any }) {
+export default function ProjectForm({ project, existingCategories }: { project?: any, existingCategories?: string[] }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,6 +23,10 @@ export default function ProjectForm({ project }: { project?: any }) {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [pdfCaptions, setPdfCaptions] = useState<string[]>([]);
   const [selectedCoverIndex, setSelectedCoverIndex] = useState<number | null>(null);
+  
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(project?.category || (existingCategories?.[0] || 'rumah'));
+  
   const router = useRouter();
 
   useEffect(() => {
@@ -44,11 +48,11 @@ export default function ProjectForm({ project }: { project?: any }) {
       // 1. Jangan ikutkan brochure_file (sudah tidak dipakai di backend)
       // 2. Jangan ikutkan File kosong (size 0) karena memicu bug "Unexpected end of form" di Next.js
       if (key === 'brochure_file') continue;
-      
+
       if (value instanceof File && value.size === 0) {
         continue;
       }
-      
+
       newFormData.append(key, value);
     }
 
@@ -243,12 +247,49 @@ export default function ProjectForm({ project }: { project?: any }) {
 
             <div className="space-y-1">
               <label className="block text-sm font-semibold text-gray-500">Kategori <span className="text-red-500">*</span></label>
-              <select name="category" defaultValue={project?.category || 'rumah'} required className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900">
-                <option value="rumah">Rumah</option>
-                <option value="ruko_gudang">Ruko & Gudang</option>
-                <option value="apartemen">Apartemen</option>
-                <option value="kavling">Kavling</option>
-              </select>
+              {!isCustomCategory ? (
+                <select 
+                  name="category" 
+                  value={selectedCategory} 
+                  onChange={(e) => {
+                    if (e.target.value === 'LAINNYA_CUSTOM') {
+                      setIsCustomCategory(true);
+                      setSelectedCategory('');
+                    } else {
+                      setSelectedCategory(e.target.value);
+                    }
+                  }}
+                  required 
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900"
+                >
+                  {existingCategories?.map(cat => (
+                    <option key={cat} value={cat}>{cat.replace(/_/g, ' ').toUpperCase()}</option>
+                  ))}
+                  <option value="LAINNYA_CUSTOM" className="font-bold text-[#1E356A] bg-blue-50">+ Lainnya (Kustom...)</option>
+                </select>
+              ) : (
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    name="category" 
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    required 
+                    placeholder="Ketik kategori baru (Misal: Villa Eksklusif)"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900" 
+                  />
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setIsCustomCategory(false);
+                      setSelectedCategory(existingCategories?.[0] || 'rumah');
+                    }}
+                    className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Batal
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="md:col-span-2 space-y-1">

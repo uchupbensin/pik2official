@@ -524,6 +524,20 @@ export async function editProgress(id: number, formData: FormData) {
   }
 }
 
+export async function renameCategory(oldCategory: string, newCategory: string) {
+  try {
+    await prisma.projects.updateMany({
+      where: { category: oldCategory },
+      data: { category: newCategory }
+    });
+    revalidatePath('/admin/projects');
+    revalidatePath('/');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Terjadi kesalahan saat mengubah nama kategori' };
+  }
+}
+
 export async function updateProgressSortOrders(updates: { id: number, sort_order: number }[]) {
   try {
     await requireAuth();

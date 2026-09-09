@@ -26,9 +26,18 @@ export default async function EditProjectPage({ params }: Props) {
 
   if (!project) return notFound();
 
+  const categoriesRaw = await prisma.projects.findMany({
+    select: { category: true },
+    distinct: ['category'],
+  });
+  
+  const baseCategories = ['rumah', 'ruko_gudang', 'apartemen', 'kavling'];
+  const dbCategories = categoriesRaw.map(p => p.category).filter(Boolean);
+  const existingCategories = Array.from(new Set([...baseCategories, ...dbCategories]));
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <ProjectForm project={project} />
+      <ProjectForm project={project} existingCategories={existingCategories} />
     </div>
   );
 }
