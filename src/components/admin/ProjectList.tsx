@@ -455,6 +455,8 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                                       <img 
                                         src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
                                         alt={project.name} 
+                                        loading="lazy"
+                                        decoding="async"
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                                         draggable={false}
                                       />
