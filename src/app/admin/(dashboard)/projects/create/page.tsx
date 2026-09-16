@@ -6,14 +6,12 @@ export const metadata = {
 };
 
 export default async function CreateProjectPage() {
-  const categoriesRaw = await prisma.projects.findMany({
-    select: { category: true },
-    distinct: ['category'],
-  });
+  let dbCategories = await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
   
-  const baseCategories = ['rumah', 'ruko_gudang', 'apartemen', 'kavling'];
-  const dbCategories = categoriesRaw.map(p => p.category).filter(Boolean);
-  const existingCategories = Array.from(new Set([...baseCategories, ...dbCategories]));
+  if (dbCategories.length === 0) {
+    const { syncCategories } = await import('@/app/admin/actions');
+    dbCategories = await syncCategories();
+  }
 
-  return <ProjectForm existingCategories={existingCategories} />;
+  return <ProjectForm existingCategories={dbCategories} />;
 }

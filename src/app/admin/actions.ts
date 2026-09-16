@@ -271,10 +271,24 @@ export async function createProject(formData: FormData) {
       return { success: false, error: 'Properti dengan nama tersebut sudah ada. Silakan gunakan nama properti atau tahap yang berbeda.' };
     }
 
+    let categoryVal = (formData.get('category') as string) || 'rumah';
+    
+    // Ensure this category exists in Categories table (in case it was custom added)
+    const existingCat = await prisma.categories.findUnique({ where: { id: categoryVal } });
+    if (!existingCat) {
+      await prisma.categories.create({
+        data: {
+          id: categoryVal,
+          label: categoryVal.replace(/_/g, ' ').toUpperCase(),
+          sort_order: (await prisma.categories.count()) + 1
+        }
+      });
+    }
+
     const createdProject = await prisma.projects.create({
       data: {
         name: formData.get('name') as string,
-        category: (formData.get('category') as string) || 'rumah',
+        category: categoryVal,
         group_name: (formData.get('group_name') as string) || null,
         slug: slug,
         short_description: formData.get('short_description') as string,
@@ -356,9 +370,23 @@ export async function updateProject(id: number, formData: FormData) {
     await requireAuth();
     const file = formData.get('cover_image') as File | null;
     const brochureFile = formData.get('brochure_file') as File | null;
+    const categoryVal = (formData.get('category') as string) || 'rumah';
+
+    // Ensure this category exists in Categories table (in case it was custom added)
+    const existingCat = await prisma.categories.findUnique({ where: { id: categoryVal } });
+    if (!existingCat) {
+      await prisma.categories.create({
+        data: {
+          id: categoryVal,
+          label: categoryVal.replace(/_/g, ' ').toUpperCase(),
+          sort_order: (await prisma.categories.count()) + 1
+        }
+      });
+    }
+
     const updateData: any = {
       name: formData.get('name') as string,
-      category: (formData.get('category') as string) || 'rumah',
+      category: categoryVal,
       group_name: (formData.get('group_name') as string) || null,
       short_description: formData.get('short_description') as string,
       features: formData.get('features') as string,

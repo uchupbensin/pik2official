@@ -11,7 +11,7 @@ type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
 
 
 
-export default function ProjectForm({ project, existingCategories }: { project?: any, existingCategories?: string[] }) {
+export default function ProjectForm({ project, existingCategories }: { project?: any, existingCategories?: { id: string, label: string }[] }) {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,7 +25,7 @@ export default function ProjectForm({ project, existingCategories }: { project?:
   const [selectedCoverIndex, setSelectedCoverIndex] = useState<number | null>(null);
   
   const [isCustomCategory, setIsCustomCategory] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(project?.category || (existingCategories?.[0] || 'rumah'));
+  const [selectedCategory, setSelectedCategory] = useState(project?.category || (existingCategories?.[0]?.id || 'rumah'));
   
   const router = useRouter();
 
@@ -263,7 +263,7 @@ export default function ProjectForm({ project, existingCategories }: { project?:
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E356A]/30 focus:border-transparent outline-none text-sm text-gray-900"
                 >
                   {existingCategories?.map(cat => (
-                    <option key={cat} value={cat}>{cat.replace(/_/g, ' ').toUpperCase()}</option>
+                    <option key={cat.id} value={cat.id}>{cat.label.toUpperCase()}</option>
                   ))}
                   <option value="LAINNYA_CUSTOM" className="font-bold text-[#1E356A] bg-blue-50">+ Lainnya (Kustom...)</option>
                 </select>
@@ -282,7 +282,7 @@ export default function ProjectForm({ project, existingCategories }: { project?:
                     type="button" 
                     onClick={() => {
                       setIsCustomCategory(false);
-                      setSelectedCategory(existingCategories?.[0] || 'rumah');
+                      setSelectedCategory(existingCategories?.[0]?.id || 'rumah');
                     }}
                     className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm font-medium transition-colors"
                   >
