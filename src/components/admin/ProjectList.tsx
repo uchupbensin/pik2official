@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProjects, updateProjectName } from '@/app/admin/actions';
+import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
 import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical } from 'lucide-react';
 import Link from 'next/link';
@@ -39,7 +39,7 @@ function OrderInput({ value, max, onChange }: { value: number, max: number, onCh
   );
 }
 
-function InlineEdit({ initialValue, onSave }: { initialValue: string, onSave: (val: string) => Promise<void> }) {
+function InlineEdit({ initialValue, onSave, textClass = "text-base font-bold text-gray-900", emptyText = "Ubah" }: { initialValue: string, onSave: (val: string) => Promise<void>, textClass?: string, emptyText?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
   const [isSaving, setIsSaving] = useState(false);
@@ -53,8 +53,10 @@ function InlineEdit({ initialValue, onSave }: { initialValue: string, onSave: (v
 
   if (!isEditing) {
     return (
-      <div className="flex items-center gap-2 group/edit cursor-pointer" onClick={() => setIsEditing(true)} title="Klik untuk mengubah nama dengan cepat">
-        <h4 className="text-base font-bold text-gray-900 group-hover:text-[#1E356A] transition-colors">{initialValue}</h4>
+      <div className="flex items-center gap-2 group/edit cursor-pointer" onClick={() => setIsEditing(true)} title="Klik untuk mengubah dengan cepat">
+        <div className={`${textClass} group-hover:text-[#1E356A] transition-colors`}>
+          {initialValue || <span className="italic text-gray-400 font-normal">{emptyText}</span>}
+        </div>
         <Edit2 className="w-3 h-3 text-gray-300 opacity-0 group-hover/edit:opacity-100 transition-opacity" />
       </div>
     );
@@ -97,6 +99,8 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
   const [projects, setProjects] = useState(initialProjects);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [isBulkSettingGroup, setIsBulkSettingGroup] = useState(false);
+  const [bulkGroupValue, setBulkGroupValue] = useState('');
 
   const baseCategories = [
     { id: 'rumah', label: 'Rumah' },
@@ -159,6 +163,28 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
     } else {
       setProjects(prev => prev.map(p => p.id === id ? { ...p, name: newName } : p));
     }
+  }
+
+  async function handleInlineSaveGroup(id: number, newGroup: string) {
+    const res = await updateProjectGroup(id, newGroup);
+    if (!res.success) {
+      alert(res.error);
+    } else {
+      setProjects(prev => prev.map(p => p.id === id ? { ...p, group_name: newGroup } : p));
+    }
+  }
+
+  async function handleBulkSetGroupSubmit() {
+    setIsSaving(true);
+    const res = await bulkUpdateProjectGroup(selectedIds, bulkGroupValue);
+    if (res.success) {
+      setProjects(prev => prev.map(p => selectedIds.includes(p.id) ? { ...p, group_name: bulkGroupValue } : p));
+      setSelectedIds([]);
+      setIsBulkSettingGroup(false);
+    } else {
+      alert(res.error);
+    }
+    setIsSaving(false);
   }
 
   async function handleManualOrderChange(categoryId: string, sourceIndex: number, newIndexStr: string) {
@@ -299,13 +325,52 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
         <div className="flex items-center gap-4 w-full sm:w-auto">
           {isSaving && <span className="text-sm font-medium text-[#1E356A] animate-pulse bg-blue-50 px-3 py-1 rounded-full shrink-0">Menyimpan...</span>}
           {selectedIds.length > 0 && (
-            <button
-              onClick={handleBulkDelete}
-              className="flex items-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-colors border border-red-200"
-            >
-              <Trash2 className="w-5 h-5" />
-              Hapus ({selectedIds.length})
-            </button>
+            isBulkSettingGroup ? (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto bg-blue-50/50 p-2 rounded-2xl border border-blue-100 shadow-inner">
+                <input 
+                  type="text"
+                  value={bulkGroupValue}
+                  onChange={e => setBulkGroupValue(e.target.value)}
+                  placeholder="Ketik nama grup baru..."
+                  className="px-4 py-2.5 rounded-xl border border-blue-200 focus:border-[#1E356A] outline-none text-sm w-full sm:w-56 focus:ring-2 focus:ring-[#1E356A]/20 transition-all font-medium text-gray-800"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleBulkSetGroupSubmit();
+                    if (e.key === 'Escape') setIsBulkSettingGroup(false);
+                  }}
+                />
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button 
+                    onClick={handleBulkSetGroupSubmit}
+                    className="flex-1 sm:flex-none px-5 py-2.5 bg-[#1E356A] text-white font-bold rounded-xl hover:bg-[#15254A] transition-colors shadow-sm text-sm"
+                  >
+                    Simpan
+                  </button>
+                  <button 
+                    onClick={() => setIsBulkSettingGroup(false)}
+                    className="flex-1 sm:flex-none px-5 py-2.5 bg-white text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm text-sm"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => { setIsBulkSettingGroup(true); setBulkGroupValue(''); }}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold hover:bg-blue-100 transition-colors border border-blue-200"
+                >
+                  Set Grup ({selectedIds.length})
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-colors border border-red-200"
+                >
+                  <Trash2 className="w-5 h-5" />
+                  Hapus ({selectedIds.length})
+                </button>
+              </div>
+            )
           )}
           <Link
             href="/admin/projects/create"
@@ -409,6 +474,17 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                                       <InlineEdit initialValue={project.name} onSave={async (val) => await handleInlineSaveName(project.id, val)} />
                                     </div>
                                     <div className="flex flex-wrap items-center gap-2 mt-1">
+                                      <span className="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-0.5 rounded-full flex items-center gap-2 border border-gray-200">
+                                        Grup/Tahap:
+                                        <InlineEdit 
+                                          initialValue={project.group_name || ''} 
+                                          onSave={async (val) => await handleInlineSaveGroup(project.id, val)} 
+                                          textClass="text-xs font-bold text-gray-700" 
+                                          emptyText="Atur Grup" 
+                                        />
+                                      </span>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1.5">
                                       {project.is_promo && (
                                         <span className="px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-bold rounded uppercase tracking-wider">
                                           Promo

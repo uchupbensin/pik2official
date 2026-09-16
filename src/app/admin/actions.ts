@@ -604,3 +604,35 @@ export async function updateProjectName(id: number, newName: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateProjectGroup(id: number, groupName: string) {
+  try {
+    await requireAuth();
+    await prisma.projects.update({
+      where: { id },
+      data: { group_name: groupName.trim() || null }
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function bulkUpdateProjectGroup(ids: number[], groupName: string) {
+  try {
+    await requireAuth();
+    await prisma.projects.updateMany({
+      where: { id: { in: ids } },
+      data: { group_name: groupName.trim() || null }
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
