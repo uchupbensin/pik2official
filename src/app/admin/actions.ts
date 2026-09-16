@@ -524,17 +524,60 @@ export async function editProgress(id: number, formData: FormData) {
   }
 }
 
-export async function renameCategory(oldCategory: string, newCategory: string) {
+export async function renameCategory(categoryId: string, newLabel: string) {
   try {
-    await prisma.projects.updateMany({
-      where: { category: oldCategory },
-      data: { category: newCategory }
+    await requireAuth();
+    await prisma.categories.update({
+      where: { id: categoryId },
+      data: { label: newLabel }
     });
     revalidatePath('/admin/projects');
     revalidatePath('/');
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message || 'Terjadi kesalahan saat mengubah nama kategori' };
+  }
+}
+
+export async function createCategory(label: string) {
+  try {
+    await requireAuth();
+    const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    
+    const max = await prisma.categories.findFirst({
+      orderBy: { sort_order: 'desc' }
+    });
+    const nextOrder = max ? max.sort_order + 1 : 1;
+
+    await prisma.categories.create({
+      data: { id, label, sort_order: nextOrder }
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true, id };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateCategorySortOrders(updates: { id: string, sort_order: number }[]) {
+  try {
+    await requireAuth();
+    await prisma.$transaction(
+      updates.map(update =>
+        prisma.categories.update({
+          where: { id: update.id },
+          data: { sort_order: update.sort_order }
+        })
+      )
+    );
+
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
   }
 }
 
@@ -637,14 +680,20 @@ export async function bulkUpdateProjectGroup(ids: number[], groupName: string) {
   }
 }
 
-export async function deleteCategory(categoryName: string) {
+export async function deleteCategory(categoryId: string) {
   try {
     await requireAuth();
-    // Kembalikan semua properti di kategori ini ke default 'rumah'
-    await prisma.projects.updateMany({
-      where: { category: categoryName },
-      data: { category: 'rumah' }
-    });
+    
+    // Hapus dari database
+    await prisma.categories.delete({ where: { id: categoryId } });
+    
+    // Kembalikan semua properti di kategori ini ke default 'rumah' (kalau bukan rumah yang dihapus)
+    if (categoryId !== 'rumah') {
+      await prisma.projects.updateMany({
+        where: { category: categoryId },
+        data: { category: 'rumah' }
+      });
+    }
     
     revalidatePath('/');
     revalidatePath('/admin/projects');
@@ -652,4 +701,38 @@ export async function deleteCategory(categoryName: string) {
   } catch (error: any) {
     return { success: false, error: error.message };
   }
+}
+
+export async function syncCategories() {
+  const baseCategories = [
+    { id: 'rumah', label: 'Rumah' },
+    { id: 'ruko_gudang', label: 'Ruko & Gudang' },
+    { id: 'apartemen', label: 'Apartemen' },
+    { id: 'kavling', label: 'Kavling' },
+  ];
+
+  const dbCategories = await prisma.categories.findMany();
+  
+  if (dbCategories.length === 0) {
+    let order = 1;
+    for (const cat of baseCategories) {
+      await prisma.categories.create({
+        data: { id: cat.id, label: cat.label, sort_order: order++ }
+      });
+    }
+
+    const projects = await prisma.projects.findMany({ select: { category: true } });
+    const uniqueCats = Array.from(new Set(projects.map(p => p.category).filter(Boolean)));
+    const customCats = uniqueCats.filter(cat => !baseCategories.find(bc => bc.id === cat));
+
+    for (const cat of customCats) {
+      await prisma.categories.create({
+        data: { id: cat, label: cat.replace(/_/g, ' ').toUpperCase(), sort_order: order++ }
+      });
+    }
+    
+    return await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
+  }
+  
+  return dbCategories.sort((a, b) => a.sort_order - b.sort_order);
 }

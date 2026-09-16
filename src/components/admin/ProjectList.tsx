@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup, deleteCategory } from '@/app/admin/actions';
+import { deleteProject, updateProjectSortOrders, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup, deleteCategory, renameCategory, createCategory, updateCategorySortOrders } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
-import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical } from 'lucide-react';
+import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical, ListPlus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
@@ -96,26 +96,15 @@ function InlineEdit({ initialValue, onSave, textClass = "text-base font-bold tex
 }
 
 
-export default function ProjectList({ projects: initialProjects }: { projects: Projects[] }) {
+export default function ProjectList({ projects: initialProjects, initialCategories }: { projects: Projects[], initialCategories: { id: string, label: string, sort_order: number }[] }) {
   const [projects, setProjects] = useState(initialProjects);
+  const [categories, setCategories] = useState(initialCategories);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isBulkSettingGroup, setIsBulkSettingGroup] = useState(false);
   const [bulkGroupValue, setBulkGroupValue] = useState('');
-
-  const baseCategories = [
-    { id: 'rumah', label: 'Rumah' },
-    { id: 'ruko_gudang', label: 'Ruko & Gudang' },
-    { id: 'apartemen', label: 'Apartemen' },
-    { id: 'kavling', label: 'Kavling' },
-  ];
-
-  const uniqueCategories = Array.from(new Set(projects.map(p => p.category).filter(Boolean)));
-  const customCategories = uniqueCategories
-    .filter(cat => !baseCategories.find(bc => bc.id === cat))
-    .map(cat => ({ id: cat, label: cat.replace(/_/g, ' ').toUpperCase() }));
-
-  const activeCategories = [...baseCategories, ...customCategories];
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
 
   // Sync state if props change (e.g., from server revalidation)
   useEffect(() => {
@@ -235,6 +224,28 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
   async function onDragEnd(result: DropResult) {
     if (!result.destination) return;
     
+    if (result.type === 'category') {
+      const sourceIndex = result.source.index;
+      const destinationIndex = result.destination.index;
+      
+      if (sourceIndex === destinationIndex) return;
+
+      const newCats = Array.from(categories);
+      const [movedCat] = newCats.splice(sourceIndex, 1);
+      newCats.splice(destinationIndex, 0, movedCat);
+      
+      const updates = newCats.map((c, index) => {
+        c.sort_order = index + 1;
+        return { id: c.id, sort_order: c.sort_order };
+      });
+      
+      setCategories(newCats);
+      setIsSaving(true);
+      await updateCategorySortOrders(updates);
+      setIsSaving(false);
+      return;
+    }
+
     const sourceIndex = result.source.index;
     const destinationIndex = result.destination.index;
     const category = result.source.droppableId;
@@ -290,17 +301,33 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
     }
   }
 
-  async function handleRenameCategory(oldCatId: string, oldCatLabel: string) {
-    const newName = window.prompt(`Ubah nama kategori "${oldCatLabel}":\n(PERHATIAN: Ini akan mengubah kategori pada semua properti di dalamnya)`, oldCatLabel);
-    if (newName && newName.trim() !== '' && newName.trim() !== oldCatId) {
+  async function handleAddCategory() {
+    if (!newCategoryName.trim()) return;
+    setIsSaving(true);
+    try {
+      const res = await createCategory(newCategoryName.trim());
+      if (res.success) {
+        window.location.reload();
+      } else {
+        alert(res.error);
+      }
+    } catch (err) {
+      alert('Gagal menambah kategori');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleRenameCategory(catId: string, oldCatLabel: string) {
+    const newName = window.prompt(`Ubah nama kategori / menu "${oldCatLabel}":`, oldCatLabel);
+    if (newName && newName.trim() !== '' && newName.trim() !== oldCatLabel) {
       setIsSaving(true);
       try {
-        const result = await renameCategory(oldCatId, newName.trim());
+        const result = await renameCategory(catId, newName.trim());
         if (!result.success) {
           alert(result.error);
         } else {
-          // Trigger a local refresh by reloading the page or we just let Next.js revalidate do its thing
-          window.location.reload();
+          setCategories(prev => prev.map(c => c.id === catId ? { ...c, label: newName.trim() } : c));
         }
       } catch (err) {
         alert('Gagal mengubah nama kategori');
@@ -311,7 +338,7 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
   }
 
   async function handleDeleteCategory(catId: string, catLabel: string) {
-    if (confirm(`Yakin ingin menghapus kategori "${catLabel}"?\n\nProperti di dalamnya TIDAK akan terhapus, tetapi akan dipindahkan ke kategori "Rumah" secara otomatis.`)) {
+    if (confirm(`Yakin ingin menghapus kategori "${catLabel}"?\n\nProperti di dalamnya TIDAK akan terhapus, tetapi akan dipindahkan ke kategori "Rumah" (jika ada).`)) {
       setIsSaving(true);
       try {
         const result = await deleteCategory(catId);
@@ -391,54 +418,91 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
               </div>
             )
           )}
-          <Link
-            href="/admin/projects/create"
-            className="flex items-center gap-2 px-6 py-3.5 bg-[#111827] text-white rounded-2xl font-bold hover:bg-[#1E356A] transition-all shadow-md hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:-translate-y-1 w-full sm:w-auto justify-center"
-          >
-            <Plus className="w-5 h-5" />
-            Tambah Baru
-          </Link>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsAddingCategory(!isAddingCategory)}
+              className="flex items-center gap-2 px-6 py-3.5 bg-green-50 text-green-700 border border-green-200 rounded-2xl font-bold hover:bg-green-100 transition-all shadow-sm w-full sm:w-auto justify-center"
+            >
+              <ListPlus className="w-5 h-5" />
+              Kategori Baru
+            </button>
+            <Link
+              href="/admin/projects/create"
+              className="flex items-center gap-2 px-6 py-3.5 bg-[#111827] text-white rounded-2xl font-bold hover:bg-[#1E356A] transition-all shadow-md hover:shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:-translate-y-1 w-full sm:w-auto justify-center"
+            >
+              <Plus className="w-5 h-5" />
+              Tambah Properti
+            </Link>
+          </div>
         </div>
       </div>
 
+      {isAddingCategory && (
+        <div className="bg-white p-6 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col sm:flex-row items-center gap-4">
+          <input 
+            type="text" 
+            placeholder="Nama Kategori/Menu Baru..."
+            value={newCategoryName}
+            onChange={e => setNewCategoryName(e.target.value)}
+            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1E356A] outline-none w-full"
+            onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+            autoFocus
+          />
+          <button onClick={handleAddCategory} className="px-6 py-3 bg-[#1E356A] text-white font-bold rounded-xl w-full sm:w-auto hover:bg-[#15254A]">Simpan</button>
+        </div>
+      )}
+
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="space-y-6">
-          {activeCategories.map((cat) => {
-            const catProjects = getProjectsByCategory(cat.id);
-            
-            return (
-              <div key={cat.id} className="bg-white rounded-[1.5rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden">
-                <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <input 
-                      type="checkbox" 
-                      className="w-4 h-4 rounded border-gray-300 text-[#1E356A] focus:ring-[#1E356A] cursor-pointer"
-                      checked={catProjects.length > 0 && catProjects.every(p => selectedIds.includes(p.id))}
-                      onChange={() => toggleSelectAll(catProjects.map(p => p.id))}
-                      title="Pilih semua di kategori ini"
-                    />
-                    <h4 className="font-bold text-[#1E356A] text-lg uppercase tracking-wide">{cat.label}</h4>
-                    <button 
-                      onClick={() => handleRenameCategory(cat.id, cat.label)} 
-                      className="text-gray-400 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-md transition-colors" 
-                      title="Edit Nama Kategori"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    {!baseCategories.find(bc => bc.id === cat.id) && (
-                      <button 
-                        onClick={() => handleDeleteCategory(cat.id, cat.label)} 
-                        className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" 
-                        title="Hapus Kategori (Custom)"
+        <Droppable droppableId="categories" type="category">
+          {(provided) => (
+            <div 
+              className="space-y-6"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {categories.map((cat, index) => {
+                const catProjects = getProjectsByCategory(cat.id);
+                
+                return (
+                  <Draggable key={cat.id} draggableId={cat.id} index={index}>
+                    {(provided, snapshot) => (
+                      <div 
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={`bg-white rounded-[1.5rem] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 overflow-hidden ${snapshot.isDragging ? 'shadow-xl ring-2 ring-[#1E356A]/20 scale-[1.02] z-50' : ''}`}
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                  <span className="bg-white text-gray-500 text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
-                    {catProjects.length} Properti
-                  </span>
-                </div>
+                        <div className="bg-gray-50/50 px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div {...provided.dragHandleProps} className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md cursor-grab active:cursor-grabbing" title="Geser kategori (ubah urutan menu)">
+                              <GripVertical className="w-5 h-5" />
+                            </div>
+                            <input 
+                              type="checkbox" 
+                              className="w-4 h-4 rounded border-gray-300 text-[#1E356A] focus:ring-[#1E356A] cursor-pointer"
+                              checked={catProjects.length > 0 && catProjects.every(p => selectedIds.includes(p.id))}
+                              onChange={() => toggleSelectAll(catProjects.map(p => p.id))}
+                              title="Pilih semua di kategori ini"
+                            />
+                            <h4 className="font-bold text-[#1E356A] text-lg uppercase tracking-wide">{cat.label}</h4>
+                            <button 
+                              onClick={() => handleRenameCategory(cat.id, cat.label)} 
+                              className="text-gray-400 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-md transition-colors" 
+                              title="Edit Nama Kategori"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteCategory(cat.id, cat.label)} 
+                              className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" 
+                              title="Hapus Kategori (Menu)"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <span className="bg-white text-gray-500 text-xs font-bold px-3 py-1 rounded-full border border-gray-200 shrink-0">
+                            {catProjects.length} Properti
+                          </span>
+                        </div>
                 
                 <div className="p-4 sm:p-6">
                   <Droppable droppableId={cat.id}>
@@ -558,11 +622,15 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                   </Droppable>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      </DragDropContext>
-
+            )}
+          </Draggable>
+        );
+      })}
+      {provided.placeholder}
     </div>
+  )}
+</Droppable>
+</DragDropContext>
+</div>
   );
 }

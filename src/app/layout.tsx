@@ -103,17 +103,20 @@ export default async function RootLayout({
     return children.length > 0 ? children : undefined;
   }
 
-  const baseCategories = ['rumah', 'ruko_gudang', 'apartemen', 'kavling'];
-  const dbCategories = projects.map(p => p.category).filter(Boolean);
-  const existingCategories = Array.from(new Set([...baseCategories, ...dbCategories]));
+  let dbCategories = await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
+  
+  if (dbCategories.length === 0) {
+    const { syncCategories } = await import('@/app/admin/actions');
+    dbCategories = await syncCategories();
+  }
 
   const menus = [
     { label: "HOME", url: "/" },
     { label: "PROGRES PIK 2", url: "/progres" },
-    ...existingCategories.map(cat => ({
-      label: cat.replace(/_/g, ' ').toUpperCase(),
+    ...dbCategories.map((cat: { id: string, label: string }) => ({
+      label: cat.label.toUpperCase(),
       url: "#",
-      children: buildMenuChildren(cat)
+      children: buildMenuChildren(cat.id)
     }))
   ];
 
