@@ -636,3 +636,20 @@ export async function bulkUpdateProjectGroup(ids: number[], groupName: string) {
     return { success: false, error: error.message };
   }
 }
+
+export async function deleteCategory(categoryName: string) {
+  try {
+    await requireAuth();
+    // Kembalikan semua properti di kategori ini ke default 'rumah'
+    await prisma.projects.updateMany({
+      where: { category: categoryName },
+      data: { category: 'rumah' }
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

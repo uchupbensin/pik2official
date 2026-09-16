@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup } from '@/app/admin/actions';
+import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup, deleteCategory } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
 import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical } from 'lucide-react';
 import Link from 'next/link';
@@ -310,6 +310,24 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
     }
   }
 
+  async function handleDeleteCategory(catId: string, catLabel: string) {
+    if (confirm(`Yakin ingin menghapus kategori "${catLabel}"?\n\nProperti di dalamnya TIDAK akan terhapus, tetapi akan dipindahkan ke kategori "Rumah" secara otomatis.`)) {
+      setIsSaving(true);
+      try {
+        const result = await deleteCategory(catId);
+        if (!result.success) {
+          alert(result.error);
+        } else {
+          window.location.reload();
+        }
+      } catch (err) {
+        alert('Gagal menghapus kategori');
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  }
+
   // Helper to group projects
   const getProjectsByCategory = (categoryId: string) => {
     return projects.filter(p => p.category === categoryId).sort((a, b) => a.sort_order - b.sort_order);
@@ -407,6 +425,15 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
+                    {!baseCategories.find(bc => bc.id === cat.id) && (
+                      <button 
+                        onClick={() => handleDeleteCategory(cat.id, cat.label)} 
+                        className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" 
+                        title="Hapus Kategori (Custom)"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                   <span className="bg-white text-gray-500 text-xs font-bold px-3 py-1 rounded-full border border-gray-200">
                     {catProjects.length} Properti
