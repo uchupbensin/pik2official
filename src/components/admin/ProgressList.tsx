@@ -6,6 +6,37 @@ import { Progress } from '@prisma/client';
 import { Trash2, Plus, PlayCircle, GripVertical, Edit2, X, Check } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
+function OrderInput({ value, max, onChange }: { value: number, max: number, onChange: (newIndexStr: string) => void }) {
+  const [localValue, setLocalValue] = useState(value.toString());
+
+  useEffect(() => {
+    setLocalValue(value.toString());
+  }, [value]);
+
+  const handleBlur = () => {
+    onChange(localValue);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur();
+    }
+  };
+
+  return (
+    <input 
+      type="number"
+      min="1"
+      max={max}
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={handleKeyDown}
+      className="w-16 bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded border border-transparent hover:border-gray-300 focus:border-[#1E356A] focus:bg-white focus:ring-2 focus:ring-[#1E356A]/20 outline-none text-center transition-all shrink-0"
+      title="Ketik angka dan tekan Enter untuk mengubah urutan"
+    />
+  );
+}
 export default function ProgressList({ initialData }: { initialData: Progress[] }) {
   const [isSaving, setIsSaving] = useState(false);
   const [progressList, setProgressList] = useState(initialData);
@@ -48,17 +79,21 @@ export default function ProgressList({ initialData }: { initialData: Progress[] 
     setIsSaving(false);
   }
 
-  async function onDragEnd(result: DropResult) {
-    if (!result.destination) return;
+  async function handleManualOrderChange(sourceIndex: number, newIndexStr: string) {
+    let newIndex = parseInt(newIndexStr) - 1;
+    if (isNaN(newIndex)) return;
     
-    const sourceIndex = result.source.index;
-    const destinationIndex = result.destination.index;
+    if (newIndex < 0) newIndex = 0;
+    if (newIndex >= progressList.length) newIndex = progressList.length - 1;
 
-    if (sourceIndex === destinationIndex) return;
+    if (sourceIndex === newIndex) {
+      setProgressList([...progressList]);
+      return;
+    }
 
     const newProgressList = Array.from(progressList);
     const [reorderedItem] = newProgressList.splice(sourceIndex, 1);
-    newProgressList.splice(destinationIndex, 0, reorderedItem);
+    newProgressList.splice(newIndex, 0, reorderedItem);
 
     // Update local state optimistically
     const updates = newProgressList.map((p, index) => {
@@ -78,6 +113,15 @@ export default function ProgressList({ initialData }: { initialData: Progress[] 
     } finally {
       setIsSaving(false);
     }
+  }
+
+  async function onDragEnd(result: DropResult) {
+    if (!result.destination) return;
+    
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    await handleManualOrderChange(sourceIndex, (destinationIndex + 1).toString());
   }
 
   // Extract Youtube ID to show thumbnail
@@ -190,7 +234,11 @@ export default function ProgressList({ initialData }: { initialData: Progress[] 
                                   {/* Info */}
                                   <div className="min-w-0">
                                     <div className="flex items-center gap-2 mb-1">
-                                      <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0">#{index + 1}</span>
+                                      <OrderInput 
+                                        value={index + 1} 
+                                        max={progressList.length} 
+                                        onChange={(newIndexStr) => handleManualOrderChange(index, newIndexStr)} 
+                                      />
                                       <h4 className="text-base font-bold text-gray-900 truncate">{progress.title}</h4>
                                     </div>
                                     <a href={progress.youtube_url} target="_blank" rel="noreferrer" className="text-xs text-[#1E356A] hover:underline truncate block">

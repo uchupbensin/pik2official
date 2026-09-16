@@ -558,3 +558,49 @@ export async function updateProgressSortOrders(updates: { id: number, sort_order
     return { success: false, error: error.message };
   }
 }
+
+export async function bulkDeleteProjects(ids: number[]) {
+  try {
+    await requireAuth();
+    
+    // Find projects to delete their files
+    const projects = await prisma.projects.findMany({ where: { id: { in: ids } } });
+    for (const project of projects) {
+      if (project.cover_image) {
+        const filepath = path.join(process.cwd(), 'public', project.cover_image);
+        try { await fs.unlink(filepath); } catch (e) { }
+      }
+      if (project.brochure_file) {
+        const filepath = path.join(process.cwd(), 'public', project.brochure_file);
+        try { await fs.unlink(filepath); } catch (e) { }
+      }
+    }
+
+    await prisma.projects.deleteMany({ where: { id: { in: ids } } });
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function updateProjectName(id: number, newName: string) {
+  try {
+    await requireAuth();
+    if (!newName || newName.trim() === '') {
+      throw new Error('Nama properti tidak boleh kosong');
+    }
+    
+    await prisma.projects.update({
+      where: { id },
+      data: { name: newName.trim() }
+    });
+    
+    revalidatePath('/');
+    revalidatePath('/admin/projects');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
