@@ -317,12 +317,12 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
   return (
     <div className="space-y-8">
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-white p-6 sm:p-8 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 sm:p-8 rounded-[1.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 gap-4 flex-wrap">
         <div>
            <h3 className="text-2xl font-bold text-gray-900">Portofolio Properti</h3>
            <p className="text-gray-500 mt-1">Kelola daftar properti, gambar cover, status promo, dan geser (drag) untuk mengatur urutan menu per kategori.</p>
         </div>
-        <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-3 md:gap-4 w-full md:w-auto justify-start md:justify-end">
           {isSaving && <span className="text-sm font-medium text-[#1E356A] animate-pulse bg-blue-50 px-3 py-1 rounded-full shrink-0">Menyimpan...</span>}
           {selectedIds.length > 0 && (
             isBulkSettingGroup ? (
@@ -355,7 +355,7 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                 </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => { setIsBulkSettingGroup(true); setBulkGroupValue(''); }}
                   className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 rounded-xl font-bold hover:bg-blue-100 transition-colors border border-blue-200"
