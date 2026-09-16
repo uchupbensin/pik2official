@@ -5,6 +5,7 @@ import { deleteProject, updateProjectSortOrders, renameCategory, bulkDeleteProje
 import { Projects } from '@prisma/client';
 import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 function OrderInput({ value, max, onChange }: { value: number, max: number, onChange: (newIndexStr: string) => void }) {
@@ -452,13 +453,14 @@ export default function ProjectList({ projects: initialProjects }: { projects: P
                                   {/* Thumbnail */}
                                   <div className="w-16 h-16 flex-shrink-0 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                                     {project.cover_image ? (
-                                      <img 
+                                      <Image 
                                         src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
                                         alt={project.name} 
-                                        loading="lazy"
-                                        decoding="async"
+                                        width={100}
+                                        height={100}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                                         draggable={false}
+                                        unoptimized={project.cover_image.startsWith('http')}
                                       />
                                     ) : (
                                       <ImageIcon className="w-6 h-6 text-gray-400" />
