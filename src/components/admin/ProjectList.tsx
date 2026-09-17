@@ -444,7 +444,7 @@ export default function ProjectList({ projects: initialProjects, initialCategori
             placeholder="Nama Kategori/Menu Baru..."
             value={newCategoryName}
             onChange={e => setNewCategoryName(e.target.value)}
-            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1E356A] outline-none w-full"
+            className="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:border-[#1E356A] outline-none w-full text-gray-800 placeholder:text-gray-400"
             onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
             autoFocus
           />
