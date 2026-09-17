@@ -71,14 +71,14 @@ export default function Navbar({
                         </div>
 
                         {/* Center: Desktop nav */}
-                        <div className="hidden xl:flex flex-none items-center justify-center gap-1 2xl:gap-2">
+                        <div className="hidden xl:flex flex-none items-center justify-center gap-1 2xl:gap-3">
                             {menus.map((menu) => {
                                 const hasChildren = menu.children && menu.children.length > 0;
                                 return (
                                     <div className="relative group" key={menu.label}>
                                         <Link href={menu.url}
                                             target={menu.url.startsWith('http') ? '_blank' : '_self'}
-                                            className="flex items-center gap-1 px-2.5 py-1.5 text-[13px] 2xl:text-[14px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white whitespace-nowrap">
+                                            className="flex items-center gap-1 px-3 py-2 text-[14px] 2xl:text-[15px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white whitespace-nowrap">
                                             {menu.label}
                                             {hasChildren && (
                                                 <svg className="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 group-hover:text-white text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
