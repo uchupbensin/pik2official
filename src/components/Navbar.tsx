@@ -64,21 +64,21 @@ export default function Navbar({
                 <div className="max-w-[100rem] mx-auto px-4 sm:px-8 lg:px-12">
                     <div className="flex items-center justify-between h-20 sm:h-24">
                         {/* Left: Logo */}
-                        <div className="flex-1 flex justify-start">
+                        <div className="flex-none flex justify-start">
                             <Link href="/" className="flex items-center gap-3 group z-50">
                                 <img src="/logo.png" alt={siteName} className="h-10 sm:h-12 w-auto group-hover:scale-105 transition-transform duration-300" />
                             </Link>
                         </div>
 
                         {/* Center: Desktop nav */}
-                        <div className="hidden lg:flex flex-none items-center justify-center gap-4 xl:gap-6">
+                        <div className="hidden lg:flex flex-1 items-center justify-center flex-wrap gap-x-2 lg:gap-x-4 xl:gap-x-6 px-2 lg:px-4">
                             {menus.map((menu) => {
                                 const hasChildren = menu.children && menu.children.length > 0;
                                 return (
                                     <div className="relative group" key={menu.label}>
                                         <Link href={menu.url}
                                             target={menu.url.startsWith('http') ? '_blank' : '_self'}
-                                            className="flex items-center gap-1.5 px-3 py-2 text-[14px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white whitespace-nowrap">
+                                            className="flex items-center gap-1.5 px-2 xl:px-3 py-2 text-[13px] xl:text-[14px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white whitespace-nowrap">
                                             {menu.label}
                                             {hasChildren && (
                                                 <svg className="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 group-hover:text-white text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
@@ -126,7 +126,7 @@ export default function Navbar({
                         </div>
 
                         {/* Right: Actions */}
-                        <div className="flex-1 flex justify-end items-center gap-4 z-50">
+                        <div className="flex-none flex justify-end items-center gap-4 z-50">
                             {/* Desktop Marketing Info & CTA */}
                             <div className="hidden lg:flex items-center gap-4 xl:gap-5">
                                 <div className="flex flex-col items-end text-right justify-center">
