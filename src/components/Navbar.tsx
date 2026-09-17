@@ -71,17 +71,17 @@ export default function Navbar({
                         </div>
 
                         {/* Center: Desktop nav */}
-                        <div className="hidden lg:flex flex-none items-center justify-center gap-6 xl:gap-8">
+                        <div className="hidden xl:flex flex-none items-center justify-center gap-1 2xl:gap-2">
                             {menus.map((menu) => {
                                 const hasChildren = menu.children && menu.children.length > 0;
                                 return (
                                     <div className="relative group" key={menu.label}>
                                         <Link href={menu.url}
                                             target={menu.url.startsWith('http') ? '_blank' : '_self'}
-                                            className="flex items-center gap-1.5 px-4 py-2 text-[15px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white">
+                                            className="flex items-center gap-1 px-2.5 py-1.5 text-[13px] 2xl:text-[14px] font-medium transition-all duration-300 rounded-full text-gray-600 hover:bg-[#1E356A] hover:text-white whitespace-nowrap">
                                             {menu.label}
                                             {hasChildren && (
-                                                <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover:rotate-180 group-hover:text-white text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                                                <svg className="w-3 h-3 transition-transform duration-300 group-hover:rotate-180 group-hover:text-white text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
                                             )}
                                         </Link>
 
@@ -130,7 +130,7 @@ export default function Navbar({
                         {/* Right: Actions */}
                         <div className="flex-1 flex justify-end items-center gap-4 z-50">
                             {/* Desktop Marketing Info & CTA */}
-                            <div className="hidden lg:flex items-center gap-5">
+                            <div className="hidden xl:flex items-center gap-3 2xl:gap-5">
                                 <div className="flex flex-col items-end text-right justify-center">
                                     <span className={`text-[9px] font-bold tracking-widest uppercase leading-tight ${isTransparent ? 'text-white/80' : 'text-gray-400'} mb-0.5`}>Official Marketing InHouse PIK2</span>
                                     <span className={`text-sm font-extrabold leading-none ${isTransparent ? 'text-white' : 'text-[#1E356A]'}`}>Wisnu Manggala</span>
@@ -147,7 +147,7 @@ export default function Navbar({
                             </div>
 
                             {/* Mobile Marketing Info & Menu */}
-                            <div className="lg:hidden flex items-center gap-2 sm:gap-4">
+                            <div className="xl:hidden flex items-center gap-2 sm:gap-4">
                                 <div className="flex flex-col items-end text-right justify-center">
                                     <span className={`text-[7px] sm:text-[8px] font-bold tracking-widest uppercase leading-tight ${isTransparent ? 'text-white/70' : 'text-gray-400'} mb-0.5`}>Official Marketing InHouse PIK2</span>
                                     <span className={`text-[11px] sm:text-xs font-extrabold leading-none ${isTransparent ? 'text-white' : 'text-[#1E356A]'}`}>Wisnu Manggala</span>
@@ -165,7 +165,7 @@ export default function Navbar({
                     </div>
 
                     {/* Mobile menu */}
-                    <div className={`lg:hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-[85vh] overflow-y-auto opacity-100 py-3 pb-6' : 'max-h-0 overflow-hidden opacity-0'}`}>
+                    <div className={`xl:hidden transition-all duration-300 ease-in-out ${mobileOpen ? 'max-h-[85vh] overflow-y-auto opacity-100 py-3 pb-6' : 'max-h-0 overflow-hidden opacity-0'}`}>
                         <div className={`pt-2 space-y-1 rounded-2xl ${isTransparent ? 'bg-white/10 backdrop-blur-md border border-white/20 p-4' : 'border-t border-gray-100'}`}>
                             {menus.map((menu) => {
                                 const hasChildren = menu.children && menu.children.length > 0;
