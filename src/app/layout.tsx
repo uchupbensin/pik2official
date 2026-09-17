@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import WhatsappButton from "@/components/WhatsappButton";
+import PublicLayout from "@/components/PublicLayout";
 import DevToolsSponsor from "@/components/DevToolsSponsor";
 import prisma from "@/lib/prisma";
 
@@ -130,12 +128,9 @@ export default async function RootLayout({
   return (
     <html lang="id" className={`${plusJakarta.variable} font-sans`} suppressHydrationWarning>
       <body className="bg-white text-gray-800 antialiased min-h-screen flex flex-col" suppressHydrationWarning>
-        <Navbar siteSetting={siteSetting} menus={menus} />
-        <main className="flex-1">
+        <PublicLayout siteSetting={siteSetting} menus={menus} waLink={waLink}>
           {children}
-        </main>
-        <Footer siteSetting={siteSetting} menus={menus} />
-        <WhatsappButton link={waLink} />
+        </PublicLayout>
         <DevToolsSponsor />
         {/*
           Jasa Pembuatan Website
