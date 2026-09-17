@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { deleteProject, updateProjectSortOrders, bulkDeleteProjects, updateProjectName, updateProjectGroup, bulkUpdateProjectGroup, deleteCategory, renameCategory, createCategory, updateCategorySortOrders } from '@/app/admin/actions';
 import { Projects } from '@prisma/client';
-import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical, ListPlus } from 'lucide-react';
+import { Trash2, Plus, ExternalLink, Image as ImageIcon, Edit2, MapPin, GripVertical, ListPlus, Search } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
@@ -105,6 +105,7 @@ export default function ProjectList({ projects: initialProjects, initialCategori
   const [bulkGroupValue, setBulkGroupValue] = useState('');
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Sync state if props change (e.g., from server revalidation)
   useEffect(() => {
@@ -357,7 +358,15 @@ export default function ProjectList({ projects: initialProjects, initialCategori
 
   // Helper to group projects
   const getProjectsByCategory = (categoryId: string) => {
-    return projects.filter(p => p.category === categoryId).sort((a, b) => a.sort_order - b.sort_order);
+    let catProjects = projects.filter(p => p.category === categoryId);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      catProjects = catProjects.filter(p => 
+        p.name.toLowerCase().includes(q) || 
+        (p.group_name && p.group_name.toLowerCase().includes(q))
+      );
+    }
+    return catProjects.sort((a, b) => a.sort_order - b.sort_order);
   };
 
   return (
@@ -435,6 +444,23 @@ export default function ProjectList({ projects: initialProjects, initialCategori
             </Link>
           </div>
         </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="bg-white p-4 sm:p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgb(0,0,0,0.02)] border border-gray-100 flex items-center gap-3">
+        <Search className="w-5 h-5 text-gray-400 shrink-0 ml-2" />
+        <input 
+          type="text" 
+          placeholder="Cari nama properti atau grup..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 px-2 py-2 outline-none w-full text-gray-800 placeholder:text-gray-400 font-medium bg-transparent"
+        />
+        {searchQuery && (
+          <button onClick={() => setSearchQuery('')} className="text-gray-400 hover:text-gray-600 p-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs font-bold w-6 h-6 flex items-center justify-center mr-1">
+            ✕
+          </button>
+        )}
       </div>
 
       {isAddingCategory && (
