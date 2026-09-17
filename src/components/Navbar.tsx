@@ -87,30 +87,28 @@ export default function Navbar({
 
                                         {/* Dropdown */}
                                         {hasChildren && (
-                                            <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-50">
-                                                <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl py-2 relative">
-                                                    <div className="absolute top-0 left-0 right-0 h-1 bg-[#81A649] rounded-t-2xl"></div>
+                                            <div className="absolute left-1/2 -translate-x-1/2 top-full pt-4 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out translate-y-3 group-hover:translate-y-0 z-50">
+                                                <div className="bg-white text-gray-800 border border-gray-100 border-t-4 border-t-[#81A649] shadow-[0_10px_40px_rgba(0,0,0,0.08)] rounded-2xl py-2 px-2 relative">
                                                     {menu.children!.map((child) => {
                                                         const hasGrandChildren = child.children && child.children.length > 0;
                                                         return (
                                                         <div key={child.label} className="relative group/sub">
                                                             <Link href={child.url}
                                                                 target={child.url.startsWith('http') ? '_blank' : '_self'}
-                                                                className="flex items-center justify-between px-5 py-3 text-sm font-medium text-gray-600 hover:bg-[#1E356A] hover:text-white transition-colors">
+                                                                className="flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-slate-50 hover:text-[#1E356A] transition-colors">
                                                                 {child.label}
                                                                 {hasGrandChildren && (
-                                                                    <svg className="w-3.5 h-3.5 text-gray-400 group-hover/sub:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
+                                                                    <svg className="w-3.5 h-3.5 text-gray-400 group-hover/sub:text-[#1E356A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                                                                 )}
                                                             </Link>
                                                             {hasGrandChildren && (
-                                                                <div className="absolute left-full top-0 pl-1 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 w-56 z-50">
-                                                                    <div className="bg-white text-gray-800 border border-gray-100 shadow-xl rounded-2xl py-2 relative">
-                                                                        <div className="absolute top-0 left-0 bottom-0 w-1 bg-[#81A649] rounded-l-2xl"></div>
+                                                                <div className="absolute left-full top-0 pl-1 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 ease-out -translate-x-2 group-hover/sub:translate-x-0 w-56 z-50">
+                                                                    <div className="bg-white text-gray-800 border border-gray-100 border-l-4 border-l-[#81A649] shadow-[0_10px_40px_rgba(0,0,0,0.08)] rounded-2xl py-2 px-2 relative">
                                                                         {child.children!.map((grandChild) => (
                                                                             <Link href={grandChild.url}
                                                                                 key={grandChild.label}
                                                                                 target={grandChild.url.startsWith('http') ? '_blank' : '_self'}
-                                                                                className="block px-5 py-3 text-sm font-medium text-gray-600 hover:bg-[#1E356A] hover:text-white transition-colors">
+                                                                                className="block px-4 py-3 text-sm font-medium text-gray-600 rounded-lg hover:bg-slate-50 hover:text-[#1E356A] transition-colors">
                                                                                 {grandChild.label}
                                                                             </Link>
                                                                         ))}
