@@ -486,14 +486,14 @@ export default function ProjectList({ projects: initialProjects, initialCategori
                             <h4 className="font-bold text-[#1E356A] text-lg uppercase tracking-wide">{cat.label}</h4>
                             <button 
                               onClick={() => handleRenameCategory(cat.id, cat.label)} 
-                              className="text-gray-400 hover:text-amber-600 hover:bg-amber-50 p-1.5 rounded-md transition-colors" 
+                              className="text-amber-500 hover:text-amber-700 hover:bg-amber-50 p-1.5 rounded-md transition-colors" 
                               title="Edit Nama Kategori"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button 
                               onClick={() => handleDeleteCategory(cat.id, cat.label)} 
-                              className="text-gray-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" 
+                              className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-md transition-colors" 
                               title="Hapus Kategori (Menu)"
                             >
                               <Trash2 className="w-4 h-4" />
