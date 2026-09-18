@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import { Building2, ListTree, Star, Link as LinkIcon, Clock, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const [totalProjects, promoProjects, totalProgress, recentProjects] = await Promise.all([
     prisma.projects.count(),
