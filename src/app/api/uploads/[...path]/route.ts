@@ -1,16 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { resolveUploadPath } from '@/lib/uploads-path';
 
 export async function GET(request: NextRequest, context: any) {
   try {
     const params = await context.params;
-    
-    // Join the path segments
-    const filePath = path.join(process.cwd(), 'public', 'uploads', ...params.path);
 
-    // Check if the file exists
-    if (!fs.existsSync(filePath)) {
+    // Validate and resolve the requested path. Returns null if the path
+    // would escape the uploads root (path traversal attempt).
+    const filePath = resolveUploadPath(params.path);
+    if (!filePath) {
+      return new NextResponse('Forbidden', { status: 403 });
+    }
+
+    // Check if the path exists AND is a regular file. We intentionally do not
+    // distinguish between "missing" and "is a directory" in the response so we
+    // don't leak filesystem details (e.g. EISDIR). A directory request is
+    // treated as Not Found instead of letting fs.readFileSync throw EISDIR
+    // (which would otherwise surface as a 500).
+    let stat;
+    try {
+      stat = fs.statSync(filePath);
+    } catch {
+      // File does not exist (ENOENT) or is otherwise inaccessible.
+      return new NextResponse('Not Found', { status: 404 });
+    }
+    if (!stat.isFile()) {
+      // Path resolves to a directory or other non-file type. Return 404
+      // without disclosing the nature of the target.
       return new NextResponse('Not Found', { status: 404 });
     }
 
