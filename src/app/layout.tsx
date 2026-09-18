@@ -16,7 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = siteSetting?.site_tagline || "Kawasan Residensial & Komersial Elite di Jakarta Utara";
   const desc = "Website Marketing Resmi PIK 2. Dapatkan penawaran eksklusif, harga terbaik, dan informasi lengkap mengenai rumah, apartemen, ruko, hingga kavling komersial di kawasan elit PIK 2.";
 
+  // metadataBase resolves relative Open Graph / Twitter image URLs.
+  // In production, NEXT_PUBLIC_SITE_URL must be set to the canonical site URL
+  // (e.g. https://pik2official.com). Fallback to localhost for development.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
   return {
+    metadataBase: new URL(siteUrl),
     title: {
       default: `${siteName} | ${tagline}`,
       template: `%s | ${siteName}`,
@@ -40,7 +46,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       locale: "id_ID",
-      url: "https://pik2official.com",
+      url: siteUrl,
       title: `${siteName} - ${tagline}`,
       description: desc,
       siteName: siteName,
@@ -60,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: ["/logo.png"],
     },
     alternates: {
-      canonical: "https://pik2official.com",
+      canonical: siteUrl,
     },
   };
 }

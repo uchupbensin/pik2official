@@ -16,14 +16,20 @@ const securityHeaders = [
     value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://wa.me; frame-src 'self' https://www.youtube.com https://youtube.com https://www.google.com; worker-src 'self' blob: https://cdnjs.cloudflare.com; frame-ancestors 'none';",
   },
 ];
+
+// The project root for output file tracing. Using process.cwd() makes this
+// robust when the app is started from the repo root (e.g. `next start`),
+// which matches the PM2 deployment in production.
+const projectRoot = process.cwd();
+
 const nextConfig: NextConfig = {
-  output: 'standalone',
   experimental: {
     serverActions: {
       bodySizeLimit: '50mb',
     },
-    middlewareClientMaxBodySize: '50mb',
+    proxyClientMaxBodySize: '50mb',
   },
+  outputFileTracingRoot: projectRoot,
   async headers() {
     return [
       {
