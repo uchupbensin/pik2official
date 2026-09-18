@@ -33,8 +33,8 @@ export default async function ProgresPage() {
         </div>
 
         {/* Video Grid */}
-        {progressVideos.length === 1 && (
-          <div className="grid grid-cols-1 max-w-3xl mx-auto gap-8">
+        {progressVideos.length > 0 && (
+          <div className="grid grid-cols-1 max-w-3xl mx-auto gap-10">
             {progressVideos.map((video) => {
               const embedUrl = getYoutubeEmbedUrl(video.youtube_url);
               if (!embedUrl) return null;
@@ -43,57 +43,11 @@ export default async function ProgresPage() {
                   <div className="aspect-video w-full bg-gray-100 relative">
                     <iframe src={embedUrl} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full border-0"></iframe>
                   </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{video.title}</h3>
+                  <div className="p-6 sm:p-8">
+                    <h3 className="font-bold text-xl sm:text-2xl text-gray-900 mb-3">{video.title}</h3>
                     <div className="flex items-center justify-between mt-4">
                       <span className="text-sm font-medium text-gray-500">{new Date(video.created_at || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                      <a href={video.youtube_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-2 rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><PlayCircle className="w-5 h-5" /></a>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        
-        {progressVideos.length === 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto gap-8">
-            {progressVideos.map((video) => {
-              const embedUrl = getYoutubeEmbedUrl(video.youtube_url);
-              if (!embedUrl) return null;
-              return (
-                <div key={video.id} className="w-full bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
-                  <div className="aspect-video w-full bg-gray-100 relative">
-                    <iframe src={embedUrl} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full border-0"></iframe>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{video.title}</h3>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-sm font-medium text-gray-500">{new Date(video.created_at || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                      <a href={video.youtube_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-2 rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><PlayCircle className="w-5 h-5" /></a>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {progressVideos.length > 2 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {progressVideos.map((video) => {
-              const embedUrl = getYoutubeEmbedUrl(video.youtube_url);
-              if (!embedUrl) return null;
-              return (
-                <div key={video.id} className="w-full bg-white rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 group hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300">
-                  <div className="aspect-video w-full bg-gray-100 relative">
-                    <iframe src={embedUrl} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen className="w-full h-full border-0"></iframe>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">{video.title}</h3>
-                    <div className="flex items-center justify-between mt-4">
-                      <span className="text-sm font-medium text-gray-500">{new Date(video.created_at || new Date()).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                      <a href={video.youtube_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-2 rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><PlayCircle className="w-5 h-5" /></a>
+                      <a href={video.youtube_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center p-3 rounded-full bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"><PlayCircle className="w-6 h-6" /></a>
                     </div>
                   </div>
                 </div>
