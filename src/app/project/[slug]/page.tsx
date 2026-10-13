@@ -124,13 +124,13 @@ export default async function ProjectDetail({ params }: Props) {
       {/* SPLIT-SCREEN ANGLED HERO SECTION */}
       <section className="relative w-full flex flex-col lg:flex-row min-h-screen lg:min-h-[90vh] bg-white overflow-hidden">
         
-        {/* Mobile Image (Visible only on mobile) */}
-        <div className="w-full h-[40vh] sm:h-[50vh] lg:hidden relative z-0">
+        {/* Mobile Image (Visible only on mobile - Menampilkan cover utuh tanpa terpotong) */}
+        <div className="w-full lg:hidden relative z-0 bg-gray-50">
           {project?.cover_image && (
             <img 
               src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
               alt={project.name}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-auto block object-contain"
             />
           )}
         </div>
