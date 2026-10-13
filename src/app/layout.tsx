@@ -68,6 +68,9 @@ export async function generateMetadata(): Promise<Metadata> {
     alternates: {
       canonical: siteUrl,
     },
+    verification: {
+      google: "qDM-QhbabFclmTT6AVB-qv7ChVBNODFn8ezyvH52g_I",
+    },
   };
 }
 
