@@ -135,6 +135,9 @@ export default async function RootLayout({
 
   return (
     <html lang="id" className={`${plusJakarta.variable} font-sans`} suppressHydrationWarning>
+      <head>
+        <meta name="google-site-verification" content="qDM-QhbabFclmTT6AVB-qv7ChVBNODFn8ezyvH52g_I" />
+      </head>
       <body className="bg-white text-gray-800 antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <PublicLayout siteSetting={siteSetting} menus={menus} waLink={waLink}>
           {children}
