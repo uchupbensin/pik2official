@@ -122,40 +122,47 @@ export default async function ProjectDetail({ params }: Props) {
     <>
       <main className="bg-white min-h-screen">
       {/* HERO SHOWCASE SECTION (100% UTUH DI MOBILE & DESKTOP) */}
-      <section className="relative w-full bg-gradient-to-b from-[#f8fafc] via-white to-gray-50/50 pt-28 sm:pt-32 lg:pt-36 pb-12 lg:pb-16 border-b border-gray-100 overflow-hidden">
+      <section className="relative w-full bg-gradient-to-b from-[#f8fafc] via-white to-gray-50/40 pt-28 sm:pt-32 lg:pt-36 pb-14 lg:pb-20 border-b border-gray-100 overflow-hidden">
         {/* Subtle decorative background glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#1E356A]/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#81A649]/5 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
             
-            {/* KOLOM KIRI: Informasi & Spesifikasi Properti (Desktop: Order 1, Mobile: Order 2) */}
-            <div className="lg:col-span-6 xl:col-span-7 flex flex-col justify-center order-2 lg:order-1">
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                {project.is_promo && (
-                  <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider border border-red-100 shadow-sm">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
-                    Promo Terbatas
-                  </span>
-                )}
+            {/* KOLOM KIRI: Informasi & Spesifikasi Properti */}
+            <div className="lg:col-span-7 flex flex-col order-2 lg:order-1 pt-1">
+              {/* Badges */}
+              <div className="flex flex-wrap items-center gap-2 mb-3">
                 {project.category && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-[#1E356A]/10 text-[#1E356A] uppercase tracking-wider">
+                  <span className="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-[#1E356A]/10 text-[#1E356A] uppercase tracking-wider">
                     {project.category}
                   </span>
                 )}
+                {project.is_promo && (
+                  <span className="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-red-100 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                    Hot Promo 🔥
+                  </span>
+                )}
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  PIK 2 Official
+                </span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-[#111827] tracking-tight leading-[1.1] mb-4">
+              {/* Title */}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#111827] tracking-tight leading-[1.15] mb-3 capitalize">
                 {project.name}
               </h1>
 
-              <div className="flex items-center gap-2 text-gray-600 text-base sm:text-lg font-medium mb-6">
-                <svg className="w-5 h-5 text-[#81A649] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" strokeWidth="2"/></svg>
-                <span>{project.location || "Kawasan Premium PIK 2"}</span>
+              {/* Location */}
+              <div className="flex items-center gap-2 text-gray-600 text-sm sm:text-base font-medium mb-5">
+                <svg className="w-4 h-4 text-[#81A649] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" strokeWidth="2"/></svg>
+                <span>{project.location || "Kawasan Premium PIK 2, Jakarta Utara"}</span>
               </div>
 
-              <div className="text-gray-600 text-base sm:text-lg leading-relaxed mb-8 font-light">
+              {/* Description */}
+              <div className="text-gray-600 text-sm sm:text-base leading-relaxed mb-6 font-normal">
                 {project.short_description ? (
                   <p>{project.short_description}</p>
                 ) : (
@@ -165,42 +172,56 @@ export default async function ProjectDetail({ params }: Props) {
                 )}
               </div>
 
-              {/* Quick Benefits */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-                {(project?.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature: string, idx: number) => (
-                  <div key={idx} className="flex items-center gap-2.5 text-sm font-medium text-gray-700 bg-white/80 backdrop-blur border border-gray-100 p-2.5 rounded-xl shadow-sm">
-                    <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">✓</div>
-                    <span className="truncate">{feature?.trim()}</span>
-                  </div>
-                ))}
+              {/* Quick Benefits / Features */}
+              <div className="mb-8">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-600 mb-2.5">Keunggulan Utama</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {(project?.features ? project.features.split(',') : ["Akses Tol Langsung", "Bebas Banjir", "Fasilitas Lengkap"]).map((feature: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-gray-700 bg-white border border-gray-200/80 p-2.5 rounded-xl shadow-xs">
+                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">✓</div>
+                      <span className="truncate">{feature?.trim()}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-                <a href={projectWaLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1E356A] hover:bg-[#2B4A93] text-white font-bold text-[15px] shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300">
-                  <span>Tanya Penawaran Spesial</span>
-                  <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              <div className="flex flex-col sm:flex-row gap-3.5 items-stretch sm:items-center pt-2">
+                <a href={projectWaLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-3 px-7 py-3.5 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm sm:text-base shadow-lg shadow-green-600/20 hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5">
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.311.045-.698.056-1.135-.084-.28-.09-.643-.222-1.076-.407-1.85-.794-3.045-2.673-3.138-2.798-.093-.125-.75-1.002-.75-1.911 0-.909.47-1.356.637-1.541.167-.185.364-.232.486-.232.122 0 .243.002.349.007.112.006.262-.043.41.312.153.366.52 1.272.565 1.365.045.093.076.202.015.324-.061.123-.092.198-.183.305-.091.107-.193.24-.275.323-.092.093-.188.194-.081.378.107.184.475.783 1.021 1.27.702.626 1.294.82 1.478.913.184.093.292.081.4-.044.108-.124.464-.54.588-.725.123-.185.247-.154.415-.092.167.062 1.062.5 1.246.593.185.093.308.139.354.216.046.077.046.448-.098.853z"/></svg>
+                  <span>Chat WhatsApp Sales</span>
                 </a>
+                {project.project_images && project.project_images.length > 0 && (
+                  <a href="#katalog" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-semibold text-sm sm:text-base hover:bg-gray-50 transition-colors">
+                    Lihat Denah & Brosur ↓
+                  </a>
+                )}
               </div>
             </div>
 
-            {/* KOLOM KANAN: Foto / Flyer Cover Utama (100% Utuh Tanpa Terpotong di HP & Laptop) */}
-            <div className="lg:col-span-6 xl:col-span-5 order-1 lg:order-2 flex justify-center items-start lg:pt-2">
+            {/* KOLOM KANAN: Foto / Flyer Cover Utama (Showcase Frame Rapi) */}
+            <div className="lg:col-span-5 order-1 lg:order-2 flex justify-center">
               {project?.cover_image ? (
-                <div className="relative w-full max-w-lg lg:max-w-none rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-gray-300/40 border border-gray-200/80 bg-gray-50 group">
-                  {/* Background subtle blur to fill frame gracefully */}
-                  <img 
-                    src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`}
-                    alt=""
-                    aria-hidden="true"
-                    className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-125 pointer-events-none"
-                  />
-                  {/* Main Cover Image - Utuh 100% baik di HP maupun Laptop */}
-                  <img 
-                    src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
-                    alt={project.name}
-                    className="relative z-10 w-full h-auto max-h-[72vh] sm:max-h-[75vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
-                  />
+                <div className="w-full max-w-md lg:max-w-none">
+                  {/* Outer Frame with clean studio finish */}
+                  <div className="relative rounded-2xl lg:rounded-3xl p-2.5 sm:p-3 bg-gradient-to-b from-gray-100 to-gray-200/70 border border-gray-200 shadow-[0_20px_50px_rgba(0,0,0,0.07)]">
+                    {/* Inner Picture Container */}
+                    <div className="relative rounded-xl lg:rounded-2xl overflow-hidden bg-white flex items-center justify-center">
+                      {/* Blur background */}
+                      <img 
+                        src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`}
+                        alt=""
+                        aria-hidden="true"
+                        className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-20 scale-125 pointer-events-none"
+                      />
+                      {/* Main Cover Image - 100% Utuh dan Terbingkai Rapi */}
+                      <img 
+                        src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
+                        alt={project.name}
+                        className="relative z-10 w-full h-auto max-h-[65vh] lg:max-h-[70vh] object-contain block mx-auto"
+                      />
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="w-full aspect-[4/3] rounded-2xl bg-gray-100 flex items-center justify-center text-gray-400">
@@ -268,7 +289,7 @@ export default async function ProjectDetail({ params }: Props) {
 
       {/* Minimalist E-Brochure Gallery */}
       {project.project_images && project.project_images.length > 0 && (
-      <section className="bg-gray-50 border-t border-gray-100 py-20 lg:py-32 overflow-hidden">
+      <section id="katalog" className="bg-gray-50 border-t border-gray-100 py-20 lg:py-32 overflow-hidden scroll-mt-24">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center mb-16 lg:mb-24">
                   <h2 className="text-3xl lg:text-4xl font-extrabold text-[#1E356A] tracking-tight mb-4">Katalog Digital</h2>
