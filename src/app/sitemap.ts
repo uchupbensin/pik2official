@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 export const revalidate = 3600; // Revalidate sitemap every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const siteUrl = 'https://pik2official.id';
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
