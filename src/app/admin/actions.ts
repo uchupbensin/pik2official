@@ -316,8 +316,9 @@ export async function createProject(formData: FormData) {
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
         if (file.size > 0) {
-          const buffer = Buffer.from(await file.arrayBuffer());
-          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
+          const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
           await fs.writeFile(path.join(imgUploadDir, filename), buffer);
 
           await prisma.projectImages.create({
@@ -440,8 +441,9 @@ export async function updateProject(id: number, formData: FormData) {
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
         if (file.size > 0) {
-          const buffer = Buffer.from(await file.arrayBuffer());
-          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+          const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
+          const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
           await fs.writeFile(path.join(imgUploadDir, filename), buffer);
 
           await prisma.projectImages.create({
@@ -470,7 +472,10 @@ export async function updateProject(id: number, formData: FormData) {
 export async function deleteProjectImage(imageId: number) {
   try {
     await requireAuth();
-    const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
+    const image = await prisma.projectImages.findUnique({
+      where: { id: imageId },
+      include: { projects: true }
+    });
     if (!image) return { success: false, error: 'Image not found' };
 
     const filepath = path.join(process.cwd(), 'public/uploads', image.image_path);
@@ -480,6 +485,9 @@ export async function deleteProjectImage(imageId: number) {
 
     revalidatePath('/');
     revalidatePath(`/admin/projects/${image.project_id}/edit`);
+    if (image.projects?.slug) {
+      revalidatePath(`/project/${image.projects.slug}`);
+    }
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -491,12 +499,15 @@ export async function updateProjectImageCaption(imageId: number, caption: string
     await requireAuth();
     const image = await prisma.projectImages.update({
       where: { id: imageId },
-      data: { caption: caption || null }
+      data: { caption: caption || null },
+      include: { projects: true }
     });
 
     revalidatePath('/');
     revalidatePath(`/admin/projects/${image.project_id}/edit`);
-    revalidatePath(`/project/[slug]`);
+    if (image.projects?.slug) {
+      revalidatePath(`/project/${image.projects.slug}`);
+    }
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };

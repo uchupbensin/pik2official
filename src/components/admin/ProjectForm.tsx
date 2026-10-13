@@ -3,13 +3,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createProject, updateProject, deleteProjectImage, updateProjectImageCaption } from '@/app/admin/actions';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2, Trash2, CheckCircle2, Save, FileImage, Type, Check } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2, CheckCircle2, Save, FileImage, Type, Check, Images, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { Projects, ProjectImages } from '@prisma/client';
 
 type ProjectWithImages = Projects & { project_images?: ProjectImages[] };
-
-
 
 export default function ProjectForm({ project, existingCategories }: { project?: any, existingCategories?: { id: string, label: string }[] }) {
   const [isSaving, setIsSaving] = useState(false);
@@ -23,6 +21,10 @@ export default function ProjectForm({ project, existingCategories }: { project?:
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [pdfCaptions, setPdfCaptions] = useState<string[]>([]);
   const [selectedCoverIndex, setSelectedCoverIndex] = useState<number | null>(null);
+
+  // Existing saved images state
+  const [existingImages, setExistingImages] = useState<any[]>(project?.project_images || []);
+  const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
   
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(project?.category || (existingCategories?.[0]?.id || 'rumah'));
@@ -181,8 +183,27 @@ export default function ProjectForm({ project, existingCategories }: { project?:
     }
   }
 
+  function handleManualImagesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newFiles = Array.from(files);
+    const newUrls = newFiles.map(f => URL.createObjectURL(f));
+    const newCaptions = newFiles.map(f => f.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '));
+
+    setWebpFiles(prev => [...prev, ...newFiles]);
+    setPreviewUrls(prev => [...prev, ...newUrls]);
+    setPdfCaptions(prev => [...prev, ...newCaptions]);
+
+    if (selectedCoverIndex === null && (webpFiles.length === 0)) {
+      setSelectedCoverIndex(0);
+    }
+    // Reset file input agar pengguna bisa memilih foto lagi jika diperlukan
+    e.target.value = '';
+  }
+
   function handleDeletePage(idx: number) {
-    if (confirm('Yakin ingin menghapus halaman ini dari daftar upload?')) {
+    if (confirm('Yakin ingin menghapus foto/halaman ini dari daftar upload?')) {
       const newWebpFiles = [...webpFiles];
       newWebpFiles.splice(idx, 1);
       setWebpFiles(newWebpFiles);
@@ -205,8 +226,21 @@ export default function ProjectForm({ project, existingCategories }: { project?:
   }
 
   async function handleDeleteImage(id: number) {
-    if (confirm('Yakin ingin menghapus gambar ini?')) {
-      await deleteProjectImage(id);
+    if (confirm('Yakin ingin menghapus gambar ini secara permanen?')) {
+      setDeletingImageId(id);
+      try {
+        const res = await deleteProjectImage(id);
+        if (res.success) {
+          setExistingImages(prev => prev.filter(img => img.id !== id));
+          router.refresh();
+        } else {
+          alert(res.error || 'Gagal menghapus gambar.');
+        }
+      } catch (err: any) {
+        alert(err.message || 'Terjadi kesalahan saat menghapus gambar.');
+      } finally {
+        setDeletingImageId(null);
+      }
     }
   }
 
@@ -355,69 +389,88 @@ export default function ProjectForm({ project, existingCategories }: { project?:
 
         {/* SECTION: MEDIA & E-BROSUR */}
         <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
-          <h3 className="text-lg font-bold text-gray-600 mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">
+          <h3 className="text-lg font-bold text-gray-700 mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">
+            <Images className="w-5 h-5 text-[#1E356A]" />
             Media & Brosur
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-500 mb-2">Upload E-Brosur (PDF)</label>
-              <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 text-center relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* OPSI 1: Upload PDF Brosur */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">1. Upload E-Brosur (PDF)</label>
+              <div className="border-2 border-dashed border-gray-300 hover:border-[#1E356A] rounded-xl p-5 bg-gray-50/70 text-center relative flex-1 flex flex-col justify-center items-center transition-colors">
                 <input type="file" name="brochure_file" accept="application/pdf" onChange={handlePdfChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-[#1E356A]">Pilih File PDF Brosur</p>
-                  <p className="text-xs text-gray-500 mt-1">Otomatis diekstrak menjadi galeri WebP.</p>
-                </div>
+                <FileImage className="w-8 h-8 text-[#1E356A] mb-2" />
+                <p className="text-sm font-bold text-[#1E356A]">Pilih File PDF</p>
+                <p className="text-xs text-gray-500 mt-1">Otomatis diekstrak jadi gambar WebP</p>
               </div>
 
               {isProcessingPdf && (
-                <div className="mt-3 text-sm text-[#1E356A] font-medium flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" /> Memproses PDF... ({pdfProgress}/{pdfTotal})
-                </div>
-              )}
-
-              {!isProcessingPdf && webpFiles.length > 0 && (
-                <div className="mt-3 text-xs text-green-600 font-medium flex items-center gap-1">
-                  <CheckCircle2 className="w-4 h-4" /> Berhasil mengekstrak {webpFiles.length} halaman.
+                <div className="mt-3 text-xs text-[#1E356A] font-medium flex items-center gap-2 bg-blue-50 p-2.5 rounded-lg border border-blue-100">
+                  <Loader2 className="w-4 h-4 animate-spin shrink-0" /> Memproses PDF... ({pdfProgress}/{pdfTotal})
                 </div>
               )}
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-500 mb-2">Gambar Cover (Manual)</label>
-              <div className="border border-dashed border-gray-300 rounded-lg p-4 bg-gray-50 text-center relative">
+            {/* OPSI 2: Upload Foto Galeri Manual (Banyak Foto Sekaligus) */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">2. Upload Foto Manual (JPG / PNG)</label>
+              <div className="border-2 border-dashed border-gray-300 hover:border-[#81A649] rounded-xl p-5 bg-gray-50/70 text-center relative flex-1 flex flex-col justify-center items-center transition-colors">
+                <input 
+                  type="file" 
+                  multiple 
+                  accept="image/jpeg,image/png,image/webp,image/jpg" 
+                  onChange={handleManualImagesChange} 
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+                />
+                <Images className="w-8 h-8 text-[#81A649] mb-2" />
+                <p className="text-sm font-bold text-[#81A649]">Pilih Banyak Foto</p>
+                <p className="text-xs text-gray-500 mt-1">Bisa pilih 1 atau banyak foto dari HP / laptop</p>
+              </div>
+            </div>
+
+            {/* OPSI 3: Gambar Cover Khusus */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">3. Cover Khusus (Manual)</label>
+              <div className="border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-xl p-5 bg-gray-50/70 text-center relative flex-1 flex flex-col justify-center items-center transition-colors">
                 <input type="file" name="cover_image" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                <div className="flex flex-col items-center justify-center">
-                  <p className="text-sm font-medium text-gray-500">Pilih gambar dari komputer</p>
-                  <p className="text-xs text-gray-500 mt-1">Abaikan ini jika Anda ingin menggunakan halaman PDF sebagai cover.</p>
-                </div>
+                <Upload className="w-8 h-8 text-gray-500 mb-2" />
+                <p className="text-sm font-bold text-gray-700">Pilih File Cover</p>
+                <p className="text-xs text-gray-500 mt-1">Abaikan jika memilih cover dari foto di bawah</p>
               </div>
               {project?.cover_image && (
-                <div className="mt-4 mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Saat Ini:</p>
-                  <div className="relative w-full max-w-xs rounded-lg overflow-hidden border border-gray-200">
-                    <img src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} alt="Current Cover" className="w-full h-auto block" />
+                <div className="mt-3">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Cover Saat Ini:</p>
+                  <div className="relative w-28 h-16 rounded-lg overflow-hidden border border-gray-200">
+                    <img src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} alt="Current Cover" className="w-full h-full object-cover" />
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* PDF Pages Thumbnails for Cover Selection */}
+          {/* Thumbnails Foto yang Baru Dipilih / Diekstrak */}
           {!isProcessingPdf && previewUrls.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-100">
-              <label className="block text-sm font-semibold text-gray-500 mb-3">Halaman Brosur (Pilih Cover & Isi Label):</label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <label className="block text-sm font-bold text-gray-800">
+                  Foto Siap Disimpan ({previewUrls.length} Foto)
+                </label>
+                <span className="text-xs text-gray-500">
+                  💡 Klik foto untuk memilih Cover Utama (centang biru). Klik 🗑️ untuk hapus.
+                </span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {previewUrls.map((url, idx) => (
                   <div
                     key={idx}
-                    className={`relative flex flex-col rounded-xl border overflow-hidden transition-all shadow-sm ${selectedCoverIndex === idx ? 'border-[#1E356A] bg-[#1E356A]/5' : 'border-gray-200 bg-white'}`}
+                    className={`relative flex flex-col rounded-xl border overflow-hidden transition-all shadow-sm ${selectedCoverIndex === idx ? 'border-[#1E356A] ring-2 ring-[#1E356A]/30 bg-[#1E356A]/5' : 'border-gray-200 bg-white'}`}
                   >
                     <button
                       type="button"
                       onClick={() => handleDeletePage(idx)}
-                      className="absolute top-2 left-2 z-10 p-1.5 bg-red-500/90 hover:bg-red-600 text-white rounded-lg shadow-sm backdrop-blur-sm transition-colors"
-                      title="Hapus Halaman"
+                      className="absolute top-2 left-2 z-10 p-2 bg-red-600/95 hover:bg-red-700 text-white rounded-lg shadow-md backdrop-blur-sm transition-transform active:scale-95"
+                      title="Hapus Foto Ini"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -425,15 +478,16 @@ export default function ProjectForm({ project, existingCategories }: { project?:
                     <div className="relative aspect-[3/4] cursor-pointer" onClick={() => setSelectedCoverIndex(idx)}>
                       <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-6 pb-2 px-2 text-white text-xs font-medium font-mono text-center">
-                        Halaman {idx + 1}
+                        Foto #{idx + 1}
                       </div>
                       {selectedCoverIndex === idx && (
-                        <div className="absolute top-2 right-2 bg-[#1E356A] text-white rounded-full p-1.5 shadow-md">
-                          <Check className="w-4 h-4" />
+                        <div className="absolute top-2 right-2 bg-[#1E356A] text-white rounded-full px-2.5 py-1 shadow-md flex items-center gap-1 text-[11px] font-bold">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Cover</span>
                         </div>
                       )}
                     </div>
-                    <div className="p-3 border-t border-gray-100">
+                    <div className="p-2 border-t border-gray-100 bg-white">
                       <input
                         type="text"
                         value={pdfCaptions[idx] || ''}
@@ -442,8 +496,8 @@ export default function ProjectForm({ project, existingCategories }: { project?:
                           newCaptions[idx] = e.target.value;
                           setPdfCaptions(newCaptions);
                         }}
-                        placeholder={`Tulis caption...`}
-                        className="w-full text-base text-gray-900 bg-gray-50 border border-gray-200 rounded-md focus:border-[#1E356A] focus:ring-[#1E356A]/20 focus:bg-white px-3 py-2 outline-none transition-all placeholder:text-gray-400"
+                        placeholder={`Tulis label foto...`}
+                        className="w-full text-xs text-gray-900 bg-gray-50 border border-gray-200 rounded-lg focus:border-[#1E356A] focus:ring-1 focus:ring-[#1E356A] focus:bg-white px-2 py-1.5 outline-none transition-all placeholder:text-gray-400"
                       />
                     </div>
                   </div>
@@ -454,39 +508,53 @@ export default function ProjectForm({ project, existingCategories }: { project?:
         </div>
 
         {/* SECTION: GALERI GAMBAR TERSIMPAN */}
-        {project?.project_images && project.project_images.length > 0 && (
+        {existingImages && existingImages.length > 0 && (
           <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-sm">
-            <h3 className="text-lg font-bold text-gray-600 mb-2 border-b border-gray-100 pb-3">Galeri Brosur Tersimpan</h3>
-            <p className="text-xs text-gray-500 mb-4">Ubah label gambar dengan langsung mengetik di kotaknya.</p>
+            <h3 className="text-lg font-bold text-gray-700 mb-2 border-b border-gray-100 pb-3 flex items-center gap-2">
+              <Images className="w-5 h-5 text-[#1E356A]" />
+              Galeri Brosur Tersimpan ({existingImages.length} Foto)
+            </h3>
+            <p className="text-xs text-gray-500 mb-4">
+              Klik ikon tong sampah merah pada foto untuk menghapus dari website. Ketik di kotak bawah untuk mengubah label/caption.
+            </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-              {project.project_images.map((img: any) => (
-                <div key={img.id} className="relative group border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
-                  <div className="aspect-[3/4] bg-gray-200">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {existingImages.map((img: any) => (
+                <div key={img.id} className="relative group border border-gray-200 rounded-xl overflow-hidden bg-gray-50 shadow-sm transition-all hover:shadow-md">
+                  <div className="aspect-[3/4] bg-gray-200 relative overflow-hidden">
                     <img
                       src={`/api/uploads/${img.image_path}`}
                       alt={img.caption || `Brochure ${img.id}`}
                       className="w-full h-full object-cover"
                     />
+                    
+                    {/* Tombol Hapus: Selalu terlihat di layar HP (opacity-100) dan hover di desktop */}
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(img.id)}
+                      disabled={deletingImageId === img.id}
+                      className="absolute top-2 right-2 p-2 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow-md transition-all opacity-100 sm:opacity-90 sm:hover:opacity-100 active:scale-95 disabled:opacity-50 z-10 flex items-center justify-center cursor-pointer"
+                      title="Hapus Foto Ini"
+                    >
+                      {deletingImageId === img.id ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+
+                    <div className="absolute top-2 left-2 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-md font-mono shadow-sm">
+                      #{img.sort_order}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteImage(img.id)}
-                    className="absolute top-1 right-1 p-1.5 bg-red-500 text-white rounded-md hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
-                    title="Hapus"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                  <div className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded shadow-sm">
-                    #{img.sort_order}
-                  </div>
+
                   <div className="p-2 border-t border-gray-200 bg-white">
                     <input
                       type="text"
                       defaultValue={img.caption || ''}
                       onBlur={(e) => handleCaptionChange(img.id, e.target.value)}
-                      placeholder="Label..."
-                      className="w-full text-sm md:text-base text-center border-none focus:ring-0 px-0 py-1 text-gray-900"
+                      placeholder="Tulis label..."
+                      className="w-full text-xs text-center border border-transparent hover:border-gray-300 focus:border-[#1E356A] rounded px-1 py-1 text-gray-900 outline-none transition-colors"
                     />
                   </div>
                 </div>
