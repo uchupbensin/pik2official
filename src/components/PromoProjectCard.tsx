@@ -8,13 +8,21 @@ export default function PromoProjectCard({ project }: { project: any }) {
     return (
         <div className="bg-white rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-gray-100 flex flex-col group hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-shadow duration-500 h-full">
             {/* Top Image Section */}
-            <Link href={projectUrl} target={isExternal ? '_blank' : '_self'} className="relative w-full aspect-[4/3] overflow-hidden bg-gray-100 block">
+            <Link href={projectUrl} target={isExternal ? '_blank' : '_self'} className="relative w-full aspect-square overflow-hidden bg-gray-100 flex items-center justify-center block">
+                {project?.cover_image && (
+                    <img 
+                        src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`}
+                        alt="" 
+                        aria-hidden="true" 
+                        className="absolute inset-0 w-full h-full object-cover blur-xl opacity-25 scale-125 pointer-events-none" 
+                    />
+                )}
                 <img 
                     src={project?.cover_image ? (project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`) : '/pik2.png'} 
                     alt={project.name}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    className="relative z-10 w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
             </Link>
 
             {/* Bottom Content Section */}

@@ -19,13 +19,18 @@ export default function ProjectCard({ project }: { project: Projects }) {
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#1E356A] to-[#81A649] opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
         
         {/* Cover */}
-        <div className="relative aspect-[4/3] overflow-hidden bg-gray-50">
+        <div className="relative aspect-square overflow-hidden bg-gray-50 flex items-center justify-center">
             {coverUrl ? (
                 <>
+                    {/* Background subtle blur to fill letterbox gracefully */}
+                    <img src={coverUrl} alt="" aria-hidden="true" className="absolute inset-0 w-full h-full object-cover blur-xl opacity-25 scale-125 pointer-events-none" />
+                    
+                    {/* Main image completely visible without any cropping */}
                     <img src={coverUrl} alt={alt} loading="lazy"
-                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                    {/* Gradient Overlay for better contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                         className="relative z-10 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out" />
+                    
+                    {/* Gradient Overlay for subtle contrast */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
                 </>
             ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-[#1E356A]/5">
