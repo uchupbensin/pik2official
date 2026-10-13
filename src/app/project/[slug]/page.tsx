@@ -122,7 +122,7 @@ export default async function ProjectDetail({ params }: Props) {
     <>
       <main className="bg-white min-h-screen">
       {/* HERO SHOWCASE SECTION (100% UTUH DI MOBILE & DESKTOP) */}
-      <section className="relative w-full bg-gradient-to-b from-[#f8fafc] via-white to-gray-50/50 py-8 lg:py-16 border-b border-gray-100 overflow-hidden">
+      <section className="relative w-full bg-gradient-to-b from-[#f8fafc] via-white to-gray-50/50 pt-28 sm:pt-32 lg:pt-36 pb-12 lg:pb-16 border-b border-gray-100 overflow-hidden">
         {/* Subtle decorative background glow */}
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#1E356A]/5 rounded-full blur-3xl pointer-events-none -mr-40 -mt-40"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#81A649]/5 rounded-full blur-3xl pointer-events-none -ml-20 -mb-20"></div>
@@ -185,9 +185,9 @@ export default async function ProjectDetail({ params }: Props) {
             </div>
 
             {/* KOLOM KANAN: Foto / Flyer Cover Utama (100% Utuh Tanpa Terpotong di HP & Laptop) */}
-            <div className="lg:col-span-6 xl:col-span-5 order-1 lg:order-2 flex justify-center">
+            <div className="lg:col-span-6 xl:col-span-5 order-1 lg:order-2 flex justify-center items-start lg:pt-2">
               {project?.cover_image ? (
-                <div className="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-gray-300/40 border border-gray-200/80 bg-gray-50 group">
+                <div className="relative w-full max-w-lg lg:max-w-none rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl shadow-gray-300/40 border border-gray-200/80 bg-gray-50 group">
                   {/* Background subtle blur to fill frame gracefully */}
                   <img 
                     src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`}
@@ -199,7 +199,7 @@ export default async function ProjectDetail({ params }: Props) {
                   <img 
                     src={project.cover_image?.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} 
                     alt={project.name}
-                    className="relative z-10 w-full h-auto max-h-[78vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
+                    className="relative z-10 w-full h-auto max-h-[72vh] sm:max-h-[75vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.01]"
                   />
                 </div>
               ) : (
