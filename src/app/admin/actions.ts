@@ -316,6 +316,7 @@ export async function createProject(formData: FormData) {
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
         if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
           const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
           const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
           const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
@@ -441,6 +442,7 @@ export async function updateProject(id: number, formData: FormData) {
       for (let i = 0; i < images.length; i++) {
         const file = images[i];
         if (file.size > 0) {
+          const buffer = Buffer.from(await file.arrayBuffer());
           const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
           const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
           const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
