@@ -1,12 +1,14 @@
 import React from 'react';
 import Link from 'next/link';
 import { SiteSettings } from '@prisma/client';
+import { MapPin, ExternalLink } from 'lucide-react';
 
 type MenuItem = {
     label: string;
     url: string;
     children?: MenuItem[];
 };
+
 export default function Footer({
     siteSetting,
     menus
@@ -17,6 +19,9 @@ export default function Footer({
     const siteName = siteSetting?.site_name || 'PIK 2 OFFICIAL';
     const siteTagline = siteSetting?.site_tagline || 'Kawasan Residensial & Komersial Elite di Jakarta Utara';
     const siteDescription = 'Dapatkan informasi resmi dan terbaru mengenai hunian eksklusif, ruko premium, apartemen mewah, serta lahan komersial strategis di kawasan mega proyek PIK 2.';
+
+    const officeAddress = 'Jl. Marina Indah Raya No. 1, Kamal Muara, Kecamatan Penjaringan, Jakarta Utara, 14470';
+    const mapsLink = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Marketing Gallery PIK 2, ' + officeAddress);
 
     const waNumber = siteSetting?.sales_whatsapp_number || '6281234567890';
     let cleanWa = waNumber.replace(/\D+/g, '');
@@ -29,17 +34,53 @@ export default function Footer({
         <footer className="bg-white border-t border-gray-200 mt-auto relative overflow-hidden">
             <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-12 lg:gap-16">
-                    {/* Branding */}
-                    <div className="md:col-span-5 lg:col-span-4">
-                        <div className="flex items-center gap-3 mb-4">
-                            <img src="/logo.png" alt={siteName} className="h-10 sm:h-12 w-auto" />
+                    {/* Branding, Logo & Alamat Kantor */}
+                    <div className="md:col-span-6 lg:col-span-5">
+                        {/* Logo PIK 2 & Developer Agung Sedayu */}
+                        <div className="flex items-center gap-4 mb-5 flex-wrap">
+                            <img src="/logo.png" alt={siteName} className="h-10 sm:h-12 w-auto object-contain" />
+                            <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
+                            <div className="flex items-center gap-2.5 bg-gray-50 border border-gray-200/80 px-3.5 py-1.5 rounded-2xl shadow-sm">
+                                <img src="/agung-sedayu-group.png" alt="Agung Sedayu Group" className="h-7 sm:h-8 w-auto object-contain" />
+                                <div className="text-[11px] leading-tight text-gray-500 font-semibold">
+                                    <span className="block text-[9px] uppercase tracking-wider text-gray-400 font-bold">Developer</span>
+                                    Agung Sedayu Group
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-[#81A649] font-bold text-sm uppercase tracking-widest mb-4">{siteTagline}</p>
-                        <p className="text-gray-500 text-[15px] leading-relaxed pr-4">{siteDescription}</p>
+
+                        <p className="text-[#81A649] font-bold text-sm uppercase tracking-widest mb-3">{siteTagline}</p>
+                        <p className="text-gray-500 text-[14px] leading-relaxed pr-4 mb-6">{siteDescription}</p>
+
+                        {/* Alamat Kantor Marketing Gallery */}
+                        <div className="bg-gray-50/80 rounded-2xl p-4 sm:p-5 border border-gray-100 shadow-sm max-w-lg">
+                            <div className="flex items-start gap-3.5">
+                                <div className="w-9 h-9 rounded-xl bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center shrink-0 mt-0.5 border border-[#1E356A]/10">
+                                    <MapPin className="w-5 h-5 text-[#81A649]" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-bold text-[#1E356A] text-xs uppercase tracking-wider mb-1">
+                                        Kantor Pemasaran / Marketing Gallery
+                                    </h4>
+                                    <p className="text-gray-600 text-[13px] leading-relaxed mb-2.5">
+                                        {officeAddress}
+                                    </p>
+                                    <a 
+                                        href={mapsLink} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-xs font-bold text-[#1E356A] hover:text-[#81A649] transition-colors"
+                                    >
+                                        <span>Buka Petunjuk Arah di Google Maps</span>
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Nav */}
-                    <div className="md:col-span-3 lg:col-span-4 lg:pl-12">
+                    <div className="md:col-span-6 lg:col-span-3 lg:pl-6">
                         <h3 className="font-extrabold text-lg mb-6 text-[#1E356A]">Jelajahi PIK 2</h3>
                         <ul className="grid grid-cols-2 gap-y-4 gap-x-4">
                             {menus.map((menu) => (
@@ -55,7 +96,7 @@ export default function Footer({
                     </div>
 
                     {/* Contact */}
-                    <div className="md:col-span-4 lg:col-span-4">
+                    <div className="md:col-span-12 lg:col-span-4">
                         <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100 shadow-sm">
                             <h3 className="font-extrabold text-lg mb-3 text-[#1E356A]">Layanan Konsultasi</h3>
                             <p className="text-gray-500 text-sm mb-6 leading-relaxed">Hubungi tim sales resmi kami untuk mendapatkan detail ketersediaan unit, price list, dan penawaran promo eksklusif bulan ini.</p>
@@ -70,9 +111,9 @@ export default function Footer({
 
                 <div className="border-t border-gray-200 mt-16 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-gray-400 text-[13px] font-medium tracking-wide">&copy; {new Date().getFullYear()} {siteName}. Hak Cipta Dilindungi.</p>
-                    <div className="flex items-center gap-1.5 text-gray-400 text-[13px]">
-                        <span>Marketing Resmi</span>
-                        <span className="font-extrabold text-[#1E356A]">PIK 2</span>
+                    <div className="flex items-center gap-3 text-gray-500 text-[13px]">
+                        <img src="/agung-sedayu-group.png" alt="Agung Sedayu Group" className="h-5 w-auto object-contain opacity-80" />
+                        <span>A Project by <strong className="text-[#1E356A] font-bold">Agung Sedayu Group</strong> &bull; Marketing Resmi PIK 2</span>
                     </div>
                 </div>
             </div>
