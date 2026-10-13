@@ -272,7 +272,7 @@ export async function createProject(formData: FormData) {
     }
 
     let categoryVal = (formData.get('category') as string) || 'rumah';
-    
+
     // Ensure this category exists in Categories table (in case it was custom added)
     const existingCat = await prisma.categories.findUnique({ where: { id: categoryVal } });
     if (!existingCat) {
@@ -317,9 +317,7 @@ export async function createProject(formData: FormData) {
         const file = images[i];
         if (file.size > 0) {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
-          const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
-          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
           await fs.writeFile(path.join(imgUploadDir, filename), buffer);
 
           await prisma.projectImages.create({
@@ -443,9 +441,7 @@ export async function updateProject(id: number, formData: FormData) {
         const file = images[i];
         if (file.size > 0) {
           const buffer = Buffer.from(await file.arrayBuffer());
-          const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
-          const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
-          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+          const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
           await fs.writeFile(path.join(imgUploadDir, filename), buffer);
 
           await prisma.projectImages.create({
@@ -474,10 +470,7 @@ export async function updateProject(id: number, formData: FormData) {
 export async function deleteProjectImage(imageId: number) {
   try {
     await requireAuth();
-    const image = await prisma.projectImages.findUnique({
-      where: { id: imageId },
-      include: { projects: true }
-    });
+    const image = await prisma.projectImages.findUnique({ where: { id: imageId } });
     if (!image) return { success: false, error: 'Image not found' };
 
     const filepath = path.join(process.cwd(), 'public/uploads', image.image_path);
@@ -487,9 +480,6 @@ export async function deleteProjectImage(imageId: number) {
 
     revalidatePath('/');
     revalidatePath(`/admin/projects/${image.project_id}/edit`);
-    if (image.projects?.slug) {
-      revalidatePath(`/project/${image.projects.slug}`);
-    }
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -501,15 +491,12 @@ export async function updateProjectImageCaption(imageId: number, caption: string
     await requireAuth();
     const image = await prisma.projectImages.update({
       where: { id: imageId },
-      data: { caption: caption || null },
-      include: { projects: true }
+      data: { caption: caption || null }
     });
 
     revalidatePath('/');
     revalidatePath(`/admin/projects/${image.project_id}/edit`);
-    if (image.projects?.slug) {
-      revalidatePath(`/project/${image.projects.slug}`);
-    }
+    revalidatePath(`/project/[slug]`);
     return { success: true };
   } catch (error: any) {
     return { success: false, error: error.message };
@@ -584,7 +571,7 @@ export async function createCategory(label: string) {
   try {
     await requireAuth();
     const id = label.toLowerCase().replace(/[^a-z0-9]+/g, '_');
-    
+
     const max = await prisma.categories.findFirst({
       orderBy: { sort_order: 'desc' }
     });
@@ -593,7 +580,7 @@ export async function createCategory(label: string) {
     await prisma.categories.create({
       data: { id, label, sort_order: nextOrder }
     });
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true, id };
@@ -646,7 +633,7 @@ export async function updateProgressSortOrders(updates: { id: number, sort_order
 export async function bulkDeleteProjects(ids: number[]) {
   try {
     await requireAuth();
-    
+
     // Find projects to delete their files
     const projects = await prisma.projects.findMany({ where: { id: { in: ids } } });
     for (const project of projects) {
@@ -675,12 +662,12 @@ export async function updateProjectName(id: number, newName: string) {
     if (!newName || newName.trim() === '') {
       throw new Error('Nama properti tidak boleh kosong');
     }
-    
+
     await prisma.projects.update({
       where: { id },
       data: { name: newName.trim() }
     });
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true };
@@ -696,7 +683,7 @@ export async function updateProjectGroup(id: number, groupName: string) {
       where: { id },
       data: { group_name: groupName.trim() || null }
     });
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true };
@@ -712,7 +699,7 @@ export async function bulkUpdateProjectGroup(ids: number[], groupName: string) {
       where: { id: { in: ids } },
       data: { group_name: groupName.trim() || null }
     });
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true };
@@ -724,10 +711,10 @@ export async function bulkUpdateProjectGroup(ids: number[], groupName: string) {
 export async function deleteCategory(categoryId: string) {
   try {
     await requireAuth();
-    
+
     // Hapus dari database
     await prisma.categories.delete({ where: { id: categoryId } });
-    
+
     // Kembalikan semua properti di kategori ini ke default 'rumah' (kalau bukan rumah yang dihapus)
     if (categoryId !== 'rumah') {
       await prisma.projects.updateMany({
@@ -735,7 +722,7 @@ export async function deleteCategory(categoryId: string) {
         data: { category: 'rumah' }
       });
     }
-    
+
     revalidatePath('/');
     revalidatePath('/admin/projects');
     return { success: true };
@@ -753,7 +740,7 @@ export async function syncCategories() {
   ];
 
   const dbCategories = await prisma.categories.findMany();
-  
+
   if (dbCategories.length === 0) {
     let order = 1;
     for (const cat of baseCategories) {
@@ -771,9 +758,9 @@ export async function syncCategories() {
         data: { id: cat, label: cat.replace(/_/g, ' ').toUpperCase(), sort_order: order++ }
       });
     }
-    
+
     return await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
   }
-  
+
   return dbCategories.sort((a, b) => a.sort_order - b.sort_order);
 }
