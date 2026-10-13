@@ -18,8 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   // metadataBase resolves relative Open Graph / Twitter image URLs.
   // In production, NEXT_PUBLIC_SITE_URL must be set to the canonical site URL
-  // (e.g. https://pik2official.com). Fallback to localhost for development.
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? "http://localhost:3000" : "https://pik2official.id");
 
   return {
     metadataBase: new URL(siteUrl),

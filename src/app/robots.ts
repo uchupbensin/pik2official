@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.com';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
 
   return {
     rules: [
