@@ -10,9 +10,11 @@ export const metadata = {
 export const revalidate = 0;
 
 export default async function FacilitiesAdminPage() {
-  const facilities = await prisma.facilities.findMany({
-    orderBy: { sort_order: 'asc' }
-  });
+  const facilities = (prisma as any)?.facilities?.findMany
+    ? await (prisma as any).facilities.findMany({
+        orderBy: { sort_order: 'asc' }
+      })
+    : [];
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
