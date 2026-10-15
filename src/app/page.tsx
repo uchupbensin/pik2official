@@ -13,22 +13,33 @@ type Props = {
 export default async function Home({ searchParams }: Props) {
     const resolvedParams = await searchParams;
     const searchQuery = (resolvedParams?.q as string) || '';
+    const selectedCategory = (resolvedParams?.cat as string) || '';
     const currentPage = parseInt((resolvedParams?.page as string) || '1');
     const pageSize = 6;
     const skip = (currentPage - 1) * pageSize;
 
     const homeSetting = await prisma.homeSettings.findFirst();
     const siteSetting = await prisma.siteSettings.findFirst();
+    const categories = await prisma.categories.findMany({
+        orderBy: { sort_order: 'asc' }
+    });
 
-    // Query untuk pencarian
-    const searchFilter: any = searchQuery ? {
-        OR: [
-            { name: { contains: searchQuery, mode: 'insensitive' } },
-            { location: { contains: searchQuery, mode: 'insensitive' } },
-            { short_description: { contains: searchQuery, mode: 'insensitive' } },
-            { category: { contains: searchQuery, mode: 'insensitive' } }
-        ]
-    } : {};
+    // Query untuk pencarian & kategori
+    const andFilters: any[] = [];
+    if (searchQuery) {
+        andFilters.push({
+            OR: [
+                { name: { contains: searchQuery, mode: 'insensitive' } },
+                { location: { contains: searchQuery, mode: 'insensitive' } },
+                { short_description: { contains: searchQuery, mode: 'insensitive' } },
+                { category: { contains: searchQuery, mode: 'insensitive' } }
+            ]
+        });
+    }
+    if (selectedCategory && selectedCategory !== 'all') {
+        andFilters.push({ category: { equals: selectedCategory, mode: 'insensitive' } });
+    }
+    const searchFilter: any = andFilters.length > 0 ? { AND: andFilters } : {};
 
     // 1. Ambil Promo Projects (Tanpa Pagination)
     const promoProjects = await prisma.projects.findMany({
@@ -108,10 +119,33 @@ export default async function Home({ searchParams }: Props) {
                                 placeholder="Cari rumah, ruko, apartemen, kavling di PIK 2..."
                                 className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2 sm:py-2.5 px-2 text-sm sm:text-base font-medium"
                             />
+                            {searchQuery && (
+                                <a
+                                    href="/"
+                                    className="p-1.5 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 mr-1 transition-colors"
+                                    title="Hapus kata kunci pencarian"
+                                >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </a>
+                            )}
                             <button type="submit" className="bg-[#1E356A] hover:bg-[#2B4A93] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md hover:shadow-lg hover:shadow-[#1E356A]/20 cursor-pointer flex-shrink-0">
                                 Cari
                             </button>
                         </form>
+
+                        {/* Tag Pencarian Populer */}
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3 text-xs text-gray-500">
+                            <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Populer:</span>
+                            {['Rumah', 'Ruko', 'Apartemen', 'Kavling', 'Pasir Putih'].map((tag) => (
+                                <a
+                                    key={tag}
+                                    href={`/?q=${encodeURIComponent(tag)}#projects`}
+                                    className="px-2.5 py-0.5 rounded-full bg-gray-50 hover:bg-[#1E356A]/10 hover:text-[#1E356A] border border-gray-200/80 transition-colors text-[11px] font-medium"
+                                >
+                                    {tag}
+                                </a>
+                            ))}
+                        </div>
                     </div>
 
                     {/* 1. GAMBAR ATAS (LANDMARK BUNDARAN PIK 2) */}
@@ -203,19 +237,51 @@ export default async function Home({ searchParams }: Props) {
             {/* PROJECTS SECTION */}
             <section id="projects" className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="mb-12">
-                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
-                        <div className="w-16 h-1 bg-[#81A649] mt-6 rounded-full"></div>
-                        <p className="text-gray-500 mt-6 text-lg font-light">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-12">
+                        <div className="max-w-xl">
+                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
+                            <div className="w-16 h-1 bg-[#81A649] mt-4 rounded-full"></div>
+                            <p className="text-gray-500 mt-4 text-base sm:text-lg font-light">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
+                        </div>
+
+                        {/* Filter Kategori Properti Tabs */}
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden shrink-0">
+                            <a
+                                href={`/#projects${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ''}`}
+                                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                                    !selectedCategory || selectedCategory === 'all'
+                                        ? 'bg-[#1E356A] text-white shadow-md shadow-[#1E356A]/20'
+                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                }`}
+                            >
+                                Semua
+                            </a>
+                            {categories.map((cat: any) => {
+                                const isCatActive = selectedCategory === cat.id;
+                                return (
+                                    <a
+                                        key={cat.id}
+                                        href={`/?cat=${cat.id}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}#projects`}
+                                        className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                                            isCatActive
+                                                ? 'bg-[#1E356A] text-white shadow-md shadow-[#1E356A]/20'
+                                                : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                        }`}
+                                    >
+                                        {cat.label}
+                                    </a>
+                                );
+                            })}
+                        </div>
                     </div>
 
-                    {searchQuery && (
+                    {(searchQuery || (selectedCategory && selectedCategory !== 'all')) && (
                         <div className="mb-8 flex items-center justify-between bg-[#1E356A]/5 rounded-2xl p-4 border border-[#1E356A]/10">
-                            <p className="text-[#1E356A] font-medium">
-                                Menampilkan hasil pencarian untuk: <span className="font-bold">"{searchQuery}"</span>
+                            <p className="text-[#1E356A] font-medium text-sm sm:text-base">
+                                Menampilkan hasil filter: {searchQuery && <span>kata kunci <b>"{searchQuery}"</b></span>}{searchQuery && selectedCategory && selectedCategory !== 'all' ? ' dan ' : ''}{selectedCategory && selectedCategory !== 'all' && <span>kategori <b>"{categories.find((c: any) => c.id === selectedCategory)?.label || selectedCategory}"</b></span>}
                             </p>
-                            <a href="/#projects" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
-                                Hapus Filter
+                            <a href="/#projects" className="text-xs sm:text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors bg-white px-3.5 py-1.5 rounded-lg border border-gray-200 shadow-sm shrink-0 ml-4">
+                                Reset Filter
                             </a>
                         </div>
                     )}
@@ -237,7 +303,7 @@ export default async function Home({ searchParams }: Props) {
                                         return (
                                             <a
                                                 key={pageNumber}
-                                                href={`/?page=${pageNumber}${searchQuery ? `&q=${searchQuery}` : ''}#projects`}
+                                                href={`/?page=${pageNumber}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ''}${selectedCategory ? `&cat=${selectedCategory}` : ''}#projects`}
                                                 className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold transition-all ${
                                                     isActive 
                                                         ? 'bg-[#1E356A] text-white shadow-md' 
