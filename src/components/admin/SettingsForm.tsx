@@ -57,17 +57,84 @@ export default function SettingsForm({
         </div>
       </div>
 
-      {/* Home Settings */}
+      {/* Home Settings - Section Editorial (Top Image + Text + Bottom Image) */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-bold text-[#1E356A] mb-4 border-b pb-2">Halaman Utama (Hero Section)</h3>
-        <div className="grid grid-cols-1 gap-6">
+        <h3 className="text-lg font-bold text-[#1E356A] mb-2 border-b pb-2 flex items-center justify-between">
+          <span>Halaman Utama (Hero Showcase / Cerita PIK 2)</span>
+          <span className="text-xs font-normal text-gray-500">Tampilan Foto Atas + Judul & Kata-Kata + Foto Bawah</span>
+        </h3>
+
+        <div className="grid grid-cols-1 gap-6 pt-2">
+          {/* 1. Foto Banner Atas */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Judul Utama (Hero)</label>
-            <input type="text" name="hero_title" defaultValue={homeSettings?.hero_title || ''} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]" />
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              1. Foto Banner Atas (Landmark / Bundaran PIK2)
+            </label>
+            <input 
+              type="file" 
+              name="hero_image_top" 
+              accept="image/*" 
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20 cursor-pointer border border-gray-200 rounded-xl p-2 bg-gray-50/50" 
+            />
+            <p className="text-xs text-gray-500 mt-1">Format JPG, PNG, atau WebP. Kosongkan jika tidak ingin mengubah.</p>
+            {homeSettings?.hero_image_top ? (
+              <div className="mt-2 flex items-center gap-3">
+                <span className="text-xs text-gray-500 font-medium">Foto saat ini:</span>
+                <div className="h-16 w-32 rounded-lg overflow-hidden border border-gray-200 shadow-xs">
+                  <img src={homeSettings.hero_image_top.startsWith('http') ? homeSettings.hero_image_top : `/api/${homeSettings.hero_image_top}`} alt="Top Hero" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-[#81A649] font-medium mt-1">Menggunakan foto bawaan: Bundaran PIK 2</p>
+            )}
           </div>
+
+          {/* 2. Judul Tengah */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Deskripsi Utama</label>
-            <textarea name="hero_description" defaultValue={homeSettings?.hero_description || ''} rows={3} className="w-full px-4 py-2 border rounded-xl bg-white text-gray-900 focus:ring-[#81A649] focus:border-[#81A649]"></textarea>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">2. Judul Tengah</label>
+            <input 
+              type="text" 
+              name="hero_title" 
+              defaultValue={homeSettings?.hero_title || 'P I K 2'} 
+              placeholder="Contoh: P I K 2"
+              className="w-full px-4 py-2.5 border rounded-xl bg-white text-gray-900 font-bold focus:ring-2 focus:ring-[#1E356A]/30 focus:border-[#1E356A] outline-none" 
+            />
+          </div>
+
+          {/* 3. Deskripsi / Kata-Kata Tengah */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">3. Kata-Kata & Deskripsi Pengantar</label>
+            <textarea 
+              name="hero_description" 
+              defaultValue={homeSettings?.hero_description || '"PIK2 The New Jakarta City" merupakan mahakarya terbaru persembahan dari Agung Sedayu Group & Salim Group. PIK2 adalah pengembangan besar yang menghubungkan negara Indonesia dengan seluruh dunia. Berlokasi hanya kurang lebih 7 menit dari Bandara Internasional Soekarno-Hatta, bahkan lebih dekat daripada PIK1, tentunya membuat PIK2 unggul dalam hal konektivitas global, ekspansi bisnis, dan berbagai peluang investasi. Keberhasilan PIK1 memicu lahirnya jalinan kerjasama baru antara Agung Sedayu Group dan Salim Group. Kedua grup besar ini kembali menjalin kolaborasi hebatnya dalam pengembangan mahakarya PIK2. PIK2 adalah pengembangan besar-besaran yang akan mencapai sekitar 2.650 hektar. PIK2 akan menjadi pusat kekuatan ekonomi yang memiliki daya tarik yang kuat bagi peluang dan investasi yang menguntungkan dalam berbagai pengembangan properti.'} 
+              rows={6} 
+              className="w-full px-4 py-2.5 border rounded-xl bg-white text-gray-900 leading-relaxed text-sm focus:ring-2 focus:ring-[#1E356A]/30 focus:border-[#1E356A] outline-none"
+            ></textarea>
+            <p className="text-xs text-gray-500 mt-1">Tulis penjelasan lengkap tentang keunggulan mahakarya PIK 2.</p>
+          </div>
+
+          {/* 4. Foto Banner Bawah */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              4. Foto Banner Bawah (Menara Syariah / Gedung Ikonik)
+            </label>
+            <input 
+              type="file" 
+              name="hero_image_bottom" 
+              accept="image/*" 
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20 cursor-pointer border border-gray-200 rounded-xl p-2 bg-gray-50/50" 
+            />
+            <p className="text-xs text-gray-500 mt-1">Format JPG, PNG, atau WebP. Kosongkan jika tidak ingin mengubah.</p>
+            {homeSettings?.hero_image_bottom ? (
+              <div className="mt-2 flex items-center gap-3">
+                <span className="text-xs text-gray-500 font-medium">Foto saat ini:</span>
+                <div className="h-16 w-32 rounded-lg overflow-hidden border border-gray-200 shadow-xs">
+                  <img src={homeSettings.hero_image_bottom.startsWith('http') ? homeSettings.hero_image_bottom : `/api/${homeSettings.hero_image_bottom}`} alt="Bottom Hero" className="w-full h-full object-cover" />
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-[#81A649] font-medium mt-1">Menggunakan foto bawaan: Menara Syariah PIK 2</p>
+            )}
           </div>
         </div>
       </div>

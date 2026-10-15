@@ -167,6 +167,33 @@ export async function updateSettings(formData: FormData) {
       }
     });
 
+    // Handle Hero Images (Top & Bottom)
+    const fileTop = formData.get('hero_image_top') as File | null;
+    let heroImageTopPath: string | undefined = undefined;
+    if (fileTop && fileTop.size > 0) {
+      const buffer = Buffer.from(await fileTop.arrayBuffer());
+      const rawExt = fileTop.name ? fileTop.name.split('.').pop()?.toLowerCase() : 'webp';
+      const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+      const filename = `hero-top-${Date.now()}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      heroImageTopPath = `uploads/${filename}`;
+    }
+
+    const fileBottom = formData.get('hero_image_bottom') as File | null;
+    let heroImageBottomPath: string | undefined = undefined;
+    if (fileBottom && fileBottom.size > 0) {
+      const buffer = Buffer.from(await fileBottom.arrayBuffer());
+      const rawExt = fileBottom.name ? fileBottom.name.split('.').pop()?.toLowerCase() : 'webp';
+      const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+      const filename = `hero-bottom-${Date.now()}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      heroImageBottomPath = `uploads/${filename}`;
+    }
+
     // 2. Update HomeSettings (id = 1)
     await prisma.homeSettings.upsert({
       where: { id: 1 },
@@ -175,6 +202,8 @@ export async function updateSettings(formData: FormData) {
         hero_description: formData.get('hero_description') as string,
         promo_title: formData.get('promo_title') as string,
         promo_description: formData.get('promo_description') as string,
+        ...(heroImageTopPath ? { hero_image_top: heroImageTopPath } : {}),
+        ...(heroImageBottomPath ? { hero_image_bottom: heroImageBottomPath } : {}),
       },
       create: {
         id: 1,
@@ -182,6 +211,8 @@ export async function updateSettings(formData: FormData) {
         hero_description: formData.get('hero_description') as string,
         promo_title: formData.get('promo_title') as string,
         promo_description: formData.get('promo_description') as string,
+        hero_image_top: heroImageTopPath || null,
+        hero_image_bottom: heroImageBottomPath || null,
       }
     });
 

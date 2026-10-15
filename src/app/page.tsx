@@ -58,8 +58,18 @@ export default async function Home({ searchParams }: Props) {
     });
     const totalPages = Math.ceil(totalRegularProjects / pageSize);
 
-    const heroTitle = homeSetting?.hero_title || 'Hunian Pilihan di PIK 2';
-    const heroDesc = homeSetting?.hero_description || 'Temukan rumah, ruko, gudang, apartemen, dan kavling terbaik di kawasan strategis PIK 2.';
+    const heroTitle = homeSetting?.hero_title || 'P I K 2';
+    const heroDesc = homeSetting?.hero_description || '"PIK2 The New Jakarta City" merupakan mahakarya terbaru persembahan dari Agung Sedayu Group & Salim Group. PIK2 adalah pengembangan besar yang menghubungkan negara Indonesia dengan seluruh dunia. Berlokasi hanya kurang lebih 7 menit dari Bandara Internasional Soekarno-Hatta, bahkan lebih dekat daripada PIK1, tentunya membuat PIK2 unggul dalam hal konektivitas global, ekspansi bisnis, dan berbagai peluang investasi. Keberhasilan PIK1 memicu lahirnya jalinan kerjasama baru antara Agung Sedayu Group dan Salim Group. Kedua grup besar ini kembali menjalin kolaborasi hebatnya dalam pengembangan mahakarya PIK2. PIK2 adalah pengembangan besar-besaran yang akan mencapai sekitar 2.650 hektar. PIK2 akan menjadi pusat kekuatan ekonomi yang memiliki daya tarik yang kuat bagi peluang dan investasi yang menguntungkan dalam berbagai pengembangan properti.';
+
+    const formatHeroImage = (path: string | null | undefined, fallback: string) => {
+        if (!path) return fallback;
+        if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) return path;
+        if (path.startsWith('uploads/')) return `/api/${path}`;
+        return `/api/uploads/${path}`;
+    };
+
+    const topHeroImage = formatHeroImage(homeSetting?.hero_image_top, '/pik2-landmark-hero.webp');
+    const bottomHeroImage = formatHeroImage(homeSetting?.hero_image_bottom, '/pik2-menara-syariah-hero.webp');
 
     const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
     let cleanWa = waNumber.replace(/\D+/g, '');
@@ -71,53 +81,54 @@ export default async function Home({ searchParams }: Props) {
 
     return (
         <>
-            {/* ELEGANT HERO SECTION */}
-            <section className="relative pt-32 pb-16 lg:pt-40 lg:pb-24 overflow-hidden bg-white">
-                {/* Subtle Background Elements */}
-                <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 bg-gray-50/30">
-                    <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-gradient-to-b from-[#1E356A]/5 to-transparent blur-[120px]"></div>
-                    <div className="absolute top-[40%] -left-[10%] w-[40%] h-[40%] rounded-full bg-gradient-to-t from-[#81A649]/5 to-transparent blur-[100px]"></div>
-                </div>
+            {/* EDITORIAL HERO SECTION (FOTO ATAS + KATA-KATA PIK2 + FOTO BAWAH) */}
+            <section className="relative pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-white">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    
+                    {/* 1. GAMBAR ATAS (LANDMARK BUNDARAN PIK 2) */}
+                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 bg-gray-50 group">
+                        <img
+                            src={topHeroImage}
+                            alt="PIK 2 Landmark Bundaran"
+                            className="w-full h-auto max-h-[500px] md:max-h-[620px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700 ease-out"
+                        />
+                    </div>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="flex flex-col md:flex-row gap-12 lg:gap-16 items-center">
+                    {/* 2. BAGIAN TENGAH: JUDUL BESAR & NARASI / KATA-KATA */}
+                    <div className="max-w-4xl mx-auto text-center py-12 sm:py-16 md:py-20 px-2 sm:px-6">
+                        {/* Judul Besar PIK2 dengan letter-spacing elegan */}
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#1E356A] tracking-[0.25em] md:tracking-[0.35em] uppercase mb-8">
+                            {heroTitle}
+                        </h1>
 
-                        {/* Text Content */}
-                        <div className="w-full md:w-[50%] lg:w-[45%] text-left order-2 md:order-1">
-                            {/* Checkmark Badge */}
-                            <div className="inline-flex items-center gap-2 bg-[#81A649]/10 text-[#81A649] text-xs font-bold px-4 py-1.5 rounded-full mb-6 uppercase tracking-widest ring-1 ring-[#81A649]/30">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                PIK 2 Official
-                            </div>
-
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1E356A] mb-6 tracking-tight leading-[1.1]">
-                                {heroTitle}
-                            </h1>
-
-                            <p className="text-gray-500 text-lg leading-relaxed mb-10 max-w-lg font-light">
-                                {heroDesc}
-                            </p>
-
-                            <div className="flex flex-col sm:flex-row gap-4">
-                                <a href="#projects" className="group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-[#1E356A] text-white font-semibold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 transform hover:-translate-y-0.5">
-                                    <svg className="w-5 h-5 text-[#81A649] group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-                                    Jelajahi Properti
-                                </a>
-                            </div>
+                        {/* Paragraf Narasi Mahakarya PIK2 */}
+                        <div className="text-gray-700 text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-normal text-justify sm:text-center space-y-4">
+                            {heroDesc.split('\n\n').map((paragraph: string, idx: number) => (
+                                <p key={idx}>{paragraph}</p>
+                            ))}
                         </div>
 
-                        {/* Image Content */}
-                        <div className="w-full md:w-[50%] lg:w-[55%] order-1 md:order-2">
-                            <div className="relative w-full aspect-[4/3] md:aspect-[4/3] lg:aspect-[16/11] rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 group">
-                                <div className="absolute inset-0 bg-gray-900/10 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                                <img
-                                    src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80"
-                                    alt="PIK 2 Properti"
-                                    className="absolute inset-0 w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700 ease-out"
-                                />
-                            </div>
+                        {/* Tombol Pintas ke Unit Properti */}
+                        <div className="mt-10 flex flex-wrap justify-center gap-4">
+                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-bold text-sm hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300">
+                                <span>Lihat Promo & Properti</span>
+                                <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
+                            </a>
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm shadow-md transition-all duration-300">
+                                <span>Konsultasi WhatsApp</span>
+                            </a>
                         </div>
                     </div>
+
+                    {/* 3. GAMBAR BAWAH (MENARA SYARIAH / GEDUNG IKONIK) */}
+                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 bg-gray-50 group">
+                        <img
+                            src={bottomHeroImage}
+                            alt="PIK 2 Menara Syariah"
+                            className="w-full h-auto max-h-[500px] md:max-h-[620px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700 ease-out"
+                        />
+                    </div>
+
                 </div>
             </section>
 
