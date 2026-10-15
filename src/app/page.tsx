@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import ProjectCard from '@/components/ProjectCard';
-import PromoSection from '@/components/PromoSection';
+import PromoProjectCard from '@/components/PromoProjectCard';
 import FacilitiesSlider from '@/components/FacilitiesSlider';
 import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-react';
 
@@ -198,12 +198,41 @@ export default async function Home({ searchParams }: Props) {
             {/* KEUNGGULAN & FASILITAS KAWASAN PIK 2 (HORIZONTAL SLIDER / CAROUSEL) */}
             <FacilitiesSlider facilities={facilities} />
 
-            {/* PROMO SECTION (UPGRADED LUXURY VIP SHOWCASE) */}
-            <PromoSection 
-                promoProjects={promoProjects} 
-                homeSetting={homeSetting} 
-                waNumber={waNumber} 
-            />
+            {/* PROMO SECTION (NEW DESIGN) */}
+            {promoProjects.length > 0 && (
+                <section id="promo" aria-label="Promo Properti PIK 2" className="bg-gradient-to-b from-gray-50 to-white py-20 lg:py-32 border-b border-gray-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center max-w-4xl mx-auto mb-16 lg:mb-24">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-sm tracking-widest uppercase mb-6 shadow-sm border border-[#81A649]/20">
+                                <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Hot Promo Bulan Ini
+                            </span>
+                            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#1E356A] tracking-tight leading-tight">
+                                {homeSetting?.promo_title || 'Penawaran Eksklusif & Terbatas'}
+                            </h2>
+                            <div className="w-20 h-1.5 bg-[#81A649] mx-auto mt-8 rounded-full opacity-80"></div>
+                            <p className="mt-8 text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed">
+                                {homeSetting?.promo_description || 'Jangan lewatkan kesempatan emas ini! Dapatkan harga perdana, kemudahan cicilan, serta diskon spesial khusus untuk unit pilihan Anda selama kuota masih tersedia.'}
+                            </p>
+                            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                                <a href={waLink} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-[#1E356A] text-white font-bold text-[15px] hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 hover:-translate-y-1">
+                                    <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    Klaim Promo Sekarang
+                                </a>
+                                <a href="#projects" className="px-8 py-4 rounded-full bg-white border border-gray-200 text-gray-700 font-bold text-[15px] hover:bg-gray-50 hover:border-gray-300 hover:shadow-sm transition-all duration-300">
+                                    Lihat Detail Unit
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {promoProjects.map((project: any) => (
+                                <PromoProjectCard key={project.id} project={project} />
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* PROJECTS SECTION */}
             <section id="projects" className="bg-white">
