@@ -116,13 +116,34 @@ export default async function Home({ searchParams }: Props) {
                             ))}
                         </div>
 
-                        {/* Tombol Pintas ke Unit Properti */}
-                        <div className="mt-10 flex flex-wrap justify-center gap-4">
-                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-bold text-sm hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300">
+                        {/* Tombol & Kotak Pencarian Properti di Bagian Atas */}
+                        <div className="mt-10 max-w-2xl mx-auto">
+                            <form method="GET" action="/#projects" className="group flex items-center bg-white border-2 border-gray-100 hover:border-[#1E356A]/30 focus-within:border-[#1E356A] rounded-full p-1.5 sm:p-2 shadow-xl shadow-gray-200/70 focus-within:ring-4 focus-within:ring-[#1E356A]/10 transition-all duration-300">
+                                <div className="pl-4 pr-2 sm:pr-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1E356A] transition-colors">
+                                    <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    name="q"
+                                    defaultValue={searchQuery}
+                                    placeholder="Cari rumah, ruko, apartemen, kavling di PIK 2..."
+                                    className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2 sm:py-2.5 px-2 text-sm sm:text-base font-medium"
+                                />
+                                <button type="submit" className="bg-[#1E356A] hover:bg-[#2B4A93] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md hover:shadow-lg hover:shadow-[#1E356A]/20 cursor-pointer flex-shrink-0">
+                                    Cari
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Tombol Pintas ke Unit Properti & WhatsApp */}
+                        <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
+                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-full bg-gray-50 hover:bg-gray-100 text-[#1E356A] font-bold text-xs sm:text-sm border border-gray-200 shadow-xs transition-all duration-300">
                                 <span>Lihat Promo & Properti</span>
                                 <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                             </a>
-                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-sm shadow-md transition-all duration-300">
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300">
                                 <span>Konsultasi WhatsApp</span>
                             </a>
                         </div>
@@ -182,33 +203,10 @@ export default async function Home({ searchParams }: Props) {
             {/* PROJECTS SECTION */}
             <section id="projects" className="bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between mb-12 gap-6">
-                        <div className="max-w-2xl">
-                            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
-                            <div className="w-16 h-1 bg-[#81A649] mt-6 rounded-full"></div>
-                            <p className="text-gray-500 mt-6 text-lg font-light">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
-                        </div>
-
-                        {/* Elegant Search Bar */}
-                        <div className="w-full sm:w-[400px] lg:w-[450px]">
-                            <form method="GET" action="/#projects" className="group flex items-center bg-gray-50 border border-gray-200 rounded-2xl p-1.5 shadow-sm focus-within:ring-2 focus-within:ring-[#1E356A]/20 focus-within:border-[#1E356A] focus-within:bg-white transition-all">
-                                <div className="pl-3 pr-2 flex items-center pointer-events-none">
-                                    <svg className="h-5 w-5 text-gray-400 group-focus-within:text-[#1E356A] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="q"
-                                    defaultValue={searchQuery}
-                                    placeholder="Cari rumah, ruko, apartemen..."
-                                    className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2.5 w-full text-base"
-                                />
-                                <button type="submit" className="bg-[#1E356A] text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#2B4A93] transition-colors shadow-sm whitespace-nowrap ml-1 flex-shrink-0">
-                                    Cari
-                                </button>
-                            </form>
-                        </div>
+                    <div className="mb-12">
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1E356A] tracking-tight">Katalog Properti</h2>
+                        <div className="w-16 h-1 bg-[#81A649] mt-6 rounded-full"></div>
+                        <p className="text-gray-500 mt-6 text-lg font-light">Pilihan hunian, komersial & investasi terbaik di kawasan elit PIK 2.</p>
                     </div>
 
                     {searchQuery && (
