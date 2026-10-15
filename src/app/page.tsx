@@ -93,6 +93,27 @@ export default async function Home({ searchParams }: Props) {
             <section className="relative pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-white">
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     
+                    {/* KOTAK PENCARIAN DI PALING ATAS BERANDA */}
+                    <div className="max-w-2xl mx-auto mb-8 sm:mb-10">
+                        <form method="GET" action="/#projects" className="group flex items-center bg-white border-2 border-gray-100 hover:border-[#1E356A]/30 focus-within:border-[#1E356A] rounded-full p-1.5 sm:p-2 shadow-xl shadow-gray-200/70 focus-within:ring-4 focus-within:ring-[#1E356A]/10 transition-all duration-300">
+                            <div className="pl-4 pr-2 sm:pr-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1E356A] transition-colors">
+                                <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                name="q"
+                                defaultValue={searchQuery}
+                                placeholder="Cari rumah, ruko, apartemen, kavling di PIK 2..."
+                                className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2 sm:py-2.5 px-2 text-sm sm:text-base font-medium"
+                            />
+                            <button type="submit" className="bg-[#1E356A] hover:bg-[#2B4A93] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md hover:shadow-lg hover:shadow-[#1E356A]/20 cursor-pointer flex-shrink-0">
+                                Cari
+                            </button>
+                        </form>
+                    </div>
+
                     {/* 1. GAMBAR ATAS (LANDMARK BUNDARAN PIK 2) */}
                     <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 bg-gray-50 group">
                         <img
@@ -116,34 +137,13 @@ export default async function Home({ searchParams }: Props) {
                             ))}
                         </div>
 
-                        {/* Tombol & Kotak Pencarian Properti di Bagian Atas */}
-                        <div className="mt-10 max-w-2xl mx-auto">
-                            <form method="GET" action="/#projects" className="group flex items-center bg-white border-2 border-gray-100 hover:border-[#1E356A]/30 focus-within:border-[#1E356A] rounded-full p-1.5 sm:p-2 shadow-xl shadow-gray-200/70 focus-within:ring-4 focus-within:ring-[#1E356A]/10 transition-all duration-300">
-                                <div className="pl-4 pr-2 sm:pr-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1E356A] transition-colors">
-                                    <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    name="q"
-                                    defaultValue={searchQuery}
-                                    placeholder="Cari rumah, ruko, apartemen, kavling di PIK 2..."
-                                    className="flex-1 bg-transparent border-none text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-0 py-2 sm:py-2.5 px-2 text-sm sm:text-base font-medium"
-                                />
-                                <button type="submit" className="bg-[#1E356A] hover:bg-[#2B4A93] text-white px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold transition-all shadow-md hover:shadow-lg hover:shadow-[#1E356A]/20 cursor-pointer flex-shrink-0">
-                                    Cari
-                                </button>
-                            </form>
-                        </div>
-
                         {/* Tombol Pintas ke Unit Properti & WhatsApp */}
-                        <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
-                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-full bg-gray-50 hover:bg-gray-100 text-[#1E356A] font-bold text-xs sm:text-sm border border-gray-200 shadow-xs transition-all duration-300">
+                        <div className="mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
+                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-bold text-xs sm:text-sm hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300">
                                 <span>Lihat Promo & Properti</span>
                                 <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                             </a>
-                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-6 sm:px-7 py-3 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300">
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300">
                                 <span>Konsultasi WhatsApp</span>
                             </a>
                         </div>
