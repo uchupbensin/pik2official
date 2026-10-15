@@ -301,7 +301,7 @@ export default function FacilitiesList({ initialData }: { initialData: Facilitie
                 const formattedImg = formatImageUrl(facility.image_url);
 
                 return (
-                  <Draggable key={facility.id} draggableId={facility.id.toString()} index={index}>
+                  <Draggable key={facility.id.toString()} draggableId={facility.id.toString()} index={index} isDragDisabled={isEditing}>
                     {(providedDraggable) => (
                       <div
                         ref={providedDraggable.innerRef}
@@ -319,10 +319,15 @@ export default function FacilitiesList({ initialData }: { initialData: Facilitie
                             className="p-6 space-y-5 bg-blue-50/20"
                           >
                             <div className="flex items-center justify-between border-b border-gray-200 pb-3">
-                              <span className="text-sm font-bold text-[#1E356A] flex items-center gap-2">
-                                <Edit2 className="w-4 h-4 text-[#81A649]" />
-                                Edit Fasilitas #{index + 1}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <div {...providedDraggable.dragHandleProps} className="p-1 text-gray-400 opacity-60">
+                                  <GripVertical className="w-4 h-4" />
+                                </div>
+                                <span className="text-sm font-bold text-[#1E356A] flex items-center gap-1.5">
+                                  <Edit2 className="w-4 h-4 text-[#81A649]" />
+                                  Edit Fasilitas #{index + 1}
+                                </span>
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => setEditingId(null)}
