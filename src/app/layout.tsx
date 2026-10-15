@@ -118,6 +118,7 @@ export default async function RootLayout({
 
   const menus = [
     { label: "HOME", url: "/" },
+    { label: "FASILITAS", url: "/#fasilitas" },
     { label: "PROGRES PIK 2", url: "/progres" },
     ...dbCategories.map((cat: { id: string, label: string }) => ({
       label: cat.label.toUpperCase(),

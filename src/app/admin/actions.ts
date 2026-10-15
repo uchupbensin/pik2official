@@ -795,3 +795,128 @@ export async function syncCategories() {
 
   return dbCategories.sort((a, b) => a.sort_order - b.sort_order);
 }
+
+// Facilities & Keunggulan Actions
+export async function createFacility(formData: FormData) {
+  try {
+    await requireAuth();
+    const title = formData.get('title') as string;
+    const category = (formData.get('category') as string) || null;
+    const badge = (formData.get('badge') as string) || null;
+    const description = (formData.get('description') as string) || '';
+    const file = formData.get('image') as File | null;
+    let imageUrl = (formData.get('image_url_text') as string) || null;
+
+    if (!title || !description) {
+      throw new Error('Judul dan deskripsi fasilitas wajib diisi.');
+    }
+
+    if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
+      const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+      const filename = `facility-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      imageUrl = `uploads/${filename}`;
+    }
+
+    // Determine sort_order
+    const maxOrder = await prisma.facilities.aggregate({ _max: { sort_order: true } });
+    const nextOrder = (maxOrder._max.sort_order ?? 0) + 1;
+
+    await prisma.facilities.create({
+      data: {
+        title,
+        category,
+        badge,
+        description,
+        image_url: imageUrl,
+        sort_order: nextOrder,
+      }
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/facilities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Gagal menambahkan fasilitas' };
+  }
+}
+
+export async function editFacility(id: number, formData: FormData) {
+  try {
+    await requireAuth();
+    const title = formData.get('title') as string;
+    const category = (formData.get('category') as string) || null;
+    const badge = (formData.get('badge') as string) || null;
+    const description = (formData.get('description') as string) || '';
+    const file = formData.get('image') as File | null;
+    let imageUrl = (formData.get('image_url_text') as string) || undefined;
+
+    if (!title || !description) {
+      throw new Error('Judul dan deskripsi fasilitas wajib diisi.');
+    }
+
+    if (file && file.size > 0) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const rawExt = file.name ? file.name.split('.').pop()?.toLowerCase() : 'webp';
+      const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+      const filename = `facility-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      imageUrl = `uploads/${filename}`;
+    }
+
+    await prisma.facilities.update({
+      where: { id },
+      data: {
+        title,
+        category,
+        badge,
+        description,
+        ...(imageUrl !== undefined ? { image_url: imageUrl } : {}),
+      }
+    });
+
+    revalidatePath('/');
+    revalidatePath('/admin/facilities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Gagal memperbarui fasilitas' };
+  }
+}
+
+export async function deleteFacility(id: number) {
+  try {
+    await requireAuth();
+    await prisma.facilities.delete({ where: { id } });
+    revalidatePath('/');
+    revalidatePath('/admin/facilities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Gagal menghapus fasilitas' };
+  }
+}
+
+export async function updateFacilitySortOrders(updates: { id: number, sort_order: number }[]) {
+  try {
+    await requireAuth();
+    await prisma.$transaction(
+      updates.map((item) =>
+        prisma.facilities.update({
+          where: { id: item.id },
+          data: { sort_order: item.sort_order }
+        })
+      )
+    );
+    revalidatePath('/');
+    revalidatePath('/admin/facilities');
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || 'Gagal memperbarui urutan fasilitas' };
+  }
+}
+

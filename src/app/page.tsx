@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import ProjectCard from '@/components/ProjectCard';
 import PromoProjectCard from '@/components/PromoProjectCard';
+import FacilitiesSlider from '@/components/FacilitiesSlider';
 import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-react';
 
 export const revalidate = 0; // Or omit this for dynamic if you prefer
@@ -57,6 +58,11 @@ export default async function Home({ searchParams }: Props) {
         }
     });
     const totalPages = Math.ceil(totalRegularProjects / pageSize);
+
+    // 4. Ambil Daftar Fasilitas Kawasan
+    const facilities = await prisma.facilities.findMany({
+        orderBy: { sort_order: 'asc' }
+    });
 
     const heroTitle = homeSetting?.hero_title || 'P I K 2';
     const heroDesc = homeSetting?.hero_description || '"PIK2 The New Jakarta City" merupakan mahakarya terbaru persembahan dari Agung Sedayu Group & Salim Group. PIK2 adalah pengembangan besar yang menghubungkan negara Indonesia dengan seluruh dunia. Berlokasi hanya kurang lebih 7 menit dari Bandara Internasional Soekarno-Hatta, bahkan lebih dekat daripada PIK1, tentunya membuat PIK2 unggul dalam hal konektivitas global, ekspansi bisnis, dan berbagai peluang investasi. Keberhasilan PIK1 memicu lahirnya jalinan kerjasama baru antara Agung Sedayu Group dan Salim Group. Kedua grup besar ini kembali menjalin kolaborasi hebatnya dalam pengembangan mahakarya PIK2. PIK2 adalah pengembangan besar-besaran yang akan mencapai sekitar 2.650 hektar. PIK2 akan menjadi pusat kekuatan ekonomi yang memiliki daya tarik yang kuat bagi peluang dan investasi yang menguntungkan dalam berbagai pengembangan properti.';
@@ -131,6 +137,9 @@ export default async function Home({ searchParams }: Props) {
 
                 </div>
             </section>
+
+            {/* KEUNGGULAN & FASILITAS KAWASAN PIK 2 (HORIZONTAL SLIDER / CAROUSEL) */}
+            <FacilitiesSlider facilities={facilities} />
 
             {/* PROMO SECTION (NEW DESIGN) */}
             {promoProjects.length > 0 && (

@@ -95,3 +95,19 @@ model Categories {
 
   @@map("categories")
 }
+
+model Facilities {
+  id          Int       @id @default(autoincrement())
+  title       String
+  category    String?
+  badge       String?
+  description String
+  image_url   String?
+  sort_order  Int       @default(0)
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @updatedAt
+
+  @@index([sort_order], map: "facilities_sort_order_index")
+  @@map("facilities")
+}
+
