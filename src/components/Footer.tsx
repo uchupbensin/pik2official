@@ -96,7 +96,7 @@ export default function Footer({
                     </div>
 
                     {/* Contact */}
-                    <div className="md:col-span-12 lg:col-span-4">
+                    <div id="contact" className="md:col-span-12 lg:col-span-4 scroll-mt-28">
                         <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100 shadow-sm">
                             <h3 className="font-extrabold text-lg mb-3 text-[#1E356A]">Layanan Konsultasi</h3>
                             <p className="text-gray-500 text-sm mb-6 leading-relaxed">Hubungi tim sales resmi kami untuk mendapatkan detail ketersediaan unit, price list, dan penawaran promo eksklusif bulan ini.</p>

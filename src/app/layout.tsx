@@ -11,7 +11,12 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const siteSetting = await prisma.siteSettings.findFirst();
+  let siteSetting = null;
+  try {
+    siteSetting = await prisma.siteSettings.findFirst();
+  } catch {
+    // Database may be offline during static build
+  }
   const siteName = siteSetting?.site_name || "PIK 2 OFFICIAL";
   const tagline = siteSetting?.site_tagline || "Kawasan Residensial & Komersial Elite di Jakarta Utara";
   const desc = "Website Marketing Resmi PIK 2. Dapatkan penawaran eksklusif, harga terbaik, dan informasi lengkap mengenai rumah, apartemen, ruko, hingga kavling komersial di kawasan elit PIK 2.";
@@ -78,11 +83,24 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const siteSetting = await prisma.siteSettings.findFirst();
-  const projects = await prisma.projects.findMany({
-    select: { name: true, slug: true, category: true, group_name: true, sort_order: true },
-    orderBy: { sort_order: "asc" }
-  });
+  let siteSetting: any = null;
+  let projects: any[] = [];
+  let dbCategories: any[] = [];
+
+  try {
+    siteSetting = await prisma.siteSettings.findFirst();
+    projects = await prisma.projects.findMany({
+      select: { name: true, slug: true, category: true, group_name: true, sort_order: true },
+      orderBy: { sort_order: "asc" }
+    });
+    dbCategories = await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
+    if (dbCategories.length === 0) {
+      const { syncCategories } = await import('@/app/admin/actions');
+      dbCategories = await syncCategories();
+    }
+  } catch {
+    // Database may be offline during static build
+  }
 
   function buildMenuChildren(category: string) {
     const categoryProjects = projects.filter(p => p.category === category);
@@ -109,12 +127,12 @@ export default async function RootLayout({
     return children.length > 0 ? children : undefined;
   }
 
-  let dbCategories = await prisma.categories.findMany({ orderBy: { sort_order: 'asc' } });
-  
-  if (dbCategories.length === 0) {
-    const { syncCategories } = await import('@/app/admin/actions');
-    dbCategories = await syncCategories();
+  const waNumber = siteSetting?.sales_whatsapp_number ?? '082210100303';
+  let cleanWa = waNumber.replace(/\D+/g, '');
+  if (cleanWa.startsWith('0')) {
+    cleanWa = '62' + cleanWa.substring(1);
   }
+  const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo Bapak Wisnu, saya ingin bertanya mengenai properti di PIK 2.');
 
   const menus = [
     { label: "HOME", url: "/" },
@@ -124,15 +142,18 @@ export default async function RootLayout({
       label: cat.label.toUpperCase(),
       url: "#",
       children: buildMenuChildren(cat.id)
-    }))
+    })),
+    {
+      label: "CONTACT",
+      url: "/#contact",
+      children: [
+        { label: "WhatsApp Marketing (Wisnu)", url: waLink },
+        { label: "Telepon Sales Inhouse", url: `tel:${cleanWa}` },
+        { label: "Marketing Gallery PIK 2", url: "/#contact" },
+        { label: "Jadwalkan Survey Show Unit", url: waLink }
+      ]
+    }
   ];
-
-  const waNumber = siteSetting?.sales_whatsapp_number ?? '6281234567890';
-  let cleanWa = waNumber.replace(/\D+/g, '');
-  if (cleanWa.startsWith('0')) {
-    cleanWa = '62' + cleanWa.substring(1);
-  }
-  const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya ingin bertanya mengenai properti di PIK 2.');
 
   return (
     <html lang="id" className={`${plusJakarta.variable} font-sans`} suppressHydrationWarning>
