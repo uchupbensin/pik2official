@@ -50,12 +50,19 @@ export default function Navbar({
 
     const siteName = siteSetting?.site_name || 'PIK 2 OFFICIAL';
     const waNumber = siteSetting?.sales_whatsapp_number || '082210100303';
+    const salesName = siteSetting?.sales_name || 'Wisnu';
+    const salesTitle = siteSetting?.sales_title || 'Senior In-House Property Consultant';
+    const salesPhoto = siteSetting?.sales_photo
+      ? (siteSetting.sales_photo.startsWith('http') || siteSetting.sales_photo.startsWith('/')
+          ? siteSetting.sales_photo
+          : `/api/${siteSetting.sales_photo}`)
+      : '/sales-wisnu-default.jpg';
 
     let cleanWa = waNumber.replace(/\D+/g, '');
     if (cleanWa.startsWith('0')) {
         cleanWa = '62' + cleanWa.substring(1);
     }
-    const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo Bapak Wisnu, saya ingin bertanya mengenai properti di PIK 2.');
+    const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent(`Halo Bapak ${salesName}, saya ingin bertanya mengenai properti di PIK 2.`);
 
     return (
         <>
@@ -106,16 +113,16 @@ export default function Navbar({
                                                     {/* Senior Consultant Spotlight */}
                                                     <div className="mt-3.5 bg-gradient-to-br from-slate-50 to-gray-50/50 rounded-2xl p-3.5 border border-gray-100">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-11 h-11 rounded-full bg-[#1E356A] text-white flex items-center justify-center font-bold text-base shadow-md shrink-0">
-                                                                W
+                                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#1E356A]/20 shadow-md shrink-0 bg-gray-100">
+                                                                <img src={salesPhoto} alt={salesName} className="w-full h-full object-cover object-top" />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center justify-between">
-                                                                    <p className="text-[11px] text-gray-500 font-medium">Senior Property Consultant</p>
+                                                                    <p className="text-[11px] text-gray-500 font-medium">In-House Consultant</p>
                                                                     <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-100/70 px-1.5 py-0.5 rounded">Online</span>
                                                                 </div>
-                                                                <p className="text-sm font-black text-gray-900 tracking-tight">Wisnu (Official PIK 2)</p>
-                                                                <p className="text-xs text-gray-600 font-mono font-medium">0822-1010-0303</p>
+                                                                <p className="text-sm font-black text-gray-900 tracking-tight">{salesName} (Official PIK 2)</p>
+                                                                <p className="text-xs text-gray-600 font-mono font-medium">{waNumber}</p>
                                                             </div>
                                                         </div>
 
@@ -155,16 +162,22 @@ export default function Navbar({
                                                         </div>
                                                     </div>
 
-                                                    {/* Quick CTA */}
-                                                    <div className="mt-3.5 pt-3 border-t border-gray-100">
+                                                    {/* Quick CTA to Page */}
+                                                    <div className="mt-3.5 pt-3 border-t border-gray-100 space-y-2">
+                                                        <Link
+                                                            href="/contact"
+                                                            className="w-full text-center py-2.5 px-3 rounded-xl bg-[#1E356A] hover:bg-[#14244B] text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm"
+                                                        >
+                                                            <span>Buka Halaman Kontak Lengkap</span>
+                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                                                        </Link>
                                                         <a
                                                             href={waLink}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="w-full text-center py-2.5 px-3 rounded-xl bg-gray-50 hover:bg-emerald-50 text-[#1E356A] hover:text-[#81A649] font-bold text-xs transition-colors flex items-center justify-center gap-1.5 border border-gray-200/60 hover:border-emerald-200"
+                                                            className="w-full text-center py-2 px-3 rounded-xl bg-gray-50 hover:bg-emerald-50 text-[#1E356A] hover:text-[#81A649] font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 border border-gray-200/60"
                                                         >
                                                             <span>📅 Jadwalkan Kunjungan Show Unit</span>
-                                                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -285,13 +298,13 @@ export default function Navbar({
                                             <div className={`overflow-hidden transition-all duration-300 ${isContactOpen ? 'max-h-[600px]' : 'max-h-0'}`}>
                                                 <div className="px-4 pb-4 pt-1 space-y-3">
                                                     <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-gray-100 shadow-xs">
-                                                        <div className="w-10 h-10 rounded-full bg-[#1E356A] text-white flex items-center justify-center font-bold text-sm shrink-0">
-                                                            W
+                                                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-[#1E356A]/20 shadow-xs shrink-0 bg-gray-100">
+                                                            <img src={salesPhoto} alt={salesName} className="w-full h-full object-cover object-top" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-[10px] text-gray-500 font-medium">Senior Property Consultant</p>
-                                                            <p className="text-sm font-black text-gray-900">Wisnu (Official PIK 2)</p>
-                                                            <p className="text-xs text-gray-600 font-mono font-medium">0822-1010-0303</p>
+                                                            <p className="text-[10px] text-gray-500 font-medium">{salesTitle}</p>
+                                                            <p className="text-sm font-black text-gray-900">{salesName} (Official PIK 2)</p>
+                                                            <p className="text-xs text-gray-600 font-mono font-medium">{waNumber}</p>
                                                         </div>
                                                     </div>
 
@@ -315,6 +328,15 @@ export default function Navbar({
                                                             Telepon
                                                         </a>
                                                     </div>
+
+                                                    <Link
+                                                        href="/contact"
+                                                        onClick={() => setMobileOpen(false)}
+                                                        className="w-full text-center py-2.5 px-3 rounded-xl bg-[#1E356A] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs"
+                                                    >
+                                                        <span>Buka Halaman Kontak Lengkap</span>
+                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                                                    </Link>
 
                                                     <div className="bg-white p-3 rounded-xl border border-gray-100 text-xs text-gray-600 space-y-1">
                                                         <p className="font-bold text-gray-800 flex items-center gap-1.5">

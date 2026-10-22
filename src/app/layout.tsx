@@ -145,11 +145,11 @@ export default async function RootLayout({
     })),
     {
       label: "CONTACT",
-      url: "/#contact",
+      url: "/contact",
       children: [
-        { label: "WhatsApp Marketing (Wisnu)", url: waLink },
+        { label: "Halaman Kontak & Profil", url: "/contact" },
+        { label: `WhatsApp Marketing (${siteSetting?.sales_name || 'Wisnu'})`, url: waLink },
         { label: "Telepon Sales Inhouse", url: `tel:${cleanWa}` },
-        { label: "Marketing Gallery PIK 2", url: "/#contact" },
         { label: "Jadwalkan Survey Show Unit", url: waLink }
       ]
     }

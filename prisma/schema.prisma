@@ -77,7 +77,14 @@ model Projects {
 
 model SiteSettings {
   id                    Int       @id @default(autoincrement())
-  sales_whatsapp_number String?
+  sales_name            String?   @default("Wisnu")
+  sales_title           String?   @default("Senior In-House Property Consultant")
+  sales_photo           String?   @default("/sales-wisnu-default.jpg")
+  sales_whatsapp_number String?   @default("082210100303")
+  sales_phone           String?   @default("082210100303")
+  sales_email           String?   @default("sales@pik2official.id")
+  office_address        String?   @default("Marketing Gallery PIK 2, Jl. Pantai Indah Kapuk, Kamal Muara, Penjaringan, Jakarta Utara")
+  office_hours          String?   @default("Buka Setiap Hari: 09.00 - 20.00 WIB")
   site_name             String    @default("PIK 2 OFFICIAL")
   site_tagline          String    @default("Katalog Properti & Hunian Pilihan di PIK 2")
   created_at            DateTime? @default(now())

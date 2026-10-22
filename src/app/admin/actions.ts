@@ -151,19 +151,47 @@ import { revalidatePath } from 'next/cache';
 export async function updateSettings(formData: FormData) {
   try {
     await requireAuth();
+    // Handle Sales Consultant Photo
+    const fileSales = formData.get('sales_photo') as File | null;
+    let salesPhotoPath: string | undefined = undefined;
+    if (fileSales && fileSales.size > 0) {
+      const buffer = Buffer.from(await fileSales.arrayBuffer());
+      const rawExt = fileSales.name ? fileSales.name.split('.').pop()?.toLowerCase() : 'webp';
+      const ext = (rawExt && ['jpg', 'jpeg', 'png', 'webp'].includes(rawExt)) ? rawExt : 'webp';
+      const filename = `sales-photo-${Date.now()}.${ext}`;
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+      await fs.writeFile(path.join(uploadDir, filename), buffer);
+      salesPhotoPath = `uploads/${filename}`;
+    }
+
     // 1. Update SiteSettings (id = 1)
     await prisma.siteSettings.upsert({
       where: { id: 1 },
       update: {
-        site_name: formData.get('site_name') as string,
-        site_tagline: formData.get('site_tagline') as string,
+        site_name: (formData.get('site_name') as string) || 'PIK 2 OFFICIAL',
+        site_tagline: (formData.get('site_tagline') as string) || 'Katalog Properti & Hunian Pilihan di PIK 2',
+        sales_name: (formData.get('sales_name') as string) || 'Wisnu',
+        sales_title: (formData.get('sales_title') as string) || 'Senior In-House Property Consultant',
         sales_whatsapp_number: formData.get('sales_whatsapp_number') as string,
+        sales_phone: (formData.get('sales_phone') as string) || (formData.get('sales_whatsapp_number') as string),
+        sales_email: (formData.get('sales_email') as string) || null,
+        office_address: (formData.get('office_address') as string) || 'Marketing Gallery PIK 2, Jl. Pantai Indah Kapuk, Kamal Muara, Penjaringan, Jakarta Utara',
+        office_hours: (formData.get('office_hours') as string) || 'Buka Setiap Hari: 09.00 - 20.00 WIB',
+        ...(salesPhotoPath ? { sales_photo: salesPhotoPath } : {}),
       },
       create: {
         id: 1,
-        site_name: formData.get('site_name') as string,
-        site_tagline: formData.get('site_tagline') as string,
+        site_name: (formData.get('site_name') as string) || 'PIK 2 OFFICIAL',
+        site_tagline: (formData.get('site_tagline') as string) || 'Katalog Properti & Hunian Pilihan di PIK 2',
+        sales_name: (formData.get('sales_name') as string) || 'Wisnu',
+        sales_title: (formData.get('sales_title') as string) || 'Senior In-House Property Consultant',
         sales_whatsapp_number: formData.get('sales_whatsapp_number') as string,
+        sales_phone: (formData.get('sales_phone') as string) || (formData.get('sales_whatsapp_number') as string),
+        sales_email: (formData.get('sales_email') as string) || null,
+        office_address: (formData.get('office_address') as string) || 'Marketing Gallery PIK 2, Jl. Pantai Indah Kapuk, Kamal Muara, Penjaringan, Jakarta Utara',
+        office_hours: (formData.get('office_hours') as string) || 'Buka Setiap Hari: 09.00 - 20.00 WIB',
+        sales_photo: salesPhotoPath || '/sales-wisnu-default.jpg',
       }
     });
 
@@ -217,6 +245,7 @@ export async function updateSettings(formData: FormData) {
     });
 
     revalidatePath('/');
+    revalidatePath('/contact');
     revalidatePath('/admin/settings');
     return { success: true };
   } catch (error: any) {
