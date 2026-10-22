@@ -142,16 +142,7 @@ export default async function RootLayout({
       url: "#",
       children: buildMenuChildren(cat.id)
     })),
-    {
-      label: "CONTACT",
-      url: "/contact",
-      children: [
-        { label: "Halaman Kontak & Profil", url: "/contact" },
-        { label: `WhatsApp Marketing (${siteSetting?.sales_name || 'Wisnu'})`, url: waLink },
-        { label: "Telepon Sales Inhouse", url: `tel:${cleanWa}` },
-        { label: "Jadwalkan Survey Show Unit", url: waLink }
-      ]
-    }
+    { label: "CONTACT", url: "/contact" }
   ];
 
   return (
