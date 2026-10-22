@@ -30,14 +30,6 @@ export default function Footer({
     }
     const waLink = 'https://wa.me/' + cleanWa + '?text=' + encodeURIComponent('Halo, saya tertarik dan ingin berkonsultasi mengenai properti di PIK 2.');
 
-    const salesName = siteSetting?.sales_name || 'Wisnu';
-    const salesTitle = siteSetting?.sales_title || 'Senior In-House Property Consultant';
-    const salesPhoto = siteSetting?.sales_photo
-      ? (siteSetting.sales_photo.startsWith('http') || siteSetting.sales_photo.startsWith('/')
-          ? siteSetting.sales_photo
-          : `/api/${siteSetting.sales_photo}`)
-      : '/sales-wisnu-default.jpg';
-
     return (
         <footer className="bg-white border-t border-gray-200 mt-auto relative overflow-hidden">
             <div className="relative z-10 max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12">
@@ -105,32 +97,16 @@ export default function Footer({
 
                     {/* Contact */}
                     <div id="contact" className="md:col-span-12 lg:col-span-4 scroll-mt-28">
-                        <div className="bg-gray-50 rounded-[2rem] p-6 sm:p-7 border border-gray-100 shadow-sm">
-                            <div className="flex items-center gap-3.5 mb-4">
-                                <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-gray-200 bg-white shrink-0 shadow-sm">
-                                    <img src={salesPhoto} alt={salesName} className="w-full h-full object-cover object-top" />
-                                    <span className="absolute bottom-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-white"></span>
-                                </div>
-                                <div>
-                                    <h3 className="font-extrabold text-base text-[#1E356A] leading-tight">{salesName}</h3>
-                                    <p className="text-xs text-[#81A649] font-semibold">{salesTitle}</p>
-                                </div>
-                            </div>
-                            <p className="text-gray-500 text-xs sm:text-sm mb-5 leading-relaxed">
-                                Hubungi sales resmi kami untuk detail ketersediaan unit terbaru, jadwal survey lokasi, dan simulasi cara bayar developer.
+                        <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100 shadow-sm">
+                            <h3 className="font-extrabold text-lg mb-3 text-[#1E356A]">Layanan Konsultasi</h3>
+                            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                                Hubungi tim sales resmi kami untuk mendapatkan detail ketersediaan unit, price list, dan penawaran promo eksklusif bulan ini.
                             </p>
-                            <div className="space-y-2.5">
-                                <a href={waLink} target="_blank" rel="noopener noreferrer"
-                                    className="group flex items-center justify-center gap-2.5 w-full px-5 py-3.5 rounded-xl bg-[#81A649] text-white text-sm font-bold hover:bg-[#6c8d3d] hover:shadow-lg hover:shadow-[#81A649]/20 hover:-translate-y-0.5 transition-all duration-300">
-                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                    <span>Chat WhatsApp Resmi</span>
-                                </a>
-                                <Link href="/contact"
-                                    className="flex items-center justify-center gap-2 w-full px-5 py-2.5 rounded-xl bg-white hover:bg-gray-100 text-[#1E356A] text-xs font-bold border border-gray-200 shadow-sm transition-all">
-                                    <span>Buka Halaman Kontak Lengkap</span>
-                                    <span>&rarr;</span>
-                                </Link>
-                            </div>
+                            <a href={waLink} target="_blank" rel="noopener noreferrer"
+                                className="group flex items-center justify-center gap-2.5 w-full px-6 py-4 rounded-xl bg-[#1E356A] text-white text-[15px] font-bold hover:bg-[#2B4A93] hover:shadow-lg hover:shadow-[#1E356A]/20 hover:-translate-y-0.5 transition-all duration-300">
+                                <svg className="w-5 h-5 group-hover:animate-bounce" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.247-.694.247-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
+                                <span>Hubungi Sales Resmi</span>
+                            </a>
                         </div>
                     </div>
                 </div>
