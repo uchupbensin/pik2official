@@ -53,6 +53,7 @@ model Projects {
   short_description String?
   location          String?
   cover_image       String?
+  cover_images      String?
   is_promo          Boolean         @default(false)
   whatsapp_number   String?
   meta_title        String?

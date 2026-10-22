@@ -47,6 +47,11 @@ export default async function Home({ searchParams }: Props) {
             is_promo: true,
             ...searchFilter
         },
+        include: {
+            project_images: {
+                orderBy: { sort_order: 'asc' }
+            }
+        },
         orderBy: { id: 'desc' }
     });
 
@@ -55,6 +60,11 @@ export default async function Home({ searchParams }: Props) {
         where: {
             is_promo: false,
             ...searchFilter
+        },
+        include: {
+            project_images: {
+                orderBy: { sort_order: 'asc' }
+            }
         },
         orderBy: { id: 'desc' },
         skip: skip,

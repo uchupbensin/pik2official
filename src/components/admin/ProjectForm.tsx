@@ -31,12 +31,49 @@ export default function ProjectForm({ project, existingCategories }: { project?:
   
   const router = useRouter();
 
+  // Cover Slider Images States
+  let initialExistingCovers: string[] = [];
+  if (project?.cover_images) {
+    try {
+      const parsed = JSON.parse(project.cover_images);
+      if (Array.isArray(parsed)) initialExistingCovers = parsed;
+    } catch {
+      initialExistingCovers = project.cover_images.split(',').map((s: string) => s.trim()).filter(Boolean);
+    }
+  } else if (project?.cover_image) {
+    initialExistingCovers = [project.cover_image];
+  }
+  const [existingCoverImages, setExistingCoverImages] = useState<string[]>(initialExistingCovers);
+  const [newCoverFiles, setNewCoverFiles] = useState<File[]>([]);
+  const [newCoverPreviews, setNewCoverPreviews] = useState<string[]>([]);
+
+  function handleCoverFilesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const fileList = Array.from(files);
+      setNewCoverFiles(prev => [...prev, ...fileList]);
+      const newUrls = fileList.map(f => URL.createObjectURL(f));
+      setNewCoverPreviews(prev => [...prev, ...newUrls]);
+    }
+  }
+
+  function handleRemoveNewCover(index: number) {
+    URL.revokeObjectURL(newCoverPreviews[index]);
+    setNewCoverFiles(prev => prev.filter((_, i) => i !== index));
+    setNewCoverPreviews(prev => prev.filter((_, i) => i !== index));
+  }
+
+  function handleRemoveExistingCover(index: number) {
+    setExistingCoverImages(prev => prev.filter((_, i) => i !== index));
+  }
+
   useEffect(() => {
     // Cleanup preview URLs on unmount
     return () => {
       previewUrls.forEach(url => URL.revokeObjectURL(url));
+      newCoverPreviews.forEach(url => URL.revokeObjectURL(url));
     };
-  }, [previewUrls]);
+  }, [previewUrls, newCoverPreviews]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,17 +101,19 @@ export default function ProjectForm({ project, existingCategories }: { project?:
       newFormData.append('image_captions', pdfCaptions[idx] || '');
     });
 
-    // Check if user uploaded a manual cover image
-    const manualCover = newFormData.get('cover_image') as File | null;
-    if ((!manualCover || manualCover.size === 0) && selectedCoverIndex !== null && webpFiles[selectedCoverIndex]) {
-      // Override cover_image with the selected WebP file from PDF
-      newFormData.set('cover_image', webpFiles[selectedCoverIndex]);
-    }
+    // Tambahkan cover images yang dipertahankan
+    existingCoverImages.forEach(imgPath => {
+      newFormData.append('existing_cover_images', imgPath);
+    });
 
-    // Jika tidak ada cover_image sama sekali, hapus field kosong agar parser tidak error
-    const finalCover = newFormData.get('cover_image') as File | null;
-    if (finalCover && finalCover.size === 0) {
-      newFormData.delete('cover_image');
+    // Tambahkan cover images baru yang dipilih
+    newCoverFiles.forEach(file => {
+      newFormData.append('cover_images', file);
+    });
+
+    // Jika tidak ada cover manual tapi ada foto yang dipilih dari PDF
+    if (newCoverFiles.length === 0 && existingCoverImages.length === 0 && selectedCoverIndex !== null && webpFiles[selectedCoverIndex]) {
+      newFormData.append('cover_images', webpFiles[selectedCoverIndex]);
     }
 
     try {
@@ -429,20 +468,86 @@ export default function ProjectForm({ project, existingCategories }: { project?:
               </div>
             </div>
 
-            {/* OPSI 3: Gambar Cover Khusus */}
+            {/* OPSI 3: Gambar Cover Khusus (Bisa 1 atau Banyak Foto - Slider) */}
             <div className="flex flex-col">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">3. Cover Khusus (Manual)</label>
-              <div className="border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-xl p-5 bg-gray-50/70 text-center relative flex-1 flex flex-col justify-center items-center transition-colors">
-                <input type="file" name="cover_image" accept="image/*" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                <Upload className="w-8 h-8 text-gray-500 mb-2" />
-                <p className="text-sm font-bold text-gray-700">Pilih File Cover</p>
-                <p className="text-xs text-gray-500 mt-1">Abaikan jika memilih cover dari foto di bawah</p>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-semibold text-gray-700">
+                  3. Foto Cover Slider (Bisa &gt;1 Foto)
+                </label>
+                <span className="text-[11px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full">
+                  Bisa Geser Kiri / Kanan
+                </span>
               </div>
-              {project?.cover_image && (
+              <div className="border-2 border-dashed border-[#1E356A]/30 hover:border-[#1E356A] rounded-xl p-5 bg-blue-50/20 hover:bg-blue-50/40 text-center relative flex-1 flex flex-col justify-center items-center transition-all cursor-pointer group">
+                <input 
+                  type="file" 
+                  name="cover_file_picker" 
+                  accept="image/*" 
+                  multiple 
+                  onChange={handleCoverFilesChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                />
+                <div className="w-10 h-10 rounded-full bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                  <Images className="w-5 h-5" />
+                </div>
+                <p className="text-sm font-bold text-[#1E356A]">Pilih Foto Cover (Bisa Lebih Dari 1)</p>
+                <p className="text-xs text-gray-500 mt-1">Pilih 1 atau beberapa foto untuk cover yang bisa digeser</p>
+              </div>
+
+              {/* Preview Cover Baru */}
+              {newCoverPreviews.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-xs font-medium text-gray-500 mb-1">Cover Saat Ini:</p>
-                  <div className="relative w-28 h-16 rounded-lg overflow-hidden border border-gray-200">
-                    <img src={project.cover_image.startsWith('http') ? project.cover_image : `/api/${project.cover_image}`} alt="Current Cover" className="w-full h-full object-cover" />
+                  <p className="text-xs font-bold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Foto Cover Baru ({newCoverPreviews.length} Foto):
+                  </p>
+                  <div className="flex flex-wrap gap-2.5">
+                    {newCoverPreviews.map((url, idx) => (
+                      <div key={idx} className="relative w-24 h-20 rounded-xl overflow-hidden border-2 border-emerald-500/40 shadow-xs group">
+                        <img src={url} alt={`Cover Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                        <span className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                          Cover #{idx + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveNewCover(idx)}
+                          className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-xs opacity-90 hover:opacity-100 transition-opacity"
+                          title="Hapus Cover Ini"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Cover yang Sudah Tersimpan */}
+              {existingCoverImages.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-gray-100">
+                  <p className="text-xs font-semibold text-gray-600 mb-1.5">
+                    Cover Saat Ini ({existingCoverImages.length} Foto):
+                  </p>
+                  <div className="flex flex-wrap gap-2.5">
+                    {existingCoverImages.map((imgPath, idx) => {
+                      const fullUrl = imgPath.startsWith('http') ? imgPath : `/api/${imgPath}`;
+                      return (
+                        <div key={idx} className="relative w-24 h-20 rounded-xl overflow-hidden border border-gray-200 shadow-xs group bg-gray-50">
+                          <img src={fullUrl} alt={`Saved Cover ${idx + 1}`} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 left-1 bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">
+                            #{idx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveExistingCover(idx)}
+                            className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-xs transition-opacity"
+                            title="Hapus Cover Ini"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}

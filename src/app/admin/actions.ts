@@ -297,24 +297,32 @@ export async function deleteProgress(id: number) {
 export async function createProject(formData: FormData) {
   try {
     await requireAuth();
-    const file = formData.get('cover_image') as File | null;
-    let coverPath = null;
-
-    if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-      const uploadDir = path.join(process.cwd(), 'public/uploads');
-
-      // Ensure dir exists
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
-      }
-
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      coverPath = `uploads/${filename}`;
+    // Handle single or multiple cover images
+    const coverFiles = formData.getAll('cover_images') as File[];
+    const singleCover = formData.get('cover_image') as File | null;
+    let allCoverFiles: File[] = [];
+    if (coverFiles && coverFiles.length > 0) {
+      allCoverFiles = coverFiles.filter(f => f && f.size > 0);
     }
+    if (singleCover && singleCover.size > 0 && !allCoverFiles.some(f => f.name === singleCover.name && f.size === singleCover.size)) {
+      allCoverFiles.unshift(singleCover);
+    }
+
+    const coverPaths: string[] = [];
+    if (allCoverFiles.length > 0) {
+      const uploadDir = path.join(process.cwd(), 'public/uploads');
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+
+      for (let i = 0; i < allCoverFiles.length; i++) {
+        const file = allCoverFiles[i];
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const filename = `${Date.now()}-${i}-${file.name.replace(/\s+/g, '-')}`;
+        await fs.writeFile(path.join(uploadDir, filename), buffer);
+        coverPaths.push(`uploads/${filename}`);
+      }
+    }
+    const coverPath = coverPaths.length > 0 ? coverPaths[0] : null;
+    const coverImagesJson = coverPaths.length > 0 ? JSON.stringify(coverPaths) : null;
 
     // (Brosur PDF tidak lagi disimpan ke server, hanya digunakan di client untuk render WebP)
     let brochurePath = null;
@@ -365,6 +373,7 @@ export async function createProject(formData: FormData) {
         youtube_url: formData.get('youtube_url') as string,
         gmaps_url: formData.get('gmaps_url') as string,
         cover_image: coverPath,
+        cover_images: coverImagesJson,
         brochure_file: brochurePath,
       }
     });
@@ -470,17 +479,39 @@ export async function updateProject(id: number, formData: FormData) {
       updateData.slug = (formData.get('name') as string).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
     }
 
-    if (file && file.size > 0) {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+    // Handle single or multiple cover images on update
+    const coverFiles = formData.getAll('cover_images') as File[];
+    const singleCover = formData.get('cover_image') as File | null;
+    const keptExistingCovers = (formData.getAll('existing_cover_images') as string[]).filter(Boolean);
+
+    let allNewCoverFiles: File[] = [];
+    if (coverFiles && coverFiles.length > 0) {
+      allNewCoverFiles = coverFiles.filter(f => f && f.size > 0);
+    }
+    if (singleCover && singleCover.size > 0 && !allNewCoverFiles.some(f => f.name === singleCover.name && f.size === singleCover.size)) {
+      allNewCoverFiles.unshift(singleCover);
+    }
+
+    const newCoverPaths: string[] = [];
+    if (allNewCoverFiles.length > 0) {
       const uploadDir = path.join(process.cwd(), 'public/uploads');
-      try {
-        await fs.access(uploadDir);
-      } catch {
-        await fs.mkdir(uploadDir, { recursive: true });
+      try { await fs.access(uploadDir); } catch { await fs.mkdir(uploadDir, { recursive: true }); }
+
+      for (let i = 0; i < allNewCoverFiles.length; i++) {
+        const file = allNewCoverFiles[i];
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const filename = `${Date.now()}-${i}-${file.name.replace(/\s+/g, '-')}`;
+        await fs.writeFile(path.join(uploadDir, filename), buffer);
+        newCoverPaths.push(`uploads/${filename}`);
       }
-      await fs.writeFile(path.join(uploadDir, filename), buffer);
-      updateData.cover_image = `uploads/${filename}`;
+    }
+
+    if (allNewCoverFiles.length > 0 || keptExistingCovers.length > 0) {
+      const finalCoverList = [...keptExistingCovers, ...newCoverPaths];
+      if (finalCoverList.length > 0) {
+        updateData.cover_image = finalCoverList[0];
+        updateData.cover_images = JSON.stringify(finalCoverList);
+      }
     }
 
     await prisma.projects.update({
