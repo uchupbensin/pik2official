@@ -1,9 +1,8 @@
 import prisma from '@/lib/prisma';
-import Link from 'next/link';
 import ProjectCard from '@/components/ProjectCard';
 import PromoProjectCard from '@/components/PromoProjectCard';
 import FacilitiesSlider from '@/components/FacilitiesSlider';
-import { Building2, BookOpen, MessageCircle, MapPin, CheckCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 
 export const revalidate = 0; // Or omit this for dynamic if you prefer
 
@@ -212,41 +211,10 @@ export default async function Home({ searchParams }: Props) {
                         <div className="w-20 h-1.5 bg-[#81A649] mx-auto mb-8 rounded-full opacity-80"></div>
 
                         {/* Paragraf Narasi Mahakarya PIK2 */}
-                        <div className="text-gray-600 text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-normal text-center space-y-4 max-w-3xl mx-auto">
+                        <div className="text-gray-600 text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-normal text-center space-y-4 max-w-3xl mx-auto mb-8 sm:mb-10">
                             {heroDesc.split('\n\n').map((paragraph: string, idx: number) => (
                                 <p key={idx}>{paragraph}</p>
                             ))}
-                        </div>
-
-                        {/* Highlight Chips: Ringkasan Nilai Unggulan PIK 2 */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto my-8 sm:my-10">
-                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
-                                <div className="w-10 h-10 rounded-xl bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center shrink-0">
-                                    <Building2 className="w-5 h-5 text-[#1E356A]" />
-                                </div>
-                                <div>
-                                    <p className="text-xs sm:text-sm font-bold text-gray-900">± 2.650 Hektar</p>
-                                    <p className="text-[11px] text-gray-500">Kota Mandiri Terintegrasi</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
-                                <div className="w-10 h-10 rounded-xl bg-[#81A649]/10 text-[#81A649] flex items-center justify-center shrink-0">
-                                    <MapPin className="w-5 h-5 text-[#81A649]" />
-                                </div>
-                                <div>
-                                    <p className="text-xs sm:text-sm font-bold text-gray-900">± 7 Menit Bandara</p>
-                                    <p className="text-[11px] text-gray-500">Akses Tol & Soekarno-Hatta</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
-                                <div className="w-10 h-10 rounded-xl bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center shrink-0">
-                                    <CheckCircle className="w-5 h-5 text-[#1E356A]" />
-                                </div>
-                                <div>
-                                    <p className="text-xs sm:text-sm font-bold text-gray-900">Agung Sedayu & Salim</p>
-                                    <p className="text-[11px] text-gray-500">Kolaborasi Dua Developer Raksasa</p>
-                                </div>
-                            </div>
                         </div>
 
                         {/* Tombol Pintas ke Unit Properti & WhatsApp */}
@@ -263,36 +231,14 @@ export default async function Home({ searchParams }: Props) {
                     </div>
 
                     {/* 3. CUPLIKAN YOUTUBE PROGRES PIK 2 (PENGGANTI GAMBAR 2) */}
-                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/60 border border-gray-100 bg-white p-4 sm:p-6 lg:p-8">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-100">
-                            <div>
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-red-50 text-red-600 border border-red-100">
-                                    <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
-                                    Cuplikan Video Progres PIK 2
-                                </span>
-                                <h3 className="text-xl sm:text-2xl font-black text-[#1E356A] mt-2 tracking-tight">
-                                    {progressTitle}
-                                </h3>
-                            </div>
-                            <Link
-                                href="/progres"
-                                className="inline-flex items-center gap-2 self-start sm:self-auto text-xs sm:text-sm font-bold text-[#1E356A] hover:text-[#81A649] px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200/70 transition-all shrink-0"
-                            >
-                                <span>Lihat Semua Video Progres</span>
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                            </Link>
-                        </div>
-
-                        {/* YouTube Video Embed Frame */}
-                        <div className="relative aspect-video w-full rounded-xl md:rounded-2xl overflow-hidden bg-black shadow-lg shadow-black/10">
-                            <iframe
-                                src={progressEmbedUrl}
-                                title={progressTitle}
-                                className="w-full h-full border-0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                            />
-                        </div>
+                    <div className="relative aspect-video w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/60 border border-gray-100 bg-black">
+                        <iframe
+                            src={progressEmbedUrl}
+                            title={progressTitle}
+                            className="w-full h-full border-0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                        />
                     </div>
 
                 </div>
