@@ -265,28 +265,26 @@ export default function SettingsForm({
             <p className="text-xs text-gray-500 mt-1">Tulis penjelasan lengkap tentang keunggulan mahakarya PIK 2.</p>
           </div>
 
-          {/* 4. Foto Banner Bawah */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              4. Foto Banner Bawah (Menara Syariah / Gedung Ikonik)
-            </label>
-            <input 
-              type="file" 
-              name="hero_image_bottom" 
-              accept="image/*" 
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-[#1E356A]/10 file:text-[#1E356A] hover:file:bg-[#1E356A]/20 cursor-pointer border border-gray-200 rounded-xl p-2 bg-gray-50/50" 
-            />
-            <p className="text-xs text-gray-500 mt-1">Format JPG, PNG, atau WebP. Kosongkan jika tidak ingin mengubah.</p>
-            {homeSettings?.hero_image_bottom ? (
-              <div className="mt-2 flex items-center gap-3">
-                <span className="text-xs text-gray-500 font-medium">Foto saat ini:</span>
-                <div className="h-16 w-32 rounded-lg overflow-hidden border border-gray-200 shadow-xs">
-                  <img src={homeSettings.hero_image_bottom.startsWith('http') ? homeSettings.hero_image_bottom : `/api/${homeSettings.hero_image_bottom}`} alt="Bottom Hero" className="w-full h-full object-cover" />
-                </div>
+          {/* 4. Cuplikan Video Progres PIK 2 (Pengganti Foto Banner Bawah) */}
+          <div className="bg-red-50/60 p-4 rounded-xl border border-red-100">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+                  Cuplikan Video YouTube Progres PIK 2 (Beranda)
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  Foto banner bawah beranda kini otomatis digantikan cuplikan video YouTube terbaru dari menu Progres PIK 2.
+                </p>
               </div>
-            ) : (
-              <p className="text-xs text-[#81A649] font-medium mt-1">Menggunakan foto bawaan: Menara Syariah PIK 2</p>
-            )}
+              <a
+                href="/admin/progress"
+                className="inline-flex items-center gap-1.5 px-4 py-2 bg-white text-[#1E356A] text-xs font-bold rounded-lg border border-gray-200 shadow-xs hover:bg-gray-50 self-start sm:self-auto shrink-0 transition-colors"
+              >
+                <span>Kelola Video Progres</span>
+                <span>&rarr;</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>

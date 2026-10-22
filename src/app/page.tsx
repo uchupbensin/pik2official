@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma';
+import Link from 'next/link';
 import ProjectCard from '@/components/ProjectCard';
 import PromoProjectCard from '@/components/PromoProjectCard';
 import FacilitiesSlider from '@/components/FacilitiesSlider';
@@ -86,6 +87,23 @@ export default async function Home({ searchParams }: Props) {
             orderBy: { sort_order: 'asc' }
         })
         : [];
+
+    // 5. Ambil Video Progres PIK 2 (Untuk Cuplikan di Beranda)
+    const latestProgress = await prisma.progress.findFirst({
+        orderBy: { sort_order: 'asc' }
+    });
+
+    const getYoutubeEmbedUrl = (url: string) => {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        const id = (match && match[2].length === 11) ? match[2] : null;
+        return id ? `https://www.youtube.com/embed/${id}` : null;
+    };
+
+    const progressYoutubeUrl = latestProgress?.youtube_url || 'https://youtu.be/1Q7xk2R0G6I?si=iCwzXpmpjnOIDMy_';
+    const progressEmbedUrl = getYoutubeEmbedUrl(progressYoutubeUrl) || 'https://www.youtube.com/embed/1Q7xk2R0G6I';
+    const progressTitle = latestProgress?.title || 'Progress Pembangunan Kawasan PIK 2';
 
     const heroTitle = homeSetting?.hero_title || 'P I K 2';
     const heroDesc = homeSetting?.hero_description || '"PIK2 The New Jakarta City" merupakan mahakarya terbaru persembahan dari Agung Sedayu Group & Salim Group. PIK2 adalah pengembangan besar yang menghubungkan negara Indonesia dengan seluruh dunia. Berlokasi hanya kurang lebih 7 menit dari Bandara Internasional Soekarno-Hatta, bahkan lebih dekat daripada PIK1, tentunya membuat PIK2 unggul dalam hal konektivitas global, ekspansi bisnis, dan berbagai peluang investasi. Keberhasilan PIK1 memicu lahirnya jalinan kerjasama baru antara Agung Sedayu Group dan Salim Group. Kedua grup besar ini kembali menjalin kolaborasi hebatnya dalam pengembangan mahakarya PIK2. PIK2 adalah pengembangan besar-besaran yang akan mencapai sekitar 2.650 hektar. PIK2 akan menjadi pusat kekuatan ekonomi yang memiliki daya tarik yang kuat bagi peluang dan investasi yang menguntungkan dalam berbagai pengembangan properti.';
@@ -193,13 +211,37 @@ export default async function Home({ searchParams }: Props) {
                         </div>
                     </div>
 
-                    {/* 3. GAMBAR BAWAH (MENARA SYARIAH / GEDUNG IKONIK) */}
-                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 bg-gray-50 group">
-                        <img
-                            src={bottomHeroImage}
-                            alt="PIK 2 Menara Syariah"
-                            className="w-full h-auto max-h-[500px] md:max-h-[620px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700 ease-out"
-                        />
+                    {/* 3. CUPLIKAN YOUTUBE PROGRES PIK 2 (PENGGANTI GAMBAR 2) */}
+                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/60 border border-gray-100 bg-white p-4 sm:p-6 lg:p-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-100">
+                            <div>
+                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-red-50 text-red-600 border border-red-100">
+                                    <span className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></span>
+                                    Cuplikan Video Progres PIK 2
+                                </span>
+                                <h3 className="text-xl sm:text-2xl font-black text-[#1E356A] mt-2 tracking-tight">
+                                    {progressTitle}
+                                </h3>
+                            </div>
+                            <Link
+                                href="/progres"
+                                className="inline-flex items-center gap-2 self-start sm:self-auto text-xs sm:text-sm font-bold text-[#1E356A] hover:text-[#81A649] px-4 py-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200/70 transition-all shrink-0"
+                            >
+                                <span>Lihat Semua Video Progres</span>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </Link>
+                        </div>
+
+                        {/* YouTube Video Embed Frame */}
+                        <div className="relative aspect-video w-full rounded-xl md:rounded-2xl overflow-hidden bg-black shadow-lg shadow-black/10">
+                            <iframe
+                                src={progressEmbedUrl}
+                                title={progressTitle}
+                                className="w-full h-full border-0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            />
+                        </div>
                     </div>
 
                 </div>
