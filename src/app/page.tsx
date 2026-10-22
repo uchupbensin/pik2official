@@ -128,12 +128,17 @@ export default async function Home({ searchParams }: Props) {
 
     return (
         <>
-            {/* EDITORIAL HERO SECTION (FOTO ATAS + KATA-KATA PIK2 + FOTO BAWAH) */}
-            <section className="relative pt-28 sm:pt-32 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-white">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            {/* EDITORIAL HERO SECTION (FOTO ATAS + KATA-KATA PIK2 + CUPLIKAN YOUTUBE PROGRES) */}
+            <section className="relative pt-24 sm:pt-28 lg:pt-32 pb-14 lg:pb-20 overflow-hidden bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     
                     {/* KOTAK PENCARIAN DI PALING ATAS BERANDA */}
-                    <div className="max-w-2xl mx-auto mb-8 sm:mb-10">
+                    <div className="max-w-2xl mx-auto mb-8 sm:mb-10 text-center">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-[#1E356A] bg-[#1E356A]/5 border border-[#1E356A]/10 mb-4">
+                            <span className="w-2 h-2 rounded-full bg-[#81A649] animate-pulse"></span>
+                            <span>Official Marketing Gallery • PIK 2</span>
+                        </div>
+
                         <form method="GET" action="/#projects" className="group flex items-center bg-white border-2 border-gray-100 hover:border-[#1E356A]/30 focus-within:border-[#1E356A] rounded-full p-1.5 sm:p-2 shadow-xl shadow-gray-200/70 focus-within:ring-4 focus-within:ring-[#1E356A]/10 transition-all duration-300">
                             <div className="pl-4 pr-2 sm:pr-3 flex items-center pointer-events-none text-gray-400 group-focus-within:text-[#1E356A] transition-colors">
                                 <svg className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,7 +167,7 @@ export default async function Home({ searchParams }: Props) {
                         </form>
 
                         {/* Tag Pencarian Populer */}
-                        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3 text-xs text-gray-500">
+                        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mt-3.5 text-xs text-gray-500">
                             <span className="font-semibold text-gray-400 text-[11px] uppercase tracking-wider">Populer:</span>
                             {['Rumah', 'Ruko', 'Apartemen', 'Kavling', 'Pasir Putih'].map((tag) => (
                                 <a
@@ -177,35 +182,81 @@ export default async function Home({ searchParams }: Props) {
                     </div>
 
                     {/* 1. GAMBAR ATAS (LANDMARK BUNDARAN PIK 2) */}
-                    <div className="w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 border border-gray-100 bg-gray-50 group">
+                    <div className="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl shadow-gray-200/60 border border-gray-100 bg-gray-50 group">
                         <img
                             src={topHeroImage}
                             alt="PIK 2 Landmark Bundaran"
-                            className="w-full h-auto max-h-[500px] md:max-h-[620px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700 ease-out"
+                            className="w-full h-[240px] sm:h-[360px] md:h-[460px] lg:h-[520px] object-cover object-center transform group-hover:scale-[1.01] transition-transform duration-700 ease-out"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none"></div>
+                        <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 text-white pointer-events-none">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-white/20 backdrop-blur-md border border-white/30 text-white mb-1.5 shadow-sm">
+                                Landmark Ikonik PIK 2
+                            </span>
+                            <p className="text-sm sm:text-base md:text-lg font-bold drop-shadow-md text-white/95">
+                                The New Jakarta City • Mahakarya Agung Sedayu Group & Salim Group
+                            </p>
+                        </div>
                     </div>
 
                     {/* 2. BAGIAN TENGAH: JUDUL BESAR & NARASI / KATA-KATA */}
                     <div className="max-w-4xl mx-auto text-center py-12 sm:py-16 md:py-20 px-2 sm:px-6">
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#81A649]/10 text-[#81A649] font-bold text-xs tracking-widest uppercase mb-4 border border-[#81A649]/20 shadow-xs">
+                            Mahakarya Kota Masa Depan
+                        </span>
+
                         {/* Judul Besar PIK2 dengan letter-spacing elegan */}
-                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#1E356A] tracking-[0.25em] md:tracking-[0.35em] uppercase mb-8">
+                        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#1E356A] tracking-[0.2em] md:tracking-[0.3em] uppercase mb-4">
                             {heroTitle}
                         </h1>
+                        <div className="w-20 h-1.5 bg-[#81A649] mx-auto mb-8 rounded-full opacity-80"></div>
 
                         {/* Paragraf Narasi Mahakarya PIK2 */}
-                        <div className="text-gray-700 text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-normal text-justify sm:text-center space-y-4">
+                        <div className="text-gray-600 text-sm sm:text-base md:text-[17px] leading-relaxed sm:leading-loose font-normal text-center space-y-4 max-w-3xl mx-auto">
                             {heroDesc.split('\n\n').map((paragraph: string, idx: number) => (
                                 <p key={idx}>{paragraph}</p>
                             ))}
                         </div>
 
+                        {/* Highlight Chips: Ringkasan Nilai Unggulan PIK 2 */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto my-8 sm:my-10">
+                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center shrink-0">
+                                    <Building2 className="w-5 h-5 text-[#1E356A]" />
+                                </div>
+                                <div>
+                                    <p className="text-xs sm:text-sm font-bold text-gray-900">± 2.650 Hektar</p>
+                                    <p className="text-[11px] text-gray-500">Kota Mandiri Terintegrasi</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-[#81A649]/10 text-[#81A649] flex items-center justify-center shrink-0">
+                                    <MapPin className="w-5 h-5 text-[#81A649]" />
+                                </div>
+                                <div>
+                                    <p className="text-xs sm:text-sm font-bold text-gray-900">± 7 Menit Bandara</p>
+                                    <p className="text-[11px] text-gray-500">Akses Tol & Soekarno-Hatta</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 hover:bg-gray-100/80 border border-gray-100 text-left transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-[#1E356A]/10 text-[#1E356A] flex items-center justify-center shrink-0">
+                                    <CheckCircle className="w-5 h-5 text-[#1E356A]" />
+                                </div>
+                                <div>
+                                    <p className="text-xs sm:text-sm font-bold text-gray-900">Agung Sedayu & Salim</p>
+                                    <p className="text-[11px] text-gray-500">Kolaborasi Dua Developer Raksasa</p>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Tombol Pintas ke Unit Properti & WhatsApp */}
-                        <div className="mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
-                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-bold text-xs sm:text-sm hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300">
+                        <div className="flex flex-wrap justify-center gap-3 sm:gap-4">
+                            <a href="#promo" className="group inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#1E356A] text-white font-bold text-xs sm:text-sm hover:bg-[#2B4A93] hover:shadow-xl hover:shadow-[#1E356A]/20 transition-all duration-300 hover:-translate-y-0.5">
                                 <span>Lihat Promo & Properti</span>
                                 <svg className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
                             </a>
-                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md transition-all duration-300">
+                            <a href={waLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5">
+                                <MessageCircle className="w-4 h-4" />
                                 <span>Konsultasi WhatsApp</span>
                             </a>
                         </div>

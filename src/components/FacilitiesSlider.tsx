@@ -87,7 +87,7 @@ export default function FacilitiesSlider({ facilities }: FacilitiesSliderProps) 
   }
 
   return (
-    <section id="fasilitas" aria-label="Keunggulan dan Fasilitas Kawasan PIK 2" className="relative py-20 lg:py-28 bg-[#F8FAFC] border-t border-b border-gray-100 overflow-hidden">
+    <section id="fasilitas" aria-label="Keunggulan dan Fasilitas Kawasan PIK 2" className="relative py-14 sm:py-16 lg:py-20 bg-[#F8FAFC] border-t border-b border-gray-100 overflow-hidden">
       {/* Subtle Background Glow */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#1E356A]/5 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-[#81A649]/5 rounded-full blur-3xl pointer-events-none"></div>
