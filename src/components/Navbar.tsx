@@ -58,6 +58,10 @@ export default function Navbar({
           : `/api/${siteSetting.sales_photo}`)
       : '/sales-wisnu-default.jpg';
 
+    const officeName = (siteSetting as any)?.office_name || 'PIK 2 SIGNATURE GALLERY';
+    const officeAddress = siteSetting?.office_address || 'CBD PIK2, Jl. Letjen S. Parman, Lot CBD SPR3, West Kosambi, Kosambi, Tangerang Regency, Banten 15213';
+    const officeMapsUrl = (siteSetting as any)?.office_maps_url || 'https://maps.app.goo.gl/mgVV7Ut8qKd241iz9?g_st=ac';
+
     let cleanWa = waNumber.replace(/\D+/g, '');
     if (cleanWa.startsWith('0')) {
         cleanWa = '62' + cleanWa.substring(1);
@@ -105,7 +109,7 @@ export default function Navbar({
                                                                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                                                                 In-House Marketing
                                                             </span>
-                                                            <h4 className="text-[15px] font-extrabold text-[#1E356A] mt-1">Marketing Gallery PIK 2</h4>
+                                                            <h4 className="text-[15px] font-extrabold text-[#1E356A] mt-1">{officeName}</h4>
                                                         </div>
                                                         <img src="/logo.png" alt="PIK 2" className="h-6 w-auto object-contain" />
                                                     </div>
@@ -153,7 +157,7 @@ export default function Navbar({
                                                             <svg className="w-4 h-4 text-[#1E356A] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                                             <div className="flex-1">
                                                                 <p className="font-bold text-gray-900">Kantor Pemasaran</p>
-                                                                <p className="text-[11px] text-gray-500 leading-tight">Jl. Pantai Indah Kapuk, Kamal Muara, Jakarta Utara</p>
+                                                                <p className="text-[11px] text-gray-500 leading-tight">CBD PIK2, Jl. Letjen S. Parman, Tangerang</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-2.5">
@@ -341,9 +345,9 @@ export default function Navbar({
                                                     <div className="bg-white p-3 rounded-xl border border-gray-100 text-xs text-gray-600 space-y-1">
                                                         <p className="font-bold text-gray-800 flex items-center gap-1.5">
                                                             <svg className="w-3.5 h-3.5 text-[#1E356A]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                                            Marketing Gallery PIK 2
+                                                            {officeName}
                                                         </p>
-                                                        <p className="text-[11px] text-gray-500">Jl. Pantai Indah Kapuk, Kamal Muara, Jakarta Utara</p>
+                                                        <p className="text-[11px] text-gray-500">CBD PIK2, Jl. Letjen S. Parman, Tangerang</p>
                                                         <p className="text-[11px] text-emerald-700 font-semibold">Buka Setiap Hari (09.00 - 20.00 WIB)</p>
                                                     </div>
 

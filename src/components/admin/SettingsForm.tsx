@@ -165,6 +165,17 @@ export default function SettingsForm({
           </div>
 
           <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Nama Kantor Pemasaran</label>
+            <input 
+              type="text" 
+              name="office_name" 
+              defaultValue={(siteSettings as any)?.office_name || 'PIK 2 SIGNATURE GALLERY'} 
+              placeholder="Contoh: PIK 2 SIGNATURE GALLERY"
+              className="w-full px-4 py-2.5 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-[#1E356A]/30 focus:border-[#1E356A]" 
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Jam Operasional</label>
             <input 
               type="text" 
@@ -176,10 +187,21 @@ export default function SettingsForm({
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Alamat Kantor / Marketing Gallery PIK 2</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Link Google Maps Kantor</label>
+            <input 
+              type="text" 
+              name="office_maps_url" 
+              defaultValue={(siteSettings as any)?.office_maps_url || 'https://maps.app.goo.gl/mgVV7Ut8qKd241iz9?g_st=ac'} 
+              placeholder="Contoh: https://maps.app.goo.gl/..."
+              className="w-full px-4 py-2.5 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-[#1E356A]/30 focus:border-[#1E356A]" 
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Alamat Kantor Pemasaran</label>
             <textarea 
               name="office_address" 
-              defaultValue={siteSettings?.office_address || 'Marketing Gallery PIK 2, Jl. Pantai Indah Kapuk, Kamal Muara, Penjaringan, Jakarta Utara'} 
+              defaultValue={siteSettings?.office_address || 'CBD PIK2, Jl. Letjen S. Parman, Lot CBD SPR3, West Kosambi, Kosambi, Tangerang Regency, Banten 15213'} 
               rows={2}
               className="w-full px-4 py-2.5 border rounded-xl bg-white text-gray-900 focus:ring-2 focus:ring-[#1E356A]/30 focus:border-[#1E356A]" 
             />

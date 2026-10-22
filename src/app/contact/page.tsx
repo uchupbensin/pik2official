@@ -36,7 +36,9 @@ export default async function ContactPage() {
   const salesTitle = siteSetting?.sales_title || 'Senior In-House Property Consultant';
   const salesPhone = siteSetting?.sales_phone || siteSetting?.sales_whatsapp_number || '082210100303';
   const salesEmail = siteSetting?.sales_email || 'sales@pik2official.id';
-  const officeAddress = siteSetting?.office_address || 'Marketing Gallery PIK 2, Jl. Pantai Indah Kapuk, Kamal Muara, Penjaringan, Jakarta Utara';
+  const officeName = (siteSetting as any)?.office_name || 'PIK 2 SIGNATURE GALLERY';
+  const officeAddress = siteSetting?.office_address || 'CBD PIK2, Jl. Letjen S. Parman, Lot CBD SPR3, West Kosambi, Kosambi, Tangerang Regency, Banten 15213';
+  const officeMapsUrl = (siteSetting as any)?.office_maps_url || 'https://maps.app.goo.gl/mgVV7Ut8qKd241iz9?g_st=ac';
   const officeHours = siteSetting?.office_hours || 'Buka Setiap Hari: 09.00 - 20.00 WIB';
 
   const salesPhoto = siteSetting?.sales_photo
@@ -187,9 +189,9 @@ export default async function ContactPage() {
         <div className="bg-white rounded-3xl p-8 sm:p-10 border border-gray-100 shadow-lg shadow-gray-100 mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-8">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#81A649]">Lokasi Kantor Pemasaran</span>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#81A649]">Kantor Pemasaran</span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#1E356A] mt-1 mb-3">
-                Marketing Gallery PIK 2
+                {officeName}
               </h3>
               <p className="text-gray-600 text-sm sm:text-base leading-relaxed mb-4">
                 {officeAddress}
@@ -216,13 +218,13 @@ export default async function ContactPage() {
                 📅 Jadwalkan Kunjungan Show Unit
               </a>
               <a
-                href="https://maps.google.com/?q=Marketing+Gallery+PIK+2"
+                href={officeMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full text-center py-3.5 px-6 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-sm border border-gray-200 transition-all flex items-center justify-center gap-2"
               >
                 <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span>Petunjuk Arah (Google Maps)</span>
+                <span>Buka Petunjuk Arah (Google Maps)</span>
               </a>
             </div>
           </div>

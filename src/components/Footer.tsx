@@ -20,8 +20,9 @@ export default function Footer({
     const siteTagline = siteSetting?.site_tagline || 'Kawasan Residensial & Komersial Elite di Jakarta Utara';
     const siteDescription = 'Dapatkan informasi resmi dan terbaru mengenai hunian eksklusif, ruko premium, apartemen mewah, serta lahan komersial strategis di kawasan mega proyek PIK 2.';
 
-    const officeAddress = 'Jl. Marina Indah Raya No. 1, Kamal Muara, Kecamatan Penjaringan, Jakarta Utara, 14470';
-    const mapsLink = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Marketing Gallery PIK 2, ' + officeAddress);
+    const officeName = (siteSetting as any)?.office_name || 'PIK 2 SIGNATURE GALLERY';
+    const officeAddress = siteSetting?.office_address || 'CBD PIK2, Jl. Letjen S. Parman, Lot CBD SPR3, West Kosambi, Kosambi, Tangerang Regency, Banten 15213';
+    const mapsLink = (siteSetting as any)?.office_maps_url || 'https://maps.app.goo.gl/mgVV7Ut8qKd241iz9?g_st=ac';
 
     const waNumber = siteSetting?.sales_whatsapp_number || '6281234567890';
     let cleanWa = waNumber.replace(/\D+/g, '');
@@ -60,7 +61,7 @@ export default function Footer({
                                 </div>
                                 <div className="flex-1">
                                     <h4 className="font-bold text-[#1E356A] text-xs uppercase tracking-wider mb-1">
-                                        Kantor Pemasaran / Marketing Gallery
+                                        Kantor Pemasaran : {officeName}
                                     </h4>
                                     <p className="text-gray-600 text-[13px] leading-relaxed mb-2.5">
                                         {officeAddress}
