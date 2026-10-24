@@ -145,10 +145,33 @@ export default async function RootLayout({
     { label: "CONTACT", url: "/contact" }
   ];
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const siteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    "name": siteSetting?.site_name || "PIK 2 OFFICIAL",
+    "description": "Website Resmi Pemasaran Properti PIK 2 - Pantai Indah Kapuk 2",
+    "url": siteUrl,
+    "telephone": waNumber,
+    "image": [`${siteUrl}/logo.png`],
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "CBD PIK2, Jl. Letjen S. Parman, Lot CBD SPR3, West Kosambi",
+      "addressLocality": "Tangerang",
+      "addressRegion": "Banten",
+      "postalCode": "15213",
+      "addressCountry": "ID"
+    }
+  };
+
   return (
     <html lang="id" className={`${plusJakarta.variable} font-sans`} suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="qDM-QhbabFclmTT6AVB-qv7ChVBNODFn8ezyvH52g_I" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd) }}
+        />
       </head>
       <body className="bg-white text-gray-800 antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <PublicLayout siteSetting={siteSetting} menus={menus} waLink={waLink}>

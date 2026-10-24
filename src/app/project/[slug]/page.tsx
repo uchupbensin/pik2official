@@ -43,16 +43,73 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const slug = decodeURIComponent((await params).slug);
   const project = await prisma.projects.findUnique({
-    where: { slug }
+    where: { slug },
+    include: {
+      project_images: {
+        orderBy: { sort_order: 'asc' },
+        take: 5
+      }
+    }
   });
 
   if (!project) {
     return { title: 'Not Found' };
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  
+  const images: string[] = [];
+  if (project.cover_image) {
+    images.push(project.cover_image.startsWith('http') ? project.cover_image : `${siteUrl}${project.cover_image.startsWith('/') ? '' : '/'}${project.cover_image}`);
+  }
+  if (project.project_images && project.project_images.length > 0) {
+    project.project_images.forEach((img: any) => {
+      if (img.image_path) {
+        const fullUrl = img.image_path.startsWith('http') 
+          ? img.image_path 
+          : `${siteUrl}${img.image_path.startsWith('/') ? '' : '/api/uploads/'}${img.image_path}`;
+        if (!images.includes(fullUrl)) images.push(fullUrl);
+      }
+    });
+  }
+
+  const title = project.meta_title || `${project.name} | PIK 2 OFFICIAL`;
+  const description = project.meta_description || project.short_description || `Detail spesifikasi, tipe unit, denah, dan promo harga ${project.name} di kawasan mandiri PIK 2. Hubungi marketing resmi.`;
+
   return {
-    title: project.meta_title || `${project.name} | PIK 2 OFFICIAL`,
-    description: project.meta_description || project.short_description || `Detail proyek ${project.name}`,
+    title,
+    description,
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${siteUrl}/project/${slug}`,
+      siteName: 'PIK 2 OFFICIAL',
+      locale: 'id_ID',
+      type: 'article',
+      images: images.map(url => ({
+        url,
+        width: 1200,
+        height: 675,
+        alt: `${project.name} - PIK 2`,
+      })),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: images.length > 0 ? [images[0]] : undefined,
+    },
   };
 }
 
@@ -145,9 +202,49 @@ export default async function ProjectDetail({ params }: Props) {
     finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(defaultLng - 0.02).toFixed(5)}%2C${(defaultLat - 0.015).toFixed(5)}%2C${(defaultLng + 0.02).toFixed(5)}%2C${(defaultLat + 0.015).toFixed(5)}&layer=mapnik&marker=${defaultLat}%2C${defaultLng}`;
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const schemaImages: string[] = [];
+  if (project.cover_image) {
+    schemaImages.push(project.cover_image.startsWith('http') ? project.cover_image : `${siteUrl}${project.cover_image.startsWith('/') ? '' : '/'}${project.cover_image}`);
+  }
+  if (project.project_images && project.project_images.length > 0) {
+    project.project_images.forEach((img: any) => {
+      if (img.image_path) {
+        const fullUrl = img.image_path.startsWith('http') 
+          ? img.image_path 
+          : `${siteUrl}${img.image_path.startsWith('/') ? '' : '/api/uploads/'}${img.image_path}`;
+        if (!schemaImages.includes(fullUrl)) schemaImages.push(fullUrl);
+      }
+    });
+  }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${project.name} PIK 2`,
+    "description": project.short_description || `Properti pilihan di kawasan terpadu PIK 2: ${project.name}`,
+    "image": schemaImages,
+    "brand": {
+      "@type": "Brand",
+      "name": "Agung Sedayu Group & Salim Group"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "IDR",
+      "price": project.price ? project.price.replace(/\D+/g, '') || "0" : "0",
+      "priceValidUntil": "2027-12-31",
+      "availability": "https://schema.org/InStock",
+      "url": `${siteUrl}/project/${project.slug}`
+    }
+  };
+
   return (
     <>
       <main className="bg-white min-h-screen">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       {/* HERO SHOWCASE SECTION (100% UTUH DI MOBILE & DESKTOP) */}
       <section className="relative w-full bg-gradient-to-b from-[#f8fafc] via-white to-gray-50/40 pt-28 sm:pt-32 lg:pt-36 pb-14 lg:pb-20 border-b border-gray-100 overflow-hidden">
         {/* Subtle decorative background glow */}
