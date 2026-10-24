@@ -1,10 +1,11 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
+import { getSiteUrl } from '@/lib/site-url';
 
 export const revalidate = 3600; // Revalidate sitemap every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = 'https://pik2official.id';
+  const siteUrl = getSiteUrl();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -12,6 +13,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1.0,
+    },
+    {
+      url: `${siteUrl}/contact`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.9,
     },
     {
       url: `${siteUrl}/progres`,

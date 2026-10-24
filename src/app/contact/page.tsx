@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import ContactInquiryForm from '@/components/ContactInquiryForm';
+import { getSiteUrl } from '@/lib/site-url';
 
 export async function generateMetadata(): Promise<Metadata> {
   let siteSetting = null;
@@ -14,12 +15,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const salesName = siteSetting?.sales_name || 'Wisnu';
   const siteName = siteSetting?.site_name || 'PIK 2 OFFICIAL';
+  const siteUrl = getSiteUrl();
 
   return {
     title: `Hubungi Marketing Resmi - ${salesName} | ${siteName}`,
     description: `Hubungi ${salesName}, Senior In-House Property Consultant ${siteName}. Konsultasikan rumah, ruko, apartemen, kavling, survey show unit, dan price list resmi.`,
     alternates: {
-      canonical: '/contact',
+      canonical: `${siteUrl}/contact`,
     },
   };
 }

@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import ProjectCard from '@/components/ProjectCard';
 import { Metadata } from 'next';
+import { getSiteUrl } from '@/lib/site-url';
 
 export const revalidate = 0;
 
@@ -56,7 +57,7 @@ export async function generateMetadata(
     return { title: 'Not Found' };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const siteUrl = getSiteUrl();
   
   const images: string[] = [];
   if (project.cover_image) {
@@ -109,6 +110,9 @@ export async function generateMetadata(
       title,
       description,
       images: images.length > 0 ? [images[0]] : undefined,
+    },
+    alternates: {
+      canonical: `${siteUrl}/project/${slug}`,
     },
   };
 }
@@ -202,7 +206,7 @@ export default async function ProjectDetail({ params }: Props) {
     finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(defaultLng - 0.02).toFixed(5)}%2C${(defaultLat - 0.015).toFixed(5)}%2C${(defaultLng + 0.02).toFixed(5)}%2C${(defaultLat + 0.015).toFixed(5)}&layer=mapnik&marker=${defaultLat}%2C${defaultLng}`;
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const siteUrl = getSiteUrl();
   const schemaImages: string[] = [];
   if (project.cover_image) {
     schemaImages.push(project.cover_image.startsWith('http') ? project.cover_image : `${siteUrl}${project.cover_image.startsWith('/') ? '' : '/'}${project.cover_image}`);

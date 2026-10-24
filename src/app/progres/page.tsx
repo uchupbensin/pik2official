@@ -1,9 +1,15 @@
 import React from 'react';
+import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { PlayCircle } from 'lucide-react';
+import { getSiteUrl } from '@/lib/site-url';
 
-export const metadata = {
-  title: 'Progres PIK 2 - PIK 2 OFFICIAL',
+export const metadata: Metadata = {
+  title: 'Progres Pembangunan PIK 2 - Video Update Lapangan | PIK 2 OFFICIAL',
+  description: 'Ikuti perkembangan terbaru pembangunan kawasan mandiri PIK 2 (Pantai Indah Kapuk 2) melalui cuplikan video dokumentasi progres langsung dari lokasi proyek.',
+  alternates: {
+    canonical: `${getSiteUrl()}/progres`,
+  },
 };
 
 function getYoutubeEmbedUrl(url: string) {

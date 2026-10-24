@@ -5,6 +5,8 @@ import PublicLayout from "@/components/PublicLayout";
 import DevToolsSponsor from "@/components/DevToolsSponsor";
 import prisma from "@/lib/prisma";
 
+import { getSiteUrl } from "@/lib/site-url";
+
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-plus-jakarta",
@@ -21,9 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const tagline = siteSetting?.site_tagline || "Kawasan Residensial & Komersial Elite di Jakarta Utara";
   const desc = "Website Marketing Resmi PIK 2. Dapatkan penawaran eksklusif, harga terbaik, dan informasi lengkap mengenai rumah, apartemen, ruko, hingga kavling komersial di kawasan elit PIK 2.";
 
-  // metadataBase resolves relative Open Graph / Twitter image URLs.
-  // In production, NEXT_PUBLIC_SITE_URL must be set to the canonical site URL
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.NODE_ENV === 'development' ? "http://localhost:3000" : "https://pik2official.id");
+  const siteUrl = getSiteUrl();
 
   return {
     metadataBase: new URL(siteUrl),
@@ -145,7 +145,7 @@ export default async function RootLayout({
     { label: "CONTACT", url: "/contact" }
   ];
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://pik2official.id';
+  const siteUrl = getSiteUrl();
   const siteJsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateAgent",
