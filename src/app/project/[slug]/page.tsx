@@ -105,11 +105,15 @@ export default async function ProjectDetail({ params }: Props) {
   }
 
   let finalMapEmbedUrl = '';
-  const directMapsUrl = project.gmaps_url?.startsWith('http') 
-    ? project.gmaps_url 
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((project.location || project.name) + ' PIK 2')}`;
+  const isSearchShare = project.gmaps_url && (project.gmaps_url.includes('share.google') || project.gmaps_url.includes('google.com/search'));
+  const isEmbedCode = project.gmaps_url && (project.gmaps_url.includes('<iframe') || project.gmaps_url.includes('google.com/maps/embed'));
 
-  if (project.gmaps_url && (project.gmaps_url.includes('<iframe') || project.gmaps_url.includes('google.com/maps/embed'))) {
+  // URL yang dibuka saat pengunjung klik tombol "Buka di Google Maps"
+  const directMapsUrl = (project.gmaps_url?.startsWith('http') && !isSearchShare)
+    ? project.gmaps_url 
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((project.location || project.name) + ' PIK')}`;
+
+  if (isEmbedCode) {
     // 1. Jika dimasukkan kode embed resmi Google Maps
     if (project.gmaps_url.includes('src="')) {
       const match = project.gmaps_url.match(/src="([^"]+)"/);
@@ -117,7 +121,7 @@ export default async function ProjectDetail({ params }: Props) {
     } else {
       finalMapEmbedUrl = project.gmaps_url;
     }
-  } else if (project.gmaps_url) {
+  } else if (project.gmaps_url && !isSearchShare) {
     // 2. Jika dimasukkan link Google Maps biasa (maps.app.goo.gl / link browser)
     const fallbackCoords = '-6.046897,106.68297';
     const resolved = await resolveGmapsQuery(project.gmaps_url, fallbackCoords);
@@ -134,8 +138,11 @@ export default async function ProjectDetail({ params }: Props) {
       finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=106.65%2C-6.08%2C106.75%2C-6.02&layer=mapnik&marker=-6.046897%2C106.68297`;
     }
   } else {
-    // 3. Fallback peta kawasan PIK 2
-    finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=106.65%2C-6.08%2C106.75%2C-6.02&layer=mapnik&marker=-6.046897%2C106.68297`;
+    // 3. Fallback peta kawasan PIK / Golf Island jika link share google atau kosong
+    const isGolfIsland = (project.name || '').toLowerCase().includes('orchestra') || (project.location || '').toLowerCase().includes('golf island');
+    const defaultLat = isGolfIsland ? -6.109867 : -6.046897;
+    const defaultLng = isGolfIsland ? 106.739221 : 106.68297;
+    finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(defaultLng - 0.02).toFixed(5)}%2C${(defaultLat - 0.015).toFixed(5)}%2C${(defaultLng + 0.02).toFixed(5)}%2C${(defaultLat + 0.015).toFixed(5)}&layer=mapnik&marker=${defaultLat}%2C${defaultLng}`;
   }
 
   return (
