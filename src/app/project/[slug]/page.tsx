@@ -104,18 +104,38 @@ export default async function ProjectDetail({ params }: Props) {
     }
   }
 
-  let finalMapEmbedUrl = null;
-  if (project.gmaps_url) {
-    if (project.gmaps_url.includes('<iframe') && project.gmaps_url.includes('src="')) {
+  let finalMapEmbedUrl = '';
+  const directMapsUrl = project.gmaps_url?.startsWith('http') 
+    ? project.gmaps_url 
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((project.location || project.name) + ' PIK 2')}`;
+
+  if (project.gmaps_url && (project.gmaps_url.includes('<iframe') || project.gmaps_url.includes('google.com/maps/embed'))) {
+    // 1. Jika dimasukkan kode embed resmi Google Maps
+    if (project.gmaps_url.includes('src="')) {
       const match = project.gmaps_url.match(/src="([^"]+)"/);
-      if (match) finalMapEmbedUrl = match[1];
-    } else if (project.gmaps_url.includes('embed')) {
-      finalMapEmbedUrl = project.gmaps_url;
+      finalMapEmbedUrl = match ? match[1] : project.gmaps_url;
     } else {
-      const fallbackQuery = encodeURIComponent(project.location || project.name);
-      const resolvedQuery = await resolveGmapsQuery(project.gmaps_url, fallbackQuery);
-      finalMapEmbedUrl = `https://maps.google.com/maps?q=${resolvedQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+      finalMapEmbedUrl = project.gmaps_url;
     }
+  } else if (project.gmaps_url) {
+    // 2. Jika dimasukkan link Google Maps biasa (maps.app.goo.gl / link browser)
+    const fallbackCoords = '-6.046897,106.68297';
+    const resolved = await resolveGmapsQuery(project.gmaps_url, fallbackCoords);
+    if (resolved && resolved.includes(',')) {
+      const [lat, lng] = resolved.split(',');
+      const latNum = parseFloat(lat);
+      const lngNum = parseFloat(lng);
+      if (!isNaN(latNum) && !isNaN(lngNum)) {
+        finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(lngNum - 0.02).toFixed(5)}%2C${(latNum - 0.015).toFixed(5)}%2C${(lngNum + 0.02).toFixed(5)}%2C${(latNum + 0.015).toFixed(5)}&layer=mapnik&marker=${latNum}%2C${lngNum}`;
+      } else {
+        finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=106.65%2C-6.08%2C106.75%2C-6.02&layer=mapnik&marker=-6.046897%2C106.68297`;
+      }
+    } else {
+      finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=106.65%2C-6.08%2C106.75%2C-6.02&layer=mapnik&marker=-6.046897%2C106.68297`;
+    }
+  } else {
+    // 3. Fallback peta kawasan PIK 2
+    finalMapEmbedUrl = `https://www.openstreetmap.org/export/embed.html?bbox=106.65%2C-6.08%2C106.75%2C-6.02&layer=mapnik&marker=-6.046897%2C106.68297`;
   }
 
   return (
@@ -255,37 +275,7 @@ export default async function ProjectDetail({ params }: Props) {
         </section>
       )}
 
-      {/* GOOGLE MAPS SECTION */}
-      {project.gmaps_url && (
-        <section className="bg-white py-16 lg:py-24 border-t border-gray-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10 lg:mb-14">
-              <h2 className="text-3xl lg:text-4xl font-extrabold text-[#1E356A] tracking-tight mb-4">Lokasi & Peta</h2>
-              <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Kunjungi lokasi {project.name} secara langsung.</p>
-            </div>
-            
-            <div className="relative aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
-              {/* Iframe otomatis menggunakan nama lokasi atau koordinat asli */}
-              <iframe 
-                src={finalMapEmbedUrl!} 
-                className="w-full h-full border-0 grayscale-[20%] group-hover:grayscale-0 transition-all duration-700" 
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title={`Peta Lokasi ${project.name}`}
-              ></iframe>
-              
-              {/* Tombol Buka di Maps overlay */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
-                <a href={project.gmaps_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md text-[#1E356A] px-6 py-3 rounded-full font-bold shadow-lg hover:bg-[#1E356A] hover:text-white transition-colors duration-300">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.244-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3" strokeWidth="2"/></svg>
-                  Buka di Google Maps
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
+
 
       {/* Minimalist E-Brochure Gallery */}
       {project.project_images && project.project_images.length > 0 && (
@@ -325,24 +315,31 @@ export default async function ProjectDetail({ params }: Props) {
 
       {/* LOCATION MAP SECTION */}
       <section className="bg-white py-16 lg:py-24 border-t border-gray-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="text-center mb-10 lg:mb-14">
-                  <h2 className="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight mb-4">Peta Lokasi</h2>
-                  <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Lokasi strategis {project.name} di kawasan terpadu PIK 2.</p>
-              </div>
-              <div className="aspect-[4/3] sm:aspect-video w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-gray-100 bg-gray-50">
-                  <iframe 
-                      src={project.gmaps_url || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126938.86877995648!2d106.6329705972656!3d-6.046897100000001!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a1d82b3a987d7%3A0xc3cf9c98ba9c1e19!2sPantai%20Indah%20Kapuk%202!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid"}
-                      width="100%" 
-                      height="100%" 
-                      style={{ border: 0 }} 
-                      allowFullScreen 
-                      loading="lazy" 
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title={`Peta Lokasi ${project.name}`}
-                  ></iframe>
-              </div>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 lg:mb-14">
+            <h2 className="text-3xl lg:text-4xl font-extrabold text-[#1E356A] tracking-tight mb-4">Peta Lokasi</h2>
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto font-light">Lokasi strategis {project.name} di kawasan terpadu PIK 2.</p>
           </div>
+          
+          <div className="relative aspect-video lg:aspect-[21/9] w-full rounded-[1.5rem] lg:rounded-[2rem] overflow-hidden shadow-2xl shadow-gray-200/50 border border-gray-200/60 bg-gray-50 group">
+            <iframe 
+              src={finalMapEmbedUrl} 
+              className="w-full h-full border-0 grayscale-[15%] group-hover:grayscale-0 transition-all duration-700" 
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title={`Peta Lokasi ${project.name}`}
+            ></iframe>
+            
+            {/* Tombol Buka di Maps overlay */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+              <a href={directMapsUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-md text-[#1E356A] px-6 py-3 rounded-full font-bold shadow-xl border border-gray-100 hover:bg-[#1E356A] hover:text-white transition-all duration-300 hover:scale-105 whitespace-nowrap">
+                <svg className="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span>Buka di Google Maps ↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Related Projects */}

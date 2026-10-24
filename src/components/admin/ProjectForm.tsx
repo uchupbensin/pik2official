@@ -407,13 +407,13 @@ export default function ProjectForm({ project, existingCategories }: { project?:
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-gray-500 uppercase">Link Google Maps (Opsional)</label>
                 <input
-                  type="url"
+                  type="text"
                   name="gmaps_url"
                   defaultValue={project?.gmaps_url || ''}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 outline-none focus:ring-2 focus:ring-[#1E356A]/20 focus:border-[#1E356A] transition-all"
-                  placeholder="https://maps.app.goo.gl/..."
+                  placeholder="https://maps.app.goo.gl/... atau kode <iframe src=...>"
                 />
-                <p className="text-xs text-gray-500 mt-1">Cukup tempelkan link Google Maps biasa. Peta akan ditampilkan secara otomatis.</p>
+                <p className="text-xs text-gray-500 mt-1">Bisa masukkan link share Google Maps biasa atau kode embed (&lt;iframe&gt;) dari menu Bagikan &gt; Sematkan Peta.</p>
               </div>
             </div>
           </div>
